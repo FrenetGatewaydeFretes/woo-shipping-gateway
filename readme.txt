@@ -1,0 +1,106 @@
+=== WooCommerce Shipping Gateway ===
+Contributors: frenet
+Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
+Requires at least: 3.5
+Tested up to: 3.9.2
+Stable tag: 1.0.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+Adds Correios, Jamef, Jadlog, TNT, Braspress shipping to the WooCommerce plugin
+
+== Description ==
+
+### Add Correios, Jamef, Jadlog, TNT, Braspress shipping to WooCommerce ###
+
+This plugin adds Correios, Jamef, Jadlog, TNT, Braspress shipping to WooCommerce.
+
+Please notice that WooCommerce must be installed and active.
+
+### Descrição em Português: ###
+
+Adiciona Correios, Jamef, Jadlog, TNT, Braspress como método de entrega em sua loja WooCommerce.
+
+[Frenet](http://www.frenet.com.br/) é um gateway de fretes brasileiro.
+
+Este plugin foi feito baseado no plugin [WooCommerce Correios](http://wordpress.org/plugins/woocommerce-correios/) do [Claudio Sanches](http://profiles.wordpress.org/claudiosanches/).
+
+= Instalação: =
+
+Confira o nosso guia de instalação e configuração na aba [Installation](http://wordpress.org/plugins/woo-shipping-gateway/installation/).
+
+= Dúvidas? =
+
+Você pode esclarecer suas dúvidas usando:
+
+* Central de ajuda [Central de ajuda](https://frenet.zendesk.com).
+* Criando um tópico no [fórum de ajuda do WordPress](http://wordpress.org/support/plugin/woo-shipping-gateway) (apenas em inglês).
+
+== Installation ==
+
+* Upload plugin files to your plugins folder, or install using WordPress built-in Add New Plugin installer;
+* Activate the plugin;
+* Navigate to WooCommerce -> Settings -> Shipping, choose Frenet and fill settings.
+
+### Instalação e configuração em Português: ###
+
+= Instalação do plugin: =
+
+* Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress.
+* Ative o plugin.
+
+= Requerimentos: =
+
+Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o PHP 5).
+
+= Configurações do plugin: =
+
+Com o plugin instalado navegue até "WooCommerce" > "Configurações" > "Entrega" > "Frenet".
+
+Nesta tela configure a sua **Chave de acesso** e **Senha**.
+
+Também é possível configurar um **Pacote Padrão** que será utilizando para definir as medidas mínimas do pacote de entraga.
+
+= Configurações dos produtos =
+
+Para que seja possível cotar o frete, os seus produtos precisam ser do tipo **simples** ou **variável** e não estarem marcados com *virtual* ou *baixável* (qualquer outro tipo de produto será ignorado na cotação).
+
+É necessário configurar o **peso** e **dimensões** de todos os seus produtos, caso você queria que a cotação de frete seja exata.
+Alternativamente, você pode configurar apenas o peso e deixar as dimensões em branco, pois neste caso serão utilizadas as configurações do **Pacote Padrão** para as dimensões (neste caso pode ocorrer uma variação no valor do frete).
+
+== Frequently Asked Questions ==
+
+= What is the plugin license? =
+
+* This plugin is released under a GPL license.
+
+### FAQ em Português: ###
+
+= Qual é a licença do plugin? =
+
+Este plugin esta licenciado como GPL.
+
+= O que eu preciso para utilizar este plugin? =
+
+* Ter instalado o plugin WooCommerce.
+* Possuir instalado em sua hospedagem a extensão de SimpleXML.
+* Configurar o seu acesso nas configurações do plugin.
+* Adicionar peso e dimensões nos produtos que pretende entregar.
+
+**Atenção**: É obrigatório ter o **peso** configurado em cada produto para que seja possível cotar o frete de forma eficiente. As dimensões podem ficar em branco e neste caso, serão utilizadas as medidas da opção **Pacote Padrão** da configuração do plugin, mas é **recomendado** que cada produto tenha suas configurações próprias de **peso** e **dimensões**.
+
+== Changelog ==
+
+= 1.0.0 =
+
+* Versão inicial do plugin.
+
+== License ==
+
+WooCommerce Frenet is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published
+by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+WooCommerce Frenet is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with WooCommerce Frenet. If not, see <http://www.gnu.org/licenses/>.
