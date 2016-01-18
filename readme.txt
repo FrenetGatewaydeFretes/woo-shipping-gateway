@@ -1,5 +1,6 @@
 === WooCommerce Shipping Gateway ===
 Contributors: frenet
+Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 3.9.2
@@ -13,17 +14,19 @@ Adds Correios, Jamef, Jadlog, TNT, Braspress shipping to the WooCommerce plugin
 
 ### Add Correios, Jamef, Jadlog, TNT, Braspress shipping to WooCommerce ###
 
-This plugin adds Correios, Jamef, Jadlog, TNT, Braspress shipping to WooCommerce.
+The Frenet freight shipping gateway is able to integrate and process tables of freight carriers and brazilian Correios. The freight calculation for the brazilian Correios services is done on-line (via Correios webservice) or in case of unavailability, uses database in the cloud highly available and regularly updated automatically, with the values of quotations.
+
+It provides to the store owners, major carriers in Brazil to transport large volumes as well as Jamef, Jadlog, TNT, Braspress, Direct among others
 
 Please notice that WooCommerce must be installed and active.
 
 ### Descrição em Português: ###
 
-Adiciona Correios, Jamef, Jadlog, TNT, Braspress como método de entrega em sua loja WooCommerce.
+O gateway de fretes Frenet é capaz de integrar e processar tabelas de fretes de transportadoras e Correios. O cálculo de frete para os serviços dos Correios é feito de forma online (via webservice dos Correios) ou em caso de indisponibilidade, utiliza base de dados na nuvem altamente disponível e regularmente atualizada de forma automática, com os valores das cotações.
+
+Disponibiliza aos lojistas as principais transportadoras do Brasil para transporte de grandes volumes, assim como Jamef, Jadlog, TNT, Braspress, Direct entre outras.
 
 [Frenet](http://www.frenet.com.br/) é um gateway de fretes brasileiro.
-
-Este plugin foi feito baseado no plugin [WooCommerce Correios](http://wordpress.org/plugins/woocommerce-correios/) do [Claudio Sanches](http://profiles.wordpress.org/claudiosanches/).
 
 = Instalação: =
 
@@ -41,6 +44,7 @@ Você pode esclarecer suas dúvidas usando:
 * Upload plugin files to your plugins folder, or install using WordPress built-in Add New Plugin installer;
 * Activate the plugin;
 * Navigate to WooCommerce -> Settings -> Shipping, choose Frenet and fill settings.
+* Register to the back end (https://painel.frenet.com.br) and get an access key.
 
 ### Instalação e configuração em Português: ###
 
@@ -48,6 +52,7 @@ Você pode esclarecer suas dúvidas usando:
 
 * Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress.
 * Ative o plugin.
+* Cadastre-se no Painel Administrativo (https://painel.frenet.com.br) e obtenha uma chave de acesso.
 
 = Requerimentos: =
 
@@ -67,6 +72,20 @@ Para que seja possível cotar o frete, os seus produtos precisam ser do tipo **s
 
 É necessário configurar o **peso** e **dimensões** de todos os seus produtos, caso você queria que a cotação de frete seja exata.
 Alternativamente, você pode configurar apenas o peso e deixar as dimensões em branco, pois neste caso serão utilizadas as configurações do **Pacote Padrão** para as dimensões (neste caso pode ocorrer uma variação no valor do frete).
+
+== Screenshots ==
+
+1. Configurações do plugin.
+
+== Changelog ==
+
+= 1.0 =
+* Initial version
+
+== Upgrade Notice ==
+
+= 1.0 =
+* Initial version
 
 == Frequently Asked Questions ==
 
