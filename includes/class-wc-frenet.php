@@ -324,11 +324,17 @@ class WC_Frenet extends WC_Shipping_Method {
         $values = array();
 
         $RecipientCEP = $package['destination']['postcode'];
+        $RecipientCountry = $package['destination']['country'];
 
         // Checks if services and zipcode is empty.
-        if (empty( $RecipientCEP )
-            || empty( $this->zip_origin )
-        ) {
+        if (empty( $RecipientCEP ) && $RecipientCountry=='BR')
+        {
+            $this->log->add( $this->id,"ERRO: CEP destino não informado");
+            return $values;
+        }
+        if(empty( $this->zip_origin ))
+        {
+            $this->log->add( $this->id,"ERRO: CEP origem não configurado");
             return $values;
         }
 
@@ -390,6 +396,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 }
 
                 $shippingItemArray[$count] = $shippingItem;
+
                 $count++;
             }
         }
@@ -407,7 +414,8 @@ class WC_Frenet extends WC_Shipping_Method {
                 'RecipientCEP' => $RecipientCEP,
                 'RecipientDocument' => '',
                 'ShipmentInvoiceValue' => WC()->cart->cart_contents_total,
-                'ShippingItemArray' => $shippingItemArray
+                'ShippingItemArray' => $shippingItemArray,
+                'RecipientCountry' => $RecipientCountry
             )
         );
 
