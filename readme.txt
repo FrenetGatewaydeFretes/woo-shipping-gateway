@@ -4,7 +4,7 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 3.9.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Adds Correios, Jamef, Jadlog, TNT, Braspress shipping to the WooCommerce plugin
 
 == Description ==
 
-### Add Correios, Jamef, Jadlog, TNT, Braspress shipping to WooCommerce ###
+### Add Correios, Jamef, Jadlog, TNT, Braspress, Direct Log, Total Express, Exporta Fácil shipping to WooCommerce ###
 
 The Frenet freight shipping gateway is able to integrate and process tables of freight carriers and brazilian Correios. The freight calculation for the brazilian Correios services is done on-line (via Correios webservice) or in case of unavailability, uses database in the cloud highly available and regularly updated automatically, with the values of quotations.
 
@@ -24,9 +24,9 @@ Please notice that WooCommerce must be installed and active.
 
 O gateway de fretes Frenet é capaz de integrar e processar tabelas de fretes de transportadoras e Correios. O cálculo de frete para os serviços dos Correios é feito de forma online (via webservice dos Correios) ou em caso de indisponibilidade, utiliza base de dados na nuvem altamente disponível e regularmente atualizada de forma automática, com os valores das cotações.
 
-Disponibiliza aos lojistas as principais transportadoras do Brasil para transporte de grandes volumes, assim como Jamef, Jadlog, TNT, Braspress, Direct entre outras.
+Disponibiliza aos lojistas as principais transportadoras do Brasil para transporte de grandes volumes, assim como Jamef, Jadlog, TNT, Braspress, Direct Log, Total Express, Exporta Fácil entre outras.
 
-[Frenet](http://www.frenet.com.br/) é um gateway de fretes brasileiro.
+[Frenet](http://www.frenet.com.br/)
 
 = Instalação: =
 
