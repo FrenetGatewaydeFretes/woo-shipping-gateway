@@ -445,23 +445,26 @@ class WC_Frenet extends WC_Shipping_Method {
                 else
                     $servicosArray = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
 
-                foreach($servicosArray as $servicos){
+                if(!empty($servicosArray))
+                {
+                    foreach($servicosArray as $servicos){
 
-                    if ( 'yes' == $this->debug ) {
-                        $this->log->add( $this->id, 'Percorrendo os serviços retornados');
+                        if ( 'yes' == $this->debug ) {
+                            $this->log->add( $this->id, 'Percorrendo os serviços retornados');
+                        }
+
+                        if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
+                            continue;
+                        }
+
+                        $code = (string) $servicos->ServiceCode;
+
+                        if ( 'yes' == $this->debug ) {
+                            $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
+                        }
+
+                        $values[ $code ] = $servicos;
                     }
-
-                    if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
-                        continue;
-                    }
-
-                    $code = (string) $servicos->ServiceCode;
-
-                    if ( 'yes' == $this->debug ) {
-                        $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
-                    }
-
-                    $values[ $code ] = $servicos;
                 }
 
             }
