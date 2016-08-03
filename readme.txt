@@ -4,7 +4,7 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 3.9.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,14 @@ Este plugin esta licenciado como GPL.
 = 1.0.0 =
 
 * Versão inicial do plugin.
+
+= 1.0.1 =
+
+* Bug Fixes
+
+= 1.0.2 =
+
+* Bug Fix - Tradução
 
 == License ==
 
