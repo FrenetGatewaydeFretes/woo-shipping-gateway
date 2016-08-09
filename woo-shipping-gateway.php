@@ -48,7 +48,10 @@ function wcfrenet_shipping_load() {
 	/**
 	 * Load textdomain.
 	 */
-	load_plugin_textdomain( 'woo-shipping-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+    $locale = apply_filters( 'plugin_locale', get_locale(), 'woo-shipping-gateway' );
+    load_textdomain( 'woo-shipping-gateway', trailingslashit( WP_LANG_DIR ) . 'woo-shipping-gateway/woo-shipping-gateway-' . $locale . '.mo' );
+    load_plugin_textdomain( 'woo-shipping-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+
 
 	/**
 	 * Add the Frenet to shipping methods.

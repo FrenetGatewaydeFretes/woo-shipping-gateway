@@ -329,12 +329,16 @@ class WC_Frenet extends WC_Shipping_Method {
         // Checks if services and zipcode is empty.
         if (empty( $RecipientCEP ) && $RecipientCountry=='BR')
         {
-            $this->log->add( $this->id,"ERRO: CEP destino não informado");
+            if ( 'yes' == $this->debug ) {
+                $this->log->add( $this->id,"ERRO: CEP destino não informado");
+            }
             return $values;
         }
         if(empty( $this->zip_origin ))
         {
-            $this->log->add( $this->id,"ERRO: CEP origem não configurado");
+            if ( 'yes' == $this->debug ) {
+                $this->log->add( $this->id,"ERRO: CEP origem não configurado");
+            }
             return $values;
         }
 
