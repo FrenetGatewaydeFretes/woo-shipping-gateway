@@ -9,9 +9,17 @@ class WC_Frenet extends WC_Shipping_Method {
 	 *
 	 * @return void
 	 */
-	public function __construct() {
-		$this->id           = 'frenet';
+	public function __construct($instance_id = 0 ) {
+        $this->id           = 'frenet';
+        $this->instance_id 	= absint( $instance_id );
 		$this->method_title = __( 'Frenet', 'woo-shipping-gateway' );
+
+        $this->supports              = array(
+            'shipping-zones',
+            'instance-settings',
+            'instance-settings-modal'
+        );
+
 		$this->init();
 	}
 
@@ -31,17 +39,18 @@ class WC_Frenet extends WC_Shipping_Method {
 		$this->init_settings();
 
 		// Define user set variables.
-		$this->enabled            = $this->settings['enabled'];
-		$this->title              = $this->settings['title'];
-		$this->zip_origin         = $this->settings['zip_origin'];
-		$this->minimum_height     = $this->settings['minimum_height'];
-		$this->minimum_width      = $this->settings['minimum_width'];
-		$this->minimum_length     = $this->settings['minimum_length'];
-		$this->debug              = $this->settings['debug'];
-        $this->display_date       = $this->settings['display_date'];
-        $this->login              = $this->settings['login'];
-        $this->password           = $this->settings['password'];
-        $this->additional_time    = $this->settings['additional_time'];
+		$this->enabled            = $this->get_option('enabled');
+		$this->title              = $this->get_option('title');
+		$this->zip_origin         = $this->get_option('zip_origin');
+		$this->minimum_height     = $this->get_option('minimum_height');
+		$this->minimum_width      = $this->get_option('minimum_width');
+		$this->minimum_length     = $this->get_option('minimum_length');
+		$this->debug              = $this->get_option('debug');
+        $this->display_date       = $this->get_option('display_date');
+        $this->login              = $this->get_option('login');
+        $this->password           = $this->get_option('password');
+        $this->additional_time    = $this->get_option('additional_time');
+        $this->debug              = $this->get_option( 'debug' );
 
 		// Active logs.
 		if ( 'yes' == $this->debug ) {
@@ -53,7 +62,7 @@ class WC_Frenet extends WC_Shipping_Method {
 		}
 
 		// Actions.
-		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( &$this, 'process_admin_options' ) );
+        add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
 	}
 
 	/**
@@ -76,12 +85,12 @@ class WC_Frenet extends WC_Shipping_Method {
 	 * @return void
 	 */
 	public function init_form_fields() {
-		$this->form_fields = array(
+		$this->instance_form_fields = array(
 			'enabled' => array(
 				'title'            => __( 'Enable/Disable', 'woo-shipping-gateway' ),
 				'type'             => 'checkbox',
 				'label'            => __( 'Enable this shipping method', 'woo-shipping-gateway' ),
-				'default'          => 'no'
+				'default'          => 'yes'
 			),
 			'title' => array(
 				'title'            => __( 'Title', 'woo-shipping-gateway' ),
@@ -102,7 +111,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 'label'            => __( 'Enable', 'woo-shipping-gateway' ),
                 'description'      => __( 'Display date of estimated delivery.', 'woo-shipping-gateway' ),
                 'desc_tip'         => true,
-                'default'          => 'no'
+                'default'          => 'yes'
             ),
             'additional_time' => array(
                 'title'            => __( 'Additional days', 'woo-shipping-gateway' ),
@@ -260,7 +269,7 @@ class WC_Frenet extends WC_Shipping_Method {
 	public function calculate_shipping( $package = array() ) {
 		$rates  = array();
         $errors = array();
-        $shipping_values = $this->frenet_calculate( $package );
+        $shipping_values = $this->frenet_calculate_json( $package );
 
         if ( ! empty( $shipping_values ) ) {
             foreach ( $shipping_values as $code => $shipping ) {
@@ -318,6 +327,182 @@ class WC_Frenet extends WC_Shipping_Method {
         }
 
         return $name;
+    }
+
+    protected function frenet_calculate_json( $package ){
+        $values = array();
+        try
+        {
+
+            $RecipientCEP = $package['destination']['postcode'];
+            $RecipientCountry = $package['destination']['country'];
+
+            // Checks if services and zipcode is empty.
+            if (empty( $RecipientCEP ) && $RecipientCountry=='BR')
+            {
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id,"ERRO: CEP destino não informado");
+                }
+                return $values;
+            }
+            if(empty( $this->zip_origin ))
+            {
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id,"ERRO: CEP origem não configurado");
+                }
+                return $values;
+            }
+
+            // product array
+            $shippingItemArray = array();
+            $count = 0;
+
+            // Shipping per item.
+            foreach ( $package['contents'] as $item_id => $values ) {
+                $product = $values['data'];
+                $qty = $values['quantity'];
+
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id, 'Product: ' . print_r($product, true));
+                }
+
+                $shippingItem = new stdClass();
+
+                if ( $qty > 0 && $product->needs_shipping() ) {
+
+                    if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '>=' ) ) {
+                        $_height = wc_get_dimension( $this->fix_format( $product->height ), 'cm' );
+                        $_width  = wc_get_dimension( $this->fix_format( $product->width ), 'cm' );
+                        $_length = wc_get_dimension( $this->fix_format( $product->length ), 'cm' );
+                        $_weight = wc_get_weight( $this->fix_format( $product->weight ), 'kg' );
+                    } else {
+                        $_height = woocommerce_get_dimension( $this->fix_format( $product->height ), 'cm' );
+                        $_width  = woocommerce_get_dimension( $this->fix_format( $product->width ), 'cm' );
+                        $_length = woocommerce_get_dimension( $this->fix_format( $product->length ), 'cm' );
+                        $_weight = woocommerce_get_weight( $this->fix_format( $product->weight ), 'kg' );
+                    }
+
+                    if(empty($_height))
+                        $_height= $this->minimum_height;
+
+                    if(empty($_width))
+                        $_width= $this->minimum_width;
+
+                    if(empty($_length))
+                        $_length = $this->minimum_length;
+
+                    if(empty($_weight))
+                        $_weight = 1;
+
+
+                    $shippingItem->Weight = $_weight * $qty;
+                    $shippingItem->Length = $_length;
+                    $shippingItem->Height = $_height;
+                    $shippingItem->Width = $_width;
+                    $shippingItem->Diameter = 0;
+                    $shippingItem->SKU = $product->get_sku();
+
+                    // wp_get_post_terms( your_id, 'product_cat' );
+                    $shippingItem->Category = '';
+                    $shippingItem->isFragile=false;
+
+                    if ( 'yes' == $this->debug ) {
+                        $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
+                    }
+
+                    $shippingItemArray[$count] = $shippingItem;
+
+                    $count++;
+                }
+            }
+
+            if ( 'yes' == $this->debug ) {
+
+                $this->log->add( $this->id, 'CEP ' . $package['destination']['postcode'] );
+            }
+
+            $service_param = array (
+                    'Token' => 'C3E9B7F0RA5D4R43FFR8E5FRBD4D6FBF6AB9',
+                    'SellerCEP' => $this->zip_origin,
+                    'RecipientCEP' => $RecipientCEP,
+                    'RecipientDocument' => '',
+                    'ShipmentInvoiceValue' => WC()->cart->cart_contents_total,
+                    'ShippingItemArray' => $shippingItemArray,
+                    'RecipientCountry' => $RecipientCountry
+            );
+
+            if ( 'yes' == $this->debug ) {
+                $this->log->add( $this->id, 'Requesting the Frenet WebServices...');
+                $this->log->add( $this->id, print_r($service_param, true));
+            }
+
+            // Gets the WebServices response.
+
+            $service_url = 'http://api.frenet.com.br/v1/Shipping/GetShippingQuote?data=' . json_encode($service_param);
+
+            if ( 'yes' == $this->debug ) {
+                $this->log->add( $this->id, 'URL: ' . $service_url );
+            }
+
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $service_url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            $curl_response = curl_exec($curl);
+            curl_close($curl);
+
+            if ( 'yes' == $this->debug ) {
+                $this->log->add( $this->id, 'Curl response: ' . $curl_response );
+            }
+
+
+            if ( is_wp_error( $curl_response ) ) {
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id, 'WP_Error: ' . $curl_response->get_error_message() );
+                }
+            } else
+            {
+                $response = json_decode($curl_response);
+
+                if ( isset( $response->ShippingSevicesArray ) ) {
+                    if(count($response->ShippingSevicesArray)==1)
+                        $servicosArray[0] = $response->ShippingSevicesArray;
+                    else
+                        $servicosArray = $response->ShippingSevicesArray;
+
+                    if(!empty($servicosArray))
+                    {
+                        foreach($servicosArray as $servicos){
+
+                            if ( 'yes' == $this->debug ) {
+                                $this->log->add( $this->id, 'Percorrendo os serviços retornados');
+                            }
+
+                            if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
+                                continue;
+                            }
+
+                            $code = (string) $servicos->ServiceCode;
+
+                            if ( 'yes' == $this->debug ) {
+                                $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
+                            }
+
+                            $values[ $code ] = $servicos;
+                        }
+                    }
+
+                }
+            }
+        }
+        catch (Exception $e)
+        {
+            if ( 'yes' == $this->debug ) {
+                $this->log->add( $this->id, var_dump($e->getMessage()));
+            }
+        }
+
+        return $values;
+
     }
 
     protected function frenet_calculate( $package ){

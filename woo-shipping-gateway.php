@@ -5,71 +5,122 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 1.0.1
+ * Version: 2.0.0
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
- * Domain Path: /languages/
+ * Domain Path: languages/
  */
 
 define( 'WOO_FRENET_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WOO_FRENET_URL', plugin_dir_url( __FILE__ ) );
 
-/**
- * WooCommerce fallback notice.
- */
-function wcfrenet_woocommerce_fallback_notice() {
-	echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Frenet depends on %s to work!', 'woo-shipping-gateway' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>' ) . '</p></div>';
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
 }
 
-/**
- * SimpleXML missing notice.
- */
-function wcfrenet_extensions_missing_notice() {
-	echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Frenet depends to %s to work!', 'woo-shipping-gateway' ), '<a href="http://php.net/manual/en/book.simplexml.php">SimpleXML</a>' ) . '</p></div>';
-}
+if ( ! class_exists( 'WC_Frenet_Main' ) ) :
 
-/**
- * Load functions.
- */
-function wcfrenet_shipping_load() {
+    /**
+     * Frenet main class.
+     */
+    class WC_Frenet_Main {
+        /**
+        * Plugin version.
+        *
+        * @var string
+        */
+        const VERSION = '2.0.0';
 
-	if ( ! class_exists( 'WC_Shipping_Method' ) ) {
-		add_action( 'admin_notices', 'wcfrenet_woocommerce_fallback_notice' );
+        /**
+        * Instance of this class.
+        *
+        * @var object
+        */
+        protected static $instance = null;
 
-		return;
-	}
+        /**
+         * Initialize the plugin
+         */
+        private function __construct() {
+            add_action( 'init', array( $this, 'load_plugin_textdomain' ), -1 );
 
-	if ( ! class_exists( 'SimpleXmlElement' ) ) {
-		add_action( 'admin_notices', 'wcfrenet_extensions_missing_notice' );
+            // Checks with WooCommerce is installed.
+            if ( class_exists( 'WC_Integration' ) ) {
+                include_once WOO_FRENET_PATH . 'includes/class-wc-frenet.php';
 
-		return;
-	}
+                add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
 
-	/**
-	 * Load textdomain.
-	 */
-    $locale = apply_filters( 'plugin_locale', get_locale(), 'woo-shipping-gateway' );
-    load_textdomain( 'woo-shipping-gateway', trailingslashit( WP_LANG_DIR ) . 'woo-shipping-gateway/woo-shipping-gateway-' . $locale . '.mo' );
-    load_plugin_textdomain( 'woo-shipping-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+            } else {
+                add_action( 'admin_notices', array( $this, 'wcfrenet_woocommerce_fallback_notice' ) );
+            }
 
+            if ( ! class_exists( 'SimpleXmlElement' ) ) {
+                add_action( 'admin_notices', 'wcfrenet_extensions_missing_notice' );
+            }
+        }
 
-	/**
-	 * Add the Frenet to shipping methods.
-	 *
-	 * @param array $methods
-	 *
-	 * @return array
-	 */
-	function wcfrenet_add_method( $methods ) {
-		$methods[] = 'WC_Frenet';
+        /**
+         * Return an instance of this class.
+         *
+         * @return object A single instance of this class.
+         */
+        public static function get_instance() {
+            // If the single instance hasn't been set, set it now.
+            if ( null === self::$instance ) {
+                self::$instance = new self;
+            }
 
-		return $methods;
-	}
+            return self::$instance;
+        }
 
-	add_filter( 'woocommerce_shipping_methods', 'wcfrenet_add_method' );
+        /**
+         * Load the plugin text domain for translation.
+         */
+        public function load_plugin_textdomain() {
+            load_plugin_textdomain( 'woo-shipping-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+        }
 
-	// WC_Frenet class.
-	include_once WOO_FRENET_PATH . 'includes/class-wc-frenet.php';
-}
+        /**
+         * Get main file.
+         *
+         * @return string
+         */
+        public static function get_main_file() {
+            return __FILE__;
+        }
 
-add_action( 'plugins_loaded', 'wcfrenet_shipping_load', 0 );
+        /**
+         * Get plugin path.
+         *
+         * @return string
+         */
+        public static function get_plugin_path() {
+            return plugin_dir_path( __FILE__ );
+        }
+
+        /**
+         * Get templates path.
+         *
+         * @return string
+         */
+        public static function get_templates_path() {
+            return self::get_plugin_path() . 'templates/';
+        }
+
+        /**
+         * Add the Frenet to shipping methods.
+         *
+         * @param array $methods
+         *
+         * @return array
+         */
+        function wcfrenet_add_method( $methods ) {
+            $methods['frenet'] = 'WC_Frenet';
+
+            return $methods;
+        }
+
+    }
+
+    add_action( 'plugins_loaded', array( 'WC_Frenet_Main', 'get_instance' ) );
+
+endif;

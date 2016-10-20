@@ -3,12 +3,12 @@ Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
-Tested up to: 3.9.2
-Stable tag: 1.0.2
+Tested up to: 4.6
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Adds Correios, Jamef, Jadlog, TNT, Braspress shipping to the WooCommerce plugin
+Adds Correios, Jamef, Jadlog, TNT, Total Express, Direct Log, Braspress and others shipping options to the WooCommerce plugin
 
 == Description ==
 
@@ -79,13 +79,27 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 
 == Changelog ==
 
-= 1.0 =
-* Initial version
+= 2.0.0 =
+
+* Versão compativel com Woocommerce 2.6.x - Shipping zones
+
+= 1.0.2 =
+
+* Bug Fix - Tradução
+
+= 1.0.1 =
+
+* Bug Fixes
+
+= 1.0.0 =
+
+* Versão inicial do plugin.
 
 == Upgrade Notice ==
 
-= 1.0 =
-* Initial version
+= 2.0.0 =
+
+* Versão compativel com Woocommerce 2.6.x - Shipping zones
 
 == Frequently Asked Questions ==
 
@@ -107,20 +121,6 @@ Este plugin esta licenciado como GPL.
 * Adicionar peso e dimensões nos produtos que pretende entregar.
 
 **Atenção**: É obrigatório ter o **peso** configurado em cada produto para que seja possível cotar o frete de forma eficiente. As dimensões podem ficar em branco e neste caso, serão utilizadas as medidas da opção **Pacote Padrão** da configuração do plugin, mas é **recomendado** que cada produto tenha suas configurações próprias de **peso** e **dimensões**.
-
-== Changelog ==
-
-= 1.0.0 =
-
-* Versão inicial do plugin.
-
-= 1.0.1 =
-
-* Bug Fixes
-
-= 1.0.2 =
-
-* Bug Fix - Tradução
 
 == License ==
 
