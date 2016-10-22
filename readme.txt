@@ -4,7 +4,7 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 4.6
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 
 == Changelog ==
 
+= 2.0.1 =
+
+* Versão compativel com Woocommerce 2.6.x - Shipping zones; Bug Fixes - Token
+
 = 2.0.0 =
 
 * Versão compativel com Woocommerce 2.6.x - Shipping zones
@@ -97,9 +101,9 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 
 == Upgrade Notice ==
 
-= 2.0.0 =
+= 2.0.1 =
 
-* Versão compativel com Woocommerce 2.6.x - Shipping zones
+* Versão compativel com Woocommerce 2.6.x - Shipping zones; Bug Fixes - Token
 
 == Frequently Asked Questions ==
 

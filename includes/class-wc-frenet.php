@@ -51,6 +51,7 @@ class WC_Frenet extends WC_Shipping_Method {
         $this->password           = $this->get_option('password');
         $this->additional_time    = $this->get_option('additional_time');
         $this->debug              = $this->get_option( 'debug' );
+        $this->token              = $this->get_option('token');
 
 		// Active logs.
 		if ( 'yes' == $this->debug ) {
@@ -131,6 +132,12 @@ class WC_Frenet extends WC_Shipping_Method {
                 'title'            => __( 'Password', 'woo-shipping-gateway' ),
                 'type'             => 'password',
                 'description'      => __( 'Your Frenet access key password.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true
+            ),
+            'token' => array(
+                'title'            => __( 'Token', 'woo-shipping-gateway' ),
+                'type'             => 'password',
+                'description'      => __( 'Your Frenet token.', 'woo-shipping-gateway' ),
                 'desc_tip'         => true
             ),
 			'package_standard' => array(
@@ -269,7 +276,10 @@ class WC_Frenet extends WC_Shipping_Method {
 	public function calculate_shipping( $package = array() ) {
 		$rates  = array();
         $errors = array();
-        $shipping_values = $this->frenet_calculate_json( $package );
+        if (isset($this->token) && $this->token != '')
+            $shipping_values = $this->frenet_calculate_json( $package );
+        else
+            $shipping_values = $this->frenet_calculate( $package );
 
         if ( ! empty( $shipping_values ) ) {
             foreach ( $shipping_values as $code => $shipping ) {
@@ -422,7 +432,7 @@ class WC_Frenet extends WC_Shipping_Method {
             }
 
             $service_param = array (
-                    'Token' => 'C3E9B7F0RA5D4R43FFR8E5FRBD4D6FBF6AB9',
+                    'Token' => $this->token,
                     'SellerCEP' => $this->zip_origin,
                     'RecipientCEP' => $RecipientCEP,
                     'RecipientDocument' => '',
