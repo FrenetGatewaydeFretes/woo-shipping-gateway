@@ -16,8 +16,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
         $this->supports              = array(
             'shipping-zones',
-            'instance-settings',
-            'instance-settings-modal'
+            'instance-settings'
         );
 
 		$this->init();
@@ -179,6 +178,8 @@ class WC_Frenet extends WC_Shipping_Method {
 				'description'      => sprintf( __( 'Log Frenet events, such as WebServices requests, inside %s.', 'woo-shipping-gateway' ), '<code>woocommerce/logs/frenet-' . sanitize_file_name( wp_hash( 'frenet' ) ) . '.txt</code>' )
 			)
 		);
+
+        $this->form_fields = $this->instance_form_fields;
 	}
 
 	/**
@@ -302,7 +303,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 array_push(
                     $rates,
                     array(
-                        'id'    => $shipping->ServiceCode,
+                        'id'    => 'FRENET_' . $shipping->ServiceCode,
                         'label' => $label,
                         'cost'  => $cost,
                     )
