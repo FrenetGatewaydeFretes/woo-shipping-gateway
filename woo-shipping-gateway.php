@@ -5,7 +5,7 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.0.1
+ * Version: 2.1.0
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
@@ -24,17 +24,17 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
      */
     class WC_Frenet_Main {
         /**
-        * Plugin version.
-        *
-        * @var string
-        */
-        const VERSION = '2.0.0';
+         * Plugin version.
+         *
+         * @var string
+         */
+        const VERSION = '2.1.0';
 
         /**
-        * Instance of this class.
-        *
-        * @var object
-        */
+         * Instance of this class.
+         *
+         * @var object
+         */
         protected static $instance = null;
 
         /**
@@ -43,9 +43,13 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
         private function __construct() {
             add_action( 'init', array( $this, 'load_plugin_textdomain' ), -1 );
 
+            add_action( 'wp_ajax_ajax_simulator', array( 'WC_Frenet_Shipping_Simulator', 'ajax_simulator' ) );
+            add_action( 'wp_ajax_nopriv_ajax_simulator', array( 'WC_Frenet_Shipping_Simulator', 'ajax_simulator' ) );
+
             // Checks with WooCommerce is installed.
             if ( class_exists( 'WC_Integration' ) ) {
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet.php';
+                include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-shipping-simulator.php';
 
                 add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
 

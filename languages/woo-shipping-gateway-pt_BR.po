@@ -57,6 +57,12 @@ msgstr "Estimativa de entrega"
 msgid "Enable"
 msgstr "Habilitar"
 
+msgid "Shipping Simulator"
+msgstr "Simulador de frete"
+
+msgid "Display shipping simulator in single product"
+msgstr "Exibe o simulador na página do produto"
+
 msgid "Display date of estimated delivery."
 msgstr "Exibe a data de entrega estimada."
 

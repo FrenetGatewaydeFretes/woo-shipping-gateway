@@ -1,0 +1,35 @@
+#shipping-simulator:before,
+#shipping-simulator:after {
+    content: " ";
+    display: table;
+}
+
+#shipping-simulator:after,
+#shipping-simulator .clear {
+    clear: both;
+}
+
+#shipping-simulator {
+    *zoom: 1;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+#shipping-simulator p {
+    margin-bottom: 5px;
+    color: green;
+}
+
+#shipping-simulator #zipcode {
+    float: left;
+    margin-right: 5px;
+    height: 28px;
+    padding: 0 5px;
+}
+
+#shipping-simulator #simulator-data {
+    margin-top: 5px;
+}
+.button{
+    height: 32px;
+}

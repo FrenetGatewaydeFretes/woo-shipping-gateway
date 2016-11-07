@@ -105,6 +105,14 @@ class WC_Frenet extends WC_Shipping_Method {
                 'description'      => __( 'Zip Code from where the requests are sent.', 'woo-shipping-gateway' ),
                 'desc_tip'         => true
             ),
+            'simulator' => array(
+                'title' => __('Shipping Simulator', 'woo-shipping-gateway'),
+                'type' => 'checkbox',
+                'label' => __('Enable', 'woo-shipping-gateway'),
+                'description' => __('Display shipping simulator in single product', 'woo-shipping-gateway'),
+                'desc_tip' => true,
+                'default' => 'yes'
+            ),
             'display_date' => array(
                 'title'            => __( 'Estimated delivery', 'woo-shipping-gateway' ),
                 'type'             => 'checkbox',
@@ -475,10 +483,8 @@ class WC_Frenet extends WC_Shipping_Method {
                 $response = json_decode($curl_response);
 
                 if ( isset( $response->ShippingSevicesArray ) ) {
-                    if(count($response->ShippingSevicesArray)==1)
-                        $servicosArray[0] = $response->ShippingSevicesArray;
-                    else
-                        $servicosArray = $response->ShippingSevicesArray;
+
+                    $servicosArray = (array)$response->ShippingSevicesArray;
 
                     if(!empty($servicosArray))
                     {
@@ -489,6 +495,9 @@ class WC_Frenet extends WC_Shipping_Method {
                             }
 
                             if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
+                                if ( 'yes' == $this->debug ) {
+                                    $this->log->add( $this->id, '*continue*');
+                                }
                                 continue;
                             }
 
