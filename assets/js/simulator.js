@@ -33,7 +33,7 @@ jQuery(document).ready(function ($) {
             product_id = $('input[name="product_id"]').val();
 
         additional_time = $('#additional_time').val();
-        additional_time = parseInt(additional_time + 0);
+        additional_time = parseInt(additional_time + 0, 10);
 
         /*
         console.log('ID do produto: ' + product_id);
