@@ -33,7 +33,7 @@ jQuery(document).ready(function ($) {
             product_id = $('input[name="product_id"]').val();
 
         additional_time = $('#additional_time').val();
-        additional_time = parseInt(additional_time + 0, 10);
+        additional_time = parseInt(additional_time, 10);
 
         /*
         console.log('ID do produto: ' + product_id);
@@ -73,7 +73,7 @@ jQuery(document).ready(function ($) {
                     shipping += '<ul id="shipping-rates">';
                     $.each(response, function (key, value) {
                         if (value.ServiceDescription !== undefined) {
-                            var EstimatingDelivery = parseInt(value.DeliveryTime) + parseInt(additional_time);
+                            var EstimatingDelivery = parseInt(value.DeliveryTime, 10) + parseInt(additional_time, 10);
                             console.log(EstimatingDelivery);
                             shipping += '<li class="li-frenet"><span class="span-frenet">' + value.ServiceDescription + '</span>: ' + value.ShippingPrice + ' (Entrega em ' + EstimatingDelivery + ' dias úteis)</li>';
                         }
