@@ -97,6 +97,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $package['contents'][0]['data'] = $variation;
         $package['contents'][0]['quantity'] = $_POST['quantity'];;
 
+        $frenet->quoteByProduct=true;
         $shipping_values = $frenet->frenet_calculate($package);
 
         echo json_encode($shipping_values);

@@ -4,6 +4,8 @@
  */
 class WC_Frenet extends WC_Shipping_Method {
 
+    public $quoteByProduct = false;
+
 	/**
 	 * Initialize the Frenet shipping method.
 	 *
@@ -352,7 +354,6 @@ class WC_Frenet extends WC_Shipping_Method {
         $values = array();
         try
         {
-
             $RecipientCEP = $package['destination']['postcode'];
             $RecipientCountry = $package['destination']['country'];
 
@@ -375,6 +376,8 @@ class WC_Frenet extends WC_Shipping_Method {
             // product array
             $shippingItemArray = array();
             $count = 0;
+
+            $shipmentInvoiceValue=0;
 
             // Shipping per item.
             foreach ( $package['contents'] as $item_id => $values ) {
@@ -414,12 +417,14 @@ class WC_Frenet extends WC_Shipping_Method {
                         $_weight = 1;
 
 
-                    $shippingItem->Weight = $_weight * $qty;
+                    $shippingItem->Weight = $_weight;
                     $shippingItem->Length = $_length;
                     $shippingItem->Height = $_height;
                     $shippingItem->Width = $_width;
                     $shippingItem->Diameter = 0;
                     $shippingItem->SKU = $product->get_sku();
+
+                    $shipmentInvoiceValue += $product->get_price() * $qty;
 
                     // wp_get_post_terms( your_id, 'product_cat' );
                     $shippingItem->Category = '';
@@ -429,9 +434,11 @@ class WC_Frenet extends WC_Shipping_Method {
                         $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
                     }
 
-                    $shippingItemArray[$count] = $shippingItem;
-
-                    $count++;
+                    for($z =0; $z < $qty; $z++){
+                        $tmp = clone($shippingItem);
+                        $shippingItemArray[$count] = $tmp;
+                        $count++;
+                    }
                 }
             }
 
@@ -440,12 +447,17 @@ class WC_Frenet extends WC_Shipping_Method {
                 $this->log->add( $this->id, 'CEP ' . $package['destination']['postcode'] );
             }
 
+            if(!$this->quoteByProduct)
+            {
+                $shipmentInvoiceValue = WC()->cart->cart_contents_total;
+            }
+
             $service_param = array (
                     'Token' => $this->token,
                     'SellerCEP' => $this->zip_origin,
                     'RecipientCEP' => $RecipientCEP,
                     'RecipientDocument' => '',
-                    'ShipmentInvoiceValue' => WC()->cart->cart_contents_total,
+                    'ShipmentInvoiceValue' => $shipmentInvoiceValue,
                     'ShippingItemArray' => $shippingItemArray,
                     'RecipientCountry' => $RecipientCountry
             );
@@ -551,6 +563,8 @@ class WC_Frenet extends WC_Shipping_Method {
         $shippingItemArray = array();
         $count = 0;
 
+        $shipmentInvoiceValue=0;
+
         // Shipping per item.
         foreach ( $package['contents'] as $item_id => $values ) {
             $product = $values['data'];
@@ -558,6 +572,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
             if ( 'yes' == $this->debug ) {
                 $this->log->add( $this->id, 'Product: ' . print_r($product, true));
+                $this->log->add( $this->id, 'Quantity: ' . $qty);
             }
 
             $shippingItem = new stdClass();
@@ -589,12 +604,14 @@ class WC_Frenet extends WC_Shipping_Method {
                     $_weight = 1;
 
 
-                $shippingItem->Weight = $_weight * $qty;
+                $shippingItem->Weight = $_weight;
                 $shippingItem->Length = $_length;
                 $shippingItem->Height = $_height;
                 $shippingItem->Width = $_width;
                 $shippingItem->Diameter = 0;
                 $shippingItem->SKU = $product->get_sku();
+
+                $shipmentInvoiceValue += $product->get_price() * $qty;
 
                 // wp_get_post_terms( your_id, 'product_cat' );
                 $shippingItem->Category = '';
@@ -604,15 +621,27 @@ class WC_Frenet extends WC_Shipping_Method {
                     $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
                 }
 
-                $shippingItemArray[$count] = $shippingItem;
-
-                $count++;
+                for($z =0; $z < $qty; $z++){
+                    $tmp = clone($shippingItem);
+                    $shippingItemArray[$count] = $tmp;
+                    $count++;
+                }
             }
         }
 
         if ( 'yes' == $this->debug ) {
 
             $this->log->add( $this->id, 'CEP ' . $package['destination']['postcode'] );
+        }
+
+        if ( 'yes' == $this->debug ) {
+            $this->log->add( $this->id, 'Carrinho: ' . WC()->cart->cart_contents_total);
+            $this->log->add( $this->id, 'Produtos: ' . $shipmentInvoiceValue);
+        }
+
+        if(!$this->quoteByProduct)
+        {
+            $shipmentInvoiceValue = WC()->cart->cart_contents_total;
         }
 
         $service_param = array (
@@ -622,7 +651,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 'SellerCEP' => $this->zip_origin,
                 'RecipientCEP' => $RecipientCEP,
                 'RecipientDocument' => '',
-                'ShipmentInvoiceValue' => WC()->cart->cart_contents_total,
+                'ShipmentInvoiceValue' => $shipmentInvoiceValue,
                 'ShippingItemArray' => $shippingItemArray,
                 'RecipientCountry' => $RecipientCountry
             )
