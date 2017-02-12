@@ -663,7 +663,7 @@ class WC_Frenet extends WC_Shipping_Method {
         }
 
         // Gets the WebServices response.
-        $client = new SoapClient($this->webservice, array("soap_version" => SOAP_1_1,"trace" => 1));
+        $client = new SoapClient($this->webservice, array("soap_version" => SOAP_1_1,"trace" => 1, "cache_wsdl" => WSDL_CACHE_NONE));
         $response = $client->__soapCall("GetShippingQuote", array($service_param));
 
         if ( 'yes' == $this->debug ) {
