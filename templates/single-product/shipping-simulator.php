@@ -21,7 +21,7 @@ if ($Options['simulator'] === 'yes') {
                 $current_user = get_current_user_id();
                 $zipcode = get_user_meta($current_user, 'shipping_postcode', true);
                 ?>
-                <input required type="text" name="zipcode" id="zipcode" placeholder="000.000-00"
+                <input required type="text" name="zipcode" id="zipcode" placeholder="00000-000"
                        value="<?php echo $zipcode; ?>">
             </label>
 
