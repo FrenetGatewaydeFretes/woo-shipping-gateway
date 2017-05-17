@@ -434,11 +434,10 @@ class WC_Frenet extends WC_Shipping_Method {
                         $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
                     }
 
-                    for($z =0; $z < $qty; $z++){
-                        $tmp = clone($shippingItem);
-                        $shippingItemArray[$count] = $tmp;
-                        $count++;
-                    }
+                    $shippingItem->Quantity =$qty;
+
+                    $shippingItemArray[$count] = $shippingItem;
+                    $count++;
                 }
             }
 
