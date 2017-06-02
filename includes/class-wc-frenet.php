@@ -468,7 +468,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
             // Gets the WebServices response.
 
-            $service_url = 'http://api.frenet.com.br/v1/Shipping/GetShippingQuote?data=' . json_encode($service_param);
+            $service_url = 'http://rest.apifrenet.com.br/v1/Shipping/GetShippingQuote?data=' . json_encode($service_param);
 
             if ( 'yes' == $this->debug ) {
                 $this->log->add( $this->id, 'URL: ' . $service_url );
