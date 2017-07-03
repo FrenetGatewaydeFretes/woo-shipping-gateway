@@ -4,7 +4,7 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 4.6
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 
 == Changelog ==
 
+= 2.1.2 - 03/07/2017 =
+
+* Bug Fix - Correção post data Json;
+
 = 2.1.1 - 12/01/2017 =
 
 * Bug Fix - Cálculo na página do produto - valor e quantidade; Quantidade do mesmo produto;
@@ -108,6 +112,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 2.1.2 - 03/07/2017 =
+
+* Bug Fix - Correção post data Json;
 
 = 2.1.1 - 12/01/2017 =
 
