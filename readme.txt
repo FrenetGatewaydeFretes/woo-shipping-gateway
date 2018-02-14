@@ -1,10 +1,10 @@
-=== WooCommerce Shipping Gateway ===
+﻿=== WooCommerce Shipping Gateway ===
 Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
-Tested up to: 4.6
-Stable tag: 2.1.2
+Tested up to: 4.9
+Stable tag: 2.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,11 +20,15 @@ It provides to the store owners, major carriers in Brazil to transport large vol
 
 Please notice that WooCommerce must be installed and active.
 
+WOOCOMMERCE: Tested up to 3.3.1
+
 ### Descrição em Português: ###
 
 O gateway de fretes Frenet é capaz de integrar e processar tabelas de fretes de transportadoras e Correios. O cálculo de frete para os serviços dos Correios é feito de forma online (via webservice dos Correios) ou em caso de indisponibilidade, utiliza base de dados na nuvem altamente disponível e regularmente atualizada de forma automática, com os valores das cotações.
 
 Disponibiliza aos lojistas as principais transportadoras do Brasil para transporte de grandes volumes, assim como Jamef, Jadlog, TNT, Braspress, Direct Log, Total Express, Exporta Fácil entre outras.
+
+WOOCOMMERCE: Testado até a versão 3.3.1
 
 [Frenet](http://www.frenet.com.br/)
 
