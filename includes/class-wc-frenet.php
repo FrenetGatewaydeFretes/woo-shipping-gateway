@@ -427,7 +427,12 @@ class WC_Frenet extends WC_Shipping_Method {
                     $shipmentInvoiceValue += $product->get_price() * $qty;
 
                     // wp_get_post_terms( your_id, 'product_cat' );
-                    $shippingItem->Category = '';
+					$terms = wp_get_post_terms( $product->id, 'product_cat' );
+					$categories = '';
+					foreach ( $terms as $term ) 
+						$categories =  $categories . $term->slug . '|';
+
+                    $shippingItem->Category = $categories;
                     $shippingItem->isFragile=false;
 
                     if ( 'yes' == $this->debug ) {
@@ -623,7 +628,12 @@ class WC_Frenet extends WC_Shipping_Method {
                 $shipmentInvoiceValue += $product->get_price() * $qty;
 
                 // wp_get_post_terms( your_id, 'product_cat' );
-                $shippingItem->Category = '';
+				$terms = wp_get_post_terms( $product->id, 'product_cat' );
+				$categories = '';
+				foreach ( $terms as $term ) 
+					$categories =  $categories . $term->slug . '|';
+
+				$shippingItem->Category = $categories;
                 $shippingItem->isFragile=false;
 
                 if ( 'yes' == $this->debug ) {
