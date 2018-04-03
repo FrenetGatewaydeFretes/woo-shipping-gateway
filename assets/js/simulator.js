@@ -79,7 +79,7 @@ jQuery(document).ready(function ($) {
                         if (value.ServiceDescription !== undefined) {
                             var EstimatingDelivery = parseInt(value.DeliveryTime, 10) + parseInt(additional_time, 10);
                             console.log(EstimatingDelivery);
-                            shipping += '<li class="li-frenet"><span class="span-frenet">' + value.ServiceDescription + '</span>: ' + value.ShippingPrice + ' (Entrega em ' + EstimatingDelivery + ' dias úteis)</li>';
+                            shipping += '<li class="li-frenet"><span class="span-frenet">' + value.ServiceDescription + '</span>: R$ ' + value.ShippingPrice + ' (Entrega em ' + EstimatingDelivery + ' dias úteis)</li>';
                         }
                     });
                     shipping += '</ul>';
