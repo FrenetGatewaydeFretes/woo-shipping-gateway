@@ -1,6 +1,6 @@
 #shipping-simulator:before,
 #shipping-simulator:after {
-    content: "R$ ";
+    content: " ";
     display: table;
 }
 
