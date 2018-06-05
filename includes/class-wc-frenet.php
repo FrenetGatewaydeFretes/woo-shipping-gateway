@@ -316,6 +316,7 @@ class WC_Frenet extends WC_Shipping_Method {
                         'id'    => 'FRENET_' . $shipping->ServiceCode,
                         'label' => $label,
                         'cost'  => $cost,
+						'meta_data' => array( 'FRENET_ID' => 'FRENET_' . $shipping->ServiceCode )
                     )
                 );
             }
