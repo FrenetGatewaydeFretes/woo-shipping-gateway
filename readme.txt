@@ -1,10 +1,11 @@
-﻿=== WooCommerce Shipping Gateway ===
+﻿
+=== WooCommerce Shipping Gateway ===
 Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 4.9
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +19,8 @@ The Frenet freight shipping gateway is able to integrate and process tables of f
 
 It provides to the store owners, major carriers in Brazil to transport large volumes as well as Jamef, Jadlog, TNT, Braspress, Direct among others
 
+It's required to create an account at [Frenet Administrative website](https://painel.frenet.com.br/)  to get access token and configure carriers that you will use. This plugin is free, but to get all the functionalities it is necessary to sign a monthly payment plan according to the policy published on our website: [http://www.frenet.com.br/precos.html](http://www.frenet.com.br/precos.html)
+
 Please notice that WooCommerce must be installed and active.
 
 WOOCOMMERCE: Tested up to 3.3.1
@@ -27,6 +30,8 @@ WOOCOMMERCE: Tested up to 3.3.1
 O gateway de fretes Frenet é capaz de integrar e processar tabelas de fretes de transportadoras e Correios. O cálculo de frete para os serviços dos Correios é feito de forma online (via webservice dos Correios) ou em caso de indisponibilidade, utiliza base de dados na nuvem altamente disponível e regularmente atualizada de forma automática, com os valores das cotações.
 
 Disponibiliza aos lojistas as principais transportadoras do Brasil para transporte de grandes volumes, assim como Jamef, Jadlog, TNT, Braspress, Direct Log, Total Express, Exporta Fácil entre outras.
+
+É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [http://www.frenet.com.br/precos.html](http://www.frenet.com.br/precos.html) 
 
 WOOCOMMERCE: Testado até a versão 3.3.1
 
@@ -83,6 +88,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 
 == Changelog ==
 
+= 2.1.4 - 05/06/2018 =
+
+* Para a nova versão do Woocommerce foi necessário utilizar metadata para armazenar o código do método de entrega escolhido na cotação;
+
 = 2.1.3 - 02/04/2018 =
 
 * Envio de dados de categoria de produtos para a cotação;
@@ -120,6 +129,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 2.1.4 - 05/06/2018 =
+
+* Para a nova versão do Woo foi necessário utilizar metadata para armazenar o código do método de entrega escolhido na cotação
 
 = 2.1.3 - 02/04/2018 =
 
