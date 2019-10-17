@@ -82,7 +82,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      *
      * @return string
      */
-    public function ajax_simulator()
+    public static function ajax_simulator()
     {
         $frenet = new WC_Frenet($_POST['instance_id']);
 
