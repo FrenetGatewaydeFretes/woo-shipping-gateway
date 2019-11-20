@@ -351,6 +351,17 @@ class WC_Frenet extends WC_Shipping_Method {
         return $name;
     }
 
+    /***
+     * Getting the coupom
+     */
+    protected function get_coupom($package) {
+        $coupom = "";
+        if (in_array( "applied_coupons", array_keys( $package ) ) && count($package["applied_coupons"]) > 0) {
+            $coupom = $package["applied_coupons"][0];
+        }
+        return $coupom;
+    }
+
     protected function frenet_calculate_json( $package ){
         $values = array();
         try
@@ -374,6 +385,8 @@ class WC_Frenet extends WC_Shipping_Method {
                 return $values;
             }
 
+            $coupom = $this->get_coupom($package);
+
             // product array
             $shippingItemArray = array();
             $count = 0;
@@ -393,8 +406,14 @@ class WC_Frenet extends WC_Shipping_Method {
 
                 if ( $qty > 0 && $product->needs_shipping() ) {
 
-                    if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '>=' ) ) {
-                        $_height = wc_get_dimension( $this->fix_format( $product->height ), 'cm' );
+                    if ( version_compare( WOOCOMMERCE_VERSION, '3.0', '>=' ) ) {
+                        $_height =  wc_get_dimension( $this->fix_format( $product->get_height() ), 'cm' );
+                        $_width  = wc_get_dimension( $this->fix_format( $product->get_width() ), 'cm' );
+                        $_length = wc_get_dimension( $this->fix_format( $product->get_length() ), 'cm' );
+                        $_weight = wc_get_weight( $this->fix_format( $product->get_weight() ), 'kg' );
+                    } 
+                    else if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '>=' ) ) {
+                        $_height =  wc_get_dimension( $this->fix_format( $product->height ), 'cm' );
                         $_width  = wc_get_dimension( $this->fix_format( $product->width ), 'cm' );
                         $_length = wc_get_dimension( $this->fix_format( $product->length ), 'cm' );
                         $_weight = wc_get_weight( $this->fix_format( $product->weight ), 'kg' );
@@ -428,7 +447,13 @@ class WC_Frenet extends WC_Shipping_Method {
                     $shipmentInvoiceValue += $product->get_price() * $qty;
 
                     // wp_get_post_terms( your_id, 'product_cat' );
-					$terms = wp_get_post_terms( $product->id, 'product_cat' );
+                    if ( version_compare( WOOCOMMERCE_VERSION, '3.0', '>=' ) ) {
+                        $terms = wp_get_post_terms( $product->get_id(), 'product_cat' );
+                    }
+                    else {
+                        $terms = wp_get_post_terms( $product->id, 'product_cat' );
+                    }
+
 					$categories = '';
 					foreach ( $terms as $term ) 
 						$categories =  $categories . $term->slug . '|';
@@ -459,6 +484,9 @@ class WC_Frenet extends WC_Shipping_Method {
 
             $service_param = array (
                     'Token' => $this->token,
+                    'Coupom' => $coupom,
+                    'PlatformName' => 'WOOCOMMERCE',// Identificar que está foi uma chamada do woocommerce
+                    'PlatformVersion' => WOOCOMMERCE_VERSION,// Identificar que está foi uma chamada do woocommerce
                     'SellerCEP' => $this->zip_origin,
                     'RecipientCEP' => $RecipientCEP,
                     'RecipientDocument' => '',
@@ -574,6 +602,8 @@ class WC_Frenet extends WC_Shipping_Method {
             return $values;
         }
 
+        $coupom = $this->get_coupom($package);
+
         // product array
         $shippingItemArray = array();
         $count = 0;
@@ -668,6 +698,9 @@ class WC_Frenet extends WC_Shipping_Method {
             'quoteRequest' => array(
                 'Username' => $this->login,
                 'Password' => $this->password,
+                'Coupom' => $coupom,
+                'PlatformName' => 'WOOCOMMERCE',// Identificar que está foi uma chamada do woocommerce
+                'PlatformVersion' => WOOCOMMERCE_VERSION,// Identificar que está foi uma chamada do woocommerce		
                 'SellerCEP' => $this->zip_origin,
                 'RecipientCEP' => $RecipientCEP,
                 'RecipientDocument' => '',

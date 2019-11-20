@@ -42,6 +42,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      *
      * @return string Simulator HTML.
      */
+	 
     public static function simulator()
     {
         global $product;
@@ -50,7 +51,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return;
         }
 
-        if ('variable' == $product->product_type) {
+        if ('variable' == $product->get_type()) {
             $style = 'display: none';
             $ids = array();
 
@@ -62,10 +63,10 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             $ids = implode(',', array_filter($ids));
         } else {
             $style = '';
-            $ids = $product->id;
+            $ids = $product->get_id();
         }
 
-        if ($product->is_in_stock() && in_array($product->product_type, array('simple', 'variable'))) {
+        if ($product->is_in_stock() && in_array($product->get_type(), array('simple', 'variable'))) {
             wc_get_template('single-product/shipping-simulator.php', array(
                 'product' => $product,
                 'style'       => $style,
@@ -98,7 +99,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $package['contents'][0]['quantity'] = $_POST['quantity'];;
 
         $frenet->quoteByProduct=true;
-        $shipping_values = $frenet->frenet_calculate($package);
+        $shipping_values = $frenet->frenet_calculate_json($package);
 
         echo json_encode($shipping_values);
         die;

@@ -4,8 +4,8 @@ Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
-Tested up to: 4.9
-Stable tag: 2.1.4
+Tested up to: 5.0.3
+Stable tag: 2.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,7 @@ It's required to create an account at [Frenet Administrative website](https://pa
 
 Please notice that WooCommerce must be installed and active.
 
-WOOCOMMERCE: Tested up to 3.3.1
+WOOCOMMERCE: Tested up to 3.5.4
 
 ### Descrição em Português: ###
 
@@ -33,7 +33,7 @@ Disponibiliza aos lojistas as principais transportadoras do Brasil para transpor
 
 É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [http://www.frenet.com.br/precos.html](http://www.frenet.com.br/precos.html) 
 
-WOOCOMMERCE: Testado até a versão 3.3.1
+WOOCOMMERCE: Testado até a versão 3.5.4
 
 [Frenet](http://www.frenet.com.br/)
 
@@ -87,6 +87,14 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 1. Configurações do plugin.
 
 == Changelog ==
+
+= 2.1.6 - 07/02/2019 =
+
+* Ajuste na compatibilidade com a nova versão Wordpress/Woocommerce
+
+= 2.1.5 - 05/06/2018 =
+
+* Agora o campo CUPOM de DESCONTO pode ser utilizado em conjunto com as regras de Fretes criadas dentro do painel do Frenet
 
 = 2.1.4 - 05/06/2018 =
 
