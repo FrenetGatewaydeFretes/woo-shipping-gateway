@@ -288,9 +288,9 @@ class WC_Frenet extends WC_Shipping_Method {
 		$rates  = array();
         $errors = array();
         if (isset($this->token) && $this->token != '')
-            $shipping_values = $this->frenet_calculate_json( $package );
+            $shipping_values = $this->frenet_calculate( $package, 'JSON' );
         else
-            $shipping_values = $this->frenet_calculate( $package );
+            $shipping_values = $this->frenet_calculate( $package, 'SOAP');
 
         if ( ! empty( $shipping_values ) ) {
             foreach ( $shipping_values as $code => $shipping ) {
@@ -362,10 +362,17 @@ class WC_Frenet extends WC_Shipping_Method {
         return $coupom;
     }
 
-    protected function frenet_calculate_json( $package ){
+    /**
+     * Calculate shipping at frenet
+     * @param array $package
+     * @param string $format
+     * @return array
+     */
+    protected function frenet_calculate( $package, $format = 'JSON' ){
+
         $values = array();
-        try
-        {
+
+        try {
             $RecipientCEP = $package['destination']['postcode'];
             $RecipientCountry = $package['destination']['country'];
 
@@ -395,6 +402,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
             // Shipping per item.
             foreach ( $package['contents'] as $item_id => $values ) {
+
                 $product = $values['data'];
                 $qty = $values['quantity'];
 
@@ -411,7 +419,7 @@ class WC_Frenet extends WC_Shipping_Method {
                         $_width  = wc_get_dimension( $this->fix_format( $product->get_width() ), 'cm' );
                         $_length = wc_get_dimension( $this->fix_format( $product->get_length() ), 'cm' );
                         $_weight = wc_get_weight( $this->fix_format( $product->get_weight() ), 'kg' );
-                    } 
+                    }
                     else if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '>=' ) ) {
                         $_height =  wc_get_dimension( $this->fix_format( $product->height ), 'cm' );
                         $_width  = wc_get_dimension( $this->fix_format( $product->width ), 'cm' );
@@ -436,7 +444,6 @@ class WC_Frenet extends WC_Shipping_Method {
                     if(empty($_weight))
                         $_weight = 1;
 
-
                     $shippingItem->Weight = $_weight;
                     $shippingItem->Length = $_length;
                     $shippingItem->Height = $_height;
@@ -448,15 +455,27 @@ class WC_Frenet extends WC_Shipping_Method {
 
                     // wp_get_post_terms( your_id, 'product_cat' );
                     if ( version_compare( WOOCOMMERCE_VERSION, '3.0', '>=' ) ) {
-                        $terms = wp_get_post_terms( $product->get_id(), 'product_cat' );
-                    }
-                    else {
-                        $terms = wp_get_post_terms( $product->id, 'product_cat' );
+
+                        if( $product->get_parent_id() ){
+                            $terms = wp_get_post_terms($product->get_parent_id(), 'product_cat');
+                        }else{
+                            $terms = wp_get_post_terms($product->get_id(), 'product_cat');
+                        }
+
+                    } else {
+
+                        if( $product->parent_id ){
+                            $terms = wp_get_post_terms($product->parent_id, 'product_cat');
+                        }else{
+                            $terms = wp_get_post_terms($product->id, 'product_cat');
+                        }
+
                     }
 
 					$categories = '';
-					foreach ( $terms as $term ) 
-						$categories =  $categories . $term->slug . '|';
+                    foreach ($terms as $term) {
+                        $categories =  $categories . $term->slug . '|';
+                    }
 
                     $shippingItem->Category = $categories;
                     $shippingItem->isFragile=false;
@@ -465,24 +484,100 @@ class WC_Frenet extends WC_Shipping_Method {
                         $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
                     }
 
-                    $shippingItem->Quantity =$qty;
+                    if( $format != 'JSON' ){
+                        for($z =0; $z < $qty; $z++){
+                            $tmp = clone($shippingItem);
+                            $shippingItemArray[$count] = $tmp;
+                            $count++;
+                        }
+                    }else{
+                        $shippingItem->Quantity =$qty;
+                        $shippingItemArray[$count] = $shippingItem;
+                        $count++;
+                    }
 
-                    $shippingItemArray[$count] = $shippingItem;
-                    $count++;
                 }
             }
 
             if ( 'yes' == $this->debug ) {
-
                 $this->log->add( $this->id, 'CEP ' . $package['destination']['postcode'] );
             }
 
-            if(!$this->quoteByProduct)
-            {
+            if(!$this->quoteByProduct) {
                 $shipmentInvoiceValue = WC()->cart->cart_contents_total;
             }
 
-            $service_param = array (
+            if( $format != 'JSON' ){
+
+                $service_param = array (
+                    'quoteRequest' => array(
+                        'Username' => $this->login,
+                        'Password' => $this->password,
+                        'Coupom' => $coupom,
+                        'PlatformName' => 'WOOCOMMERCE',// Identificar que está foi uma chamada do woocommerce
+                        'PlatformVersion' => WOOCOMMERCE_VERSION,// Identificar que está foi uma chamada do woocommerce
+                        'SellerCEP' => $this->zip_origin,
+                        'RecipientCEP' => $RecipientCEP,
+                        'RecipientDocument' => '',
+                        'ShipmentInvoiceValue' => $shipmentInvoiceValue,
+                        'ShippingItemArray' => $shippingItemArray,
+                        'RecipientCountry' => $RecipientCountry
+                    )
+                );
+
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id, 'Requesting the Frenet WebServices...');
+                    $this->log->add( $this->id, print_r($service_param, true));
+                }
+
+                // Gets the WebServices response.
+                $client = new SoapClient($this->webservice, array("soap_version" => SOAP_1_1,"trace" => 1, "cache_wsdl" => WSDL_CACHE_NONE));
+                $response = $client->__soapCall("GetShippingQuote", array($service_param));
+
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id, $client->__getLastRequest());
+                    $this->log->add( $this->id, $client->__getLastResponse());
+                }
+
+                if ( is_wp_error( $response ) ) {
+                    if ( 'yes' == $this->debug ) {
+                        $this->log->add( $this->id, 'WP_Error: ' . $response->get_error_message() );
+                    }
+                } else {
+                    if ( isset( $response->GetShippingQuoteResult ) ) {
+                        if(count($response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices)==1)
+                            $servicosArray[0] = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
+                        else
+                            $servicosArray = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
+
+                        if(!empty($servicosArray))
+                        {
+                            foreach($servicosArray as $servicos){
+
+                                if ( 'yes' == $this->debug ) {
+                                    $this->log->add( $this->id, 'Percorrendo os serviços retornados');
+                                }
+
+                                if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
+                                    continue;
+                                }
+
+                                $code = (string) $servicos->ServiceCode;
+
+                                if ( 'yes' == $this->debug ) {
+                                    $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
+                                }
+
+                                $values[ $code ] = $servicos;
+                            }
+                        }
+
+                    }
+                }
+
+            }else{
+
+                $service_param = array(
                     'Token' => $this->token,
                     'Coupom' => $coupom,
                     'PlatformName' => 'WOOCOMMERCE',// Identificar que está foi uma chamada do woocommerce
@@ -493,271 +588,88 @@ class WC_Frenet extends WC_Shipping_Method {
                     'ShipmentInvoiceValue' => $shipmentInvoiceValue,
                     'ShippingItemArray' => $shippingItemArray,
                     'RecipientCountry' => $RecipientCountry
-            );
+                );
 
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id, 'Requesting the Frenet WebServices...');
-                $this->log->add( $this->id, print_r($service_param, true));
-            }
-
-            // Gets the WebServices response.
-
-            $service_url = 'http://api.frenet.com.br/shipping/quote' ;
-
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id, 'URL: ' . $service_url );
-            }
-
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $service_url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($curl, CURLOPT_HEADER, FALSE);
-            curl_setopt($curl, CURLOPT_POST, TRUE);
-
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($service_param));
-
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                "Content-Type: application/json",
-                "token: " . $this->token
-            ));
-
-            $curl_response = curl_exec($curl);
-            curl_close($curl);
-
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id, 'Curl response: ' . $curl_response );
-            }
-
-
-            if ( is_wp_error( $curl_response ) ) {
                 if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'WP_Error: ' . $curl_response->get_error_message() );
+                    $this->log->add( $this->id, 'Requesting the Frenet WebServices...');
+                    $this->log->add( $this->id, print_r($service_param, true));
                 }
-            } else
-            {
-                $response = json_decode($curl_response);
 
-                if ( isset( $response->ShippingSevicesArray ) ) {
+                // Gets the WebServices response.
 
-                    $servicosArray = (array)$response->ShippingSevicesArray;
+                $service_url = 'http://api.frenet.com.br/shipping/quote' ;
 
-                    if(!empty($servicosArray))
-                    {
-                        foreach($servicosArray as $servicos){
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id, 'URL: ' . $service_url );
+                }
 
-                            if ( 'yes' == $this->debug ) {
-                                $this->log->add( $this->id, 'Percorrendo os serviços retornados');
-                            }
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_URL, $service_url);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt($curl, CURLOPT_HEADER, FALSE);
+                curl_setopt($curl, CURLOPT_POST, TRUE);
 
-                            if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
-                                if ( 'yes' == $this->debug ) {
-                                    $this->log->add( $this->id, '*continue*');
-                                }
-                                continue;
-                            }
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($service_param));
 
-                            $code = (string) $servicos->ServiceCode;
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                    "Content-Type: application/json",
+                    "token: " . $this->token
+                ));
 
-                            if ( 'yes' == $this->debug ) {
-                                $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
-                            }
+                $curl_response = curl_exec($curl);
+                curl_close($curl);
 
-                            $values[ $code ] = $servicos;
-                        }
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id, 'Curl response: ' . $curl_response );
+                }
+
+                if ( is_wp_error( $curl_response ) ) {
+                    if ( 'yes' == $this->debug ) {
+                        $this->log->add( $this->id, 'WP_Error: ' . $curl_response->get_error_message() );
                     }
+                } else {
+                    $response = json_decode($curl_response);
 
+                    if ( isset( $response->ShippingSevicesArray ) ) {
+
+                        $servicosArray = (array)$response->ShippingSevicesArray;
+
+                        if(!empty($servicosArray))
+                        {
+                            foreach($servicosArray as $servicos){
+
+                                if ( 'yes' == $this->debug ) {
+                                    $this->log->add( $this->id, 'Percorrendo os serviços retornados');
+                                }
+
+                                if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
+                                    if ( 'yes' == $this->debug ) {
+                                        $this->log->add( $this->id, '*continue*');
+                                    }
+                                    continue;
+                                }
+
+                                $code = (string) $servicos->ServiceCode;
+
+                                if ( 'yes' == $this->debug ) {
+                                    $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
+                                }
+
+                                $values[ $code ] = $servicos;
+                            }
+                        }
+
+                    }
                 }
+
             }
+
+
         }
         catch (Exception $e)
         {
             if ( 'yes' == $this->debug ) {
                 $this->log->add( $this->id, var_dump($e->getMessage()));
-            }
-        }
-
-        return $values;
-
-    }
-
-    protected function frenet_calculate( $package ){
-        $values = array();
-
-        $RecipientCEP = $package['destination']['postcode'];
-        $RecipientCountry = $package['destination']['country'];
-
-        // Checks if services and zipcode is empty.
-        if (empty( $RecipientCEP ) && $RecipientCountry=='BR')
-        {
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id,"ERRO: CEP destino não informado");
-            }
-            return $values;
-        }
-        if(empty( $this->zip_origin ))
-        {
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id,"ERRO: CEP origem não configurado");
-            }
-            return $values;
-        }
-
-        $coupom = $this->get_coupom($package);
-
-        // product array
-        $shippingItemArray = array();
-        $count = 0;
-
-        $shipmentInvoiceValue=0;
-
-        // Shipping per item.
-        foreach ( $package['contents'] as $item_id => $values ) {
-            $product = $values['data'];
-            $qty = $values['quantity'];
-
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id, 'Product: ' . print_r($product, true));
-                $this->log->add( $this->id, 'Quantity: ' . $qty);
-            }
-
-            $shippingItem = new stdClass();
-
-            if ( $qty > 0 && $product->needs_shipping() ) {
-
-                if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '>=' ) ) {
-                    $_height = wc_get_dimension( $this->fix_format( $product->height ), 'cm' );
-                    $_width  = wc_get_dimension( $this->fix_format( $product->width ), 'cm' );
-                    $_length = wc_get_dimension( $this->fix_format( $product->length ), 'cm' );
-                    $_weight = wc_get_weight( $this->fix_format( $product->weight ), 'kg' );
-                } else {
-                    $_height = woocommerce_get_dimension( $this->fix_format( $product->height ), 'cm' );
-                    $_width  = woocommerce_get_dimension( $this->fix_format( $product->width ), 'cm' );
-                    $_length = woocommerce_get_dimension( $this->fix_format( $product->length ), 'cm' );
-                    $_weight = woocommerce_get_weight( $this->fix_format( $product->weight ), 'kg' );
-                }
-
-                if(empty($_height))
-                    $_height= $this->minimum_height;
-
-                if(empty($_width))
-                    $_width= $this->minimum_width;
-
-                if(empty($_length))
-                    $_length = $this->minimum_length;
-
-                if(empty($_weight))
-                    $_weight = 1;
-
-
-                $shippingItem->Weight = $_weight;
-                $shippingItem->Length = $_length;
-                $shippingItem->Height = $_height;
-                $shippingItem->Width = $_width;
-                $shippingItem->Diameter = 0;
-                $shippingItem->SKU = $product->get_sku();
-
-                $shipmentInvoiceValue += $product->get_price() * $qty;
-
-                // wp_get_post_terms( your_id, 'product_cat' );
-				$terms = wp_get_post_terms( $product->id, 'product_cat' );
-				$categories = '';
-				foreach ( $terms as $term ) 
-					$categories =  $categories . $term->slug . '|';
-
-				$shippingItem->Category = $categories;
-                $shippingItem->isFragile=false;
-
-                if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
-                }
-
-                for($z =0; $z < $qty; $z++){
-                    $tmp = clone($shippingItem);
-                    $shippingItemArray[$count] = $tmp;
-                    $count++;
-                }
-            }
-        }
-
-        if ( 'yes' == $this->debug ) {
-
-            $this->log->add( $this->id, 'CEP ' . $package['destination']['postcode'] );
-        }
-
-        if ( 'yes' == $this->debug ) {
-            $this->log->add( $this->id, 'Carrinho: ' . WC()->cart->cart_contents_total);
-            $this->log->add( $this->id, 'Produtos: ' . $shipmentInvoiceValue);
-        }
-
-        if(!$this->quoteByProduct)
-        {
-            $shipmentInvoiceValue = WC()->cart->cart_contents_total;
-        }
-
-        $service_param = array (
-            'quoteRequest' => array(
-                'Username' => $this->login,
-                'Password' => $this->password,
-                'Coupom' => $coupom,
-                'PlatformName' => 'WOOCOMMERCE',// Identificar que está foi uma chamada do woocommerce
-                'PlatformVersion' => WOOCOMMERCE_VERSION,// Identificar que está foi uma chamada do woocommerce		
-                'SellerCEP' => $this->zip_origin,
-                'RecipientCEP' => $RecipientCEP,
-                'RecipientDocument' => '',
-                'ShipmentInvoiceValue' => $shipmentInvoiceValue,
-                'ShippingItemArray' => $shippingItemArray,
-                'RecipientCountry' => $RecipientCountry
-            )
-        );
-
-        if ( 'yes' == $this->debug ) {
-            $this->log->add( $this->id, 'Requesting the Frenet WebServices...');
-            $this->log->add( $this->id, print_r($service_param, true));
-        }
-
-        // Gets the WebServices response.
-        $client = new SoapClient($this->webservice, array("soap_version" => SOAP_1_1,"trace" => 1, "cache_wsdl" => WSDL_CACHE_NONE));
-        $response = $client->__soapCall("GetShippingQuote", array($service_param));
-
-        if ( 'yes' == $this->debug ) {
-            $this->log->add( $this->id, $client->__getLastRequest());
-            $this->log->add( $this->id, $client->__getLastResponse());
-        }
-
-        if ( is_wp_error( $response ) ) {
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id, 'WP_Error: ' . $response->get_error_message() );
-            }
-        } else
-        {
-            if ( isset( $response->GetShippingQuoteResult ) ) {
-                if(count($response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices)==1)
-                    $servicosArray[0] = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
-                else
-                    $servicosArray = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
-
-                if(!empty($servicosArray))
-                {
-                    foreach($servicosArray as $servicos){
-
-                        if ( 'yes' == $this->debug ) {
-                            $this->log->add( $this->id, 'Percorrendo os serviços retornados');
-                        }
-
-                        if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
-                            continue;
-                        }
-
-                        $code = (string) $servicos->ServiceCode;
-
-                        if ( 'yes' == $this->debug ) {
-                            $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
-                        }
-
-                        $values[ $code ] = $servicos;
-                    }
-                }
-
             }
         }
 

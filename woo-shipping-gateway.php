@@ -49,6 +49,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
             // Checks with WooCommerce is installed.
             if ( class_exists( 'WC_Integration' ) ) {
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet.php';
+                include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-helper.php';
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-shipping-simulator.php';
 
                 add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
