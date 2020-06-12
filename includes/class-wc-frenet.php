@@ -307,7 +307,18 @@ class WC_Frenet extends WC_Shipping_Method {
                 if (isset($shipping->DeliveryTime))
                     $date=$shipping->DeliveryTime;
 
-                $label = ( 'yes' == $this->display_date ) ? $this->estimating_delivery( $label, $date, $this->additional_time ) : $label;
+                $additional_time = $this->additional_time;
+
+                foreach ($package['contents'] as $value) {
+                    $product = $value['data'];
+                    if ($product->get_meta('shipping_additional_days')) {
+                        if (intval($product->get_meta('shipping_additional_days')) > $additional_time) {
+                            $additional_time = intval($product->get_meta('shipping_additional_days'));
+                        }
+                    }
+                }
+
+                $label = ( 'yes' == $this->display_date ) ? $this->estimating_delivery( $label, $date, $additional_time ) : $label;
                 $cost  = floatval(str_replace(",", ".", (string) $shipping->ShippingPrice));
 
                 array_push(
