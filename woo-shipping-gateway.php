@@ -5,7 +5,7 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.1.6
+ * Version: 2.2.0
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
@@ -61,6 +61,28 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
             if ( ! class_exists( 'SimpleXmlElement' ) ) {
                 add_action( 'admin_notices', 'wcfrenet_extensions_missing_notice' );
             }
+
+            function create_delivery_custom_fields() {
+                $args = array(
+                    'id'            => 'shipping_additional_days',
+                    'label'         => __( 'Tempo adicional (dias)', 'cfwc' ),
+                    'class'					=> 'cfwc-custom-field',
+                    'desc_tip'      => true,
+                    'description'   => __( 'Insira o tempo adicional de processamento para entrega, em dias.', 'ctwc' ),
+                );
+                woocommerce_wp_text_input( $args );
+            }
+            add_action( 'woocommerce_product_options_shipping', 'create_delivery_custom_fields' );
+
+            function save_delivery_custom_fields( $post_id ) {
+                $product = wc_get_product( $post_id );
+                
+                $title = isset( $_POST['shipping_additional_days'] ) ? $_POST['shipping_additional_days'] : '';
+                $product->update_meta_data( 'shipping_additional_days', sanitize_text_field( $title ) );
+                
+                $product->save();
+            }
+            add_action( 'woocommerce_process_product_meta', 'save_delivery_custom_fields' );
         }
 
         /**
