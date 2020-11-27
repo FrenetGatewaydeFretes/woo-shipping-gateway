@@ -4,8 +4,9 @@ Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
-Tested up to: 5.0.3
-Stable tag: 2.1.6
+Tested up to: 5.5.1
+Version: 2.1.7
+Stable tag: 2.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +24,7 @@ It's required to create an account at [Frenet Administrative website](https://pa
 
 Please notice that WooCommerce must be installed and active.
 
-WOOCOMMERCE: Tested up to 3.5.4
+WOOCOMMERCE: Tested up to 4.5.2
 
 ### Descrição em Português: ###
 
@@ -33,7 +34,7 @@ Disponibiliza aos lojistas as principais transportadoras do Brasil para transpor
 
 É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [http://www.frenet.com.br/precos.html](http://www.frenet.com.br/precos.html) 
 
-WOOCOMMERCE: Testado até a versão 3.5.4
+WOOCOMMERCE: Testado até a versão 3.8.1
 
 [Frenet](http://www.frenet.com.br/)
 
@@ -87,6 +88,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 1. Configurações do plugin.
 
 == Changelog ==
+
+= 2.1.7 - 07/02/2019 =
+
+* Ajustes na calculadora da página do produto
 
 = 2.1.6 - 07/02/2019 =
 
