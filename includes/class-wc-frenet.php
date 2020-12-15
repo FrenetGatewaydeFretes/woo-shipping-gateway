@@ -6,6 +6,11 @@ class WC_Frenet extends WC_Shipping_Method {
 
     public $quoteByProduct = false;
 
+    /**
+     * @var string
+     */
+    protected $urlShipQuote = 'http://api.frenet.com.br/shipping/quote';
+
 	/**
 	 * Initialize the Frenet shipping method.
 	 *
@@ -197,12 +202,15 @@ class WC_Frenet extends WC_Shipping_Method {
 	 *
 	 * @return void
 	 */
-	public function admin_options() {
-		echo '<h3>' . $this->method_title . '</h3>';
-		echo '<p>' . __( 'Frenet is a brazilian delivery method.', 'woo-shipping-gateway' ) . '</p>';
-		echo '<table class="form-table">';
-			$this->generate_settings_html();
-		echo '</table>';
+    public function admin_options() 
+    {
+        $html = '<h3>' . $this->method_title . '</h3>';
+        $html .= '<p>' . __( 'Frenet is a brazilian delivery method.', 'woo-shipping-gateway' ) . '</p>';
+        $html .= '<table class="form-table">';
+        $html .= $this->generate_settings_html();
+        $html .= '</table>';
+
+		echo $html;
 	}
 
 	/**
@@ -577,7 +585,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
             }else{
 
-                $service_param = array(
+                $serviceParam = array(
                     'Token' => $this->token,
                     'Coupom' => $coupom,
                     'PlatformName' => 'WOOCOMMERCE',// Identificar que está foi uma chamada do woocommerce
@@ -592,43 +600,32 @@ class WC_Frenet extends WC_Shipping_Method {
 
                 if ( 'yes' == $this->debug ) {
                     $this->log->add( $this->id, 'Requesting the Frenet WebServices...');
-                    $this->log->add( $this->id, print_r($service_param, true));
+                    $this->log->add( $this->id, print_r($serviceParam, true));
                 }
 
                 // Gets the WebServices response.
-
-                $service_url = 'http://api.frenet.com.br/shipping/quote' ;
+                if ( 'yes' == $this->debug ) {
+                    $this->log->add( $this->id, 'URL: ' . $this->urlShipQuote);
+                }
+                $paramsRequest = [
+                    'body' => wp_json_encode($serviceParam),
+                    'headers' => [
+                        "Content-Type" =>  "application/json",
+                        "Authorization" => $this->token
+                    ]
+                ];
+                $curlResponse = wp_remote_post($this->urlShipQuote, $paramsRequest);
 
                 if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'URL: ' . $service_url );
+                    $this->log->add( $this->id, 'Curl response: ' . $curlResponse['body'] );
                 }
 
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_URL, $service_url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-                curl_setopt($curl, CURLOPT_HEADER, FALSE);
-                curl_setopt($curl, CURLOPT_POST, TRUE);
-
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($service_param));
-
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                    "Content-Type: application/json",
-                    "token: " . $this->token
-                ));
-
-                $curl_response = curl_exec($curl);
-                curl_close($curl);
-
-                if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'Curl response: ' . $curl_response );
-                }
-
-                if ( is_wp_error( $curl_response ) ) {
+                if ( is_wp_error( $curlResponse ) ) {
                     if ( 'yes' == $this->debug ) {
-                        $this->log->add( $this->id, 'WP_Error: ' . $curl_response->get_error_message() );
+                        $this->log->add( $this->id, 'WP_Error: ' . $curlResponse->get_error_message() );
                     }
                 } else {
-                    $response = json_decode($curl_response);
+                    $response = wp_json_encode($curlResponse['body']);
 
                     if ( isset( $response->ShippingSevicesArray ) ) {
 

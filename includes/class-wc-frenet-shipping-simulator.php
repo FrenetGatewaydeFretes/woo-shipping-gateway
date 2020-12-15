@@ -10,10 +10,8 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      */
     public function __construct()
     {
-
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('woocommerce_single_product_summary', array(__CLASS__, 'simulator'), 40);
-
     }
 
     /**
@@ -23,7 +21,6 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      */
     public function enqueue_scripts()
     {
-
         if (!is_product()) {
             return;
         }
@@ -43,7 +40,6 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
                 'error_message' => __('Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor')
             )
         );
-
     }
 
     /**
@@ -103,32 +99,102 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
     }
 
     /**
+     * Validate datas
+     *
+     * @param array $post
+     * @return boolean
+     */
+    protected static function validateData(array $post)
+    {
+        if (!isset($post['instance_id']) || !$post['instance_id']) {
+            return false;
+        }
+
+        if (!isset($post['zipcode']) || !$post['zipcode']) {
+            return false;
+        }
+
+        if (!isset($post['variation_id']) || !$post['variation_id']) {
+            return false;
+        }
+
+        if (!isset($post['quantity']) || !$post['quantity']) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Return data products
+     *
+     * @param array $post
+     * @return array|null
+     */
+    protected static function getProduct(array $post)
+    {
+        $variation = wc_get_product(self::getParamPost($post, 'variation_id'));
+
+        if ($variation) {
+            return $variation;
+        }
+
+        if (!isset($post['product_id']) || !$post['product_id']) {
+            return false;
+        }
+
+        $variation = wc_get_product(self::getParamPost($post, 'product_id'));
+
+        if ($variation) {
+            return $variation;
+        }
+        return null;
+    }
+
+    /**
+     * Get param
+     *
+     * @param array $post
+     * @param [type] $field
+     * @return void
+     */
+    protected static function getParamPost(array $post, $field)
+    {
+        return sanitize_text_field($post[$field]);
+    }
+
+    /**
      * Simulator ajax response.
      *
      * @return string
      */
     public function ajax_simulator()
     {
-        $frenet = new WC_Frenet($_POST['instance_id']);
+        $post = $_POST;
+        $shippingValues = [];
+        if (!self::validateData($post)) {
+            echo json_encode($shippingValues);
+            return;
+        } 
 
-        $package = array();
-        $package['destination']['postcode'] = $_POST['zipcode'];
-        $package['destination']['country'] = 'BR';
-        $variation = wc_get_product($_POST['variation_id']);
-
-        if (false === $variation) {
-            $variation = wc_get_product($_POST['product_id']);
+        if(!($variation = self::getProduct($post))) {
+            echo json_encode($shippingValues);
+            return;
         }
 
+        $frenet = new WC_Frenet(self::getParamPost($post, 'instance_id'));
+
+        $package = array();
+        $package['destination']['postcode'] = self::getParamPost($post, 'zipcode');
+        $package['destination']['country'] = 'BR';
         $package['contents'][0]['data'] = $variation;
-        $package['contents'][0]['quantity'] = $_POST['quantity'];;
+        $package['contents'][0]['quantity'] = self::getParamPost($post, 'quantity');
 
         $frenet->quoteByProduct=true;
-        $shipping_values = $frenet->frenet_calculate($package, 'JSON');
+        $shippingValues = $frenet->frenet_calculate($package, 'JSON');
 
-        echo json_encode($shipping_values);
+        echo json_encode($shippingValues);
         die;
-
     }
 }
 
