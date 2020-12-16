@@ -204,11 +204,12 @@ class WC_Frenet extends WC_Shipping_Method {
 	 */
     public function admin_options() 
     {
-        $html = '<h3>' . $this->method_title . '</h3>';
-        $html .= '<p>' . __( 'Frenet is a brazilian delivery method.', 'woo-shipping-gateway' ) . '</p>';
+        $html = '<h3>' . esc_html($this->method_title) . '</h3>';
+        $html .= '<p>' . __( esc_html('Frenet is a brazilian delivery method.'), 'woo-shipping-gateway' ) . '</p>';
         $html .= '<table class="form-table">';
-        $html .= $this->generate_settings_html();
-        $html .= '</table>';
+        echo $html;
+        $this->generate_settings_html();
+        $html = '</table>';
 
 		echo $html;
 	}
@@ -385,15 +386,14 @@ class WC_Frenet extends WC_Shipping_Method {
             $RecipientCountry = $package['destination']['country'];
 
             // Checks if services and zipcode is empty.
-            if (empty( $RecipientCEP ) && $RecipientCountry=='BR')
-            {
+            if (empty( $RecipientCEP ) && $RecipientCountry =='BR') {
                 if ( 'yes' == $this->debug ) {
                     $this->log->add( $this->id,"ERRO: CEP destino não informado");
                 }
                 return $values;
             }
-            if(empty( $this->zip_origin ))
-            {
+
+            if (empty( $this->zip_origin )) {
                 if ( 'yes' == $this->debug ) {
                     $this->log->add( $this->id,"ERRO: CEP origem não configurado");
                 }
@@ -515,8 +515,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 $shipmentInvoiceValue = WC()->cart->cart_contents_total;
             }
 
-            if( $format != 'JSON' ){
-
+            if( $format != 'JSON' ) {
                 $service_param = array (
                     'quoteRequest' => array(
                         'Username' => $this->login,
@@ -584,7 +583,6 @@ class WC_Frenet extends WC_Shipping_Method {
                 }
 
             }else{
-
                 $serviceParam = array(
                     'Token' => $this->token,
                     'Coupom' => $coupom,
@@ -597,81 +595,79 @@ class WC_Frenet extends WC_Shipping_Method {
                     'ShippingItemArray' => $shippingItemArray,
                     'RecipientCountry' => $RecipientCountry
                 );
-
-                if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'Requesting the Frenet WebServices...');
-                    $this->log->add( $this->id, print_r($serviceParam, true));
-                }
-
-                // Gets the WebServices response.
-                if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'URL: ' . $this->urlShipQuote);
-                }
-                $paramsRequest = [
-                    'body' => wp_json_encode($serviceParam),
-                    'headers' => [
-                        "Content-Type" =>  "application/json",
-                        "Authorization" => $this->token
-                    ]
-                ];
-                $curlResponse = wp_remote_post($this->urlShipQuote, $paramsRequest);
-
-                if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'Curl response: ' . $curlResponse['body'] );
-                }
-
-                if ( is_wp_error( $curlResponse ) ) {
-                    if ( 'yes' == $this->debug ) {
-                        $this->log->add( $this->id, 'WP_Error: ' . $curlResponse->get_error_message() );
-                    }
-                } else {
-                    $response = wp_json_encode($curlResponse['body']);
-
-                    if ( isset( $response->ShippingSevicesArray ) ) {
-
-                        $servicosArray = (array)$response->ShippingSevicesArray;
-
-                        if(!empty($servicosArray))
-                        {
-                            foreach($servicosArray as $servicos){
-
-                                if ( 'yes' == $this->debug ) {
-                                    $this->log->add( $this->id, 'Percorrendo os serviços retornados');
-                                }
-
-                                if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
-                                    if ( 'yes' == $this->debug ) {
-                                        $this->log->add( $this->id, '*continue*');
-                                    }
-                                    continue;
-                                }
-
-                                $code = (string) $servicos->ServiceCode;
-
-                                if ( 'yes' == $this->debug ) {
-                                    $this->log->add( $this->id, 'WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ) );
-                                }
-
-                                $values[ $code ] = $servicos;
-                            }
-                        }
-
-                    }
-                }
-
+                $values = $this->requestJson($serviceParam, $values);
             }
-
-
-        }
-        catch (Exception $e)
-        {
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( $this->id, var_dump($e->getMessage()));
-            }
+        } catch (Exception $e) {
+            $this->log(print_r($e->getMessage(), true));
         }
 
         return $values;
 
+    }
+
+    /**
+     * Log message
+     *
+     * @param string $mensage
+     * @return void
+     */
+    protected function log($menssage) {
+        if ( 'yes' == $this->debug ) {
+            $this->log->add( $this->id, $menssage);
+        }
+    }
+
+    /**
+     * Request Json
+     *
+     * @param array $serviceParam
+     * @param array $values
+     * @return array
+     */
+    protected function requestJson(array $serviceParam, array $values)
+    {
+        $this->log('Requesting the Frenet WebServices...');
+        $this->log(print_r($serviceParam, true));
+        $this->log('URL: ' . $this->urlShipQuote);
+
+        $paramsRequest = [
+            'body' => wp_json_encode($serviceParam),
+            'headers' => [
+                "Content-Type" =>  "application/json",
+                "Authorization" => $this->token
+            ]
+        ];
+        $curlResponse = wp_remote_post($this->urlShipQuote, $paramsRequest);
+        $this->log('Curl response: ' . $curlResponse['body']);
+        
+        if ( is_wp_error( $curlResponse ) ) {
+            $this->log('WP_Error: ' . $curlResponse->get_error_message());
+            return $values;
+        } 
+        
+        $response = json_decode($curlResponse['body']);
+        if ( !isset( $response->ShippingSevicesArray ) ) {
+            return $values;
+        }
+        $servicosArray = (array)$response->ShippingSevicesArray;
+        
+        if(empty($servicosArray)) {
+            return $values;
+        }
+
+        foreach ($servicosArray as $servicos) {
+            $this->log('Percorrendo os serviços retornados');
+
+            if (!isset($servicos->ServiceCode) || $servicos->ServiceCode . '' == '' || !isset($servicos->ShippingPrice)) {
+                $this->log('*continue*');
+                continue;
+            }
+
+            $code = (string) $servicos->ServiceCode;
+            $this->log('WebServices response [' . $servicos->ServiceDescription . ']: ' . print_r( $servicos, true ));
+            $values[ $code ] = $servicos;
+        }
+        return $values;
     }
 
     /**

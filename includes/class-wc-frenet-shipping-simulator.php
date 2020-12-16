@@ -193,7 +193,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $frenet->quoteByProduct=true;
         $shippingValues = $frenet->frenet_calculate($package, 'JSON');
 
-        echo json_encode($shippingValues);
+        echo wp_json_encode($shippingValues);
         die;
     }
 }
