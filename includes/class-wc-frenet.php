@@ -210,8 +210,7 @@ class WC_Frenet extends WC_Shipping_Method {
         echo $html;
         $this->generate_settings_html();
         $html = '</table>';
-
-		echo $html;
+        echo $html;
 	}
 
 	/**
