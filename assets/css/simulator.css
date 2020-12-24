@@ -25,11 +25,9 @@
     margin-right: 5px;
     height: 28px;
     padding: 0 5px;
+    width: 100px;
 }
 
 #shipping-simulator #simulator-data {
     margin-top: 5px;
-}
-.button{
-    height: 32px;
 }

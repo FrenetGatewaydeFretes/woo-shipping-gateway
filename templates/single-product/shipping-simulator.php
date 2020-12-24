@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     <form method="post" class="cart">
 
         <label for="shipping">Calcular Frete <br>
-            <input required type="text" name="zipcode" id="zipcode" placeholder="00000-000"
+            <input required type="text" name="zipcode" id="zipcode" maxlength="9" placeholder="00000-000"
                     value="<?php echo $zipcode; ?>">
         </label>
 
