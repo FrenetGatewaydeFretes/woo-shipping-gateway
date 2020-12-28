@@ -89,6 +89,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 
 == Changelog ==
 
+= 2.1.8 - 28/12/2020 =
+
+* Ajustes de nova padronização do Woocommerce 
+
 = 2.1.7 - 07/02/2019 =
 
 * Ajustes na calculadora da página do produto
