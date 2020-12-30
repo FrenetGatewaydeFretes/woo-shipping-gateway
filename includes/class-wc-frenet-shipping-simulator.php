@@ -173,12 +173,12 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $post = $_POST;
         $shippingValues = [];
         if (!self::validateData($post)) {
-            echo json_encode($shippingValues);
+            echo wp_json_encode($shippingValues);
             return;
         } 
 
         if(!($variation = self::getProduct($post))) {
-            echo json_encode($shippingValues);
+            echo wp_json_encode($shippingValues);
             return;
         }
 
