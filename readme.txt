@@ -1,5 +1,5 @@
 ﻿
-=== Frenet Shipping Gateway for Woocommece ===
+=== Frenet Shipping Gateway for WooCommerce ===
 Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
