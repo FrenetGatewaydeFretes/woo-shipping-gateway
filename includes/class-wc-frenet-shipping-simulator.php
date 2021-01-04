@@ -133,7 +133,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      */
     protected static function getProduct(array $post)
     {
-        $variation = wc_get_product(self::getParamPost($post, 'variation_id'));
+        $variation = wc_get_product(sanitize_text_field($post['variation_id']));
 
         if ($variation) {
             return $variation;
@@ -143,24 +143,12 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return false;
         }
 
-        $variation = wc_get_product(self::getParamPost($post, 'product_id'));
+        $variation = wc_get_product(sanitize_text_field($post['product_id']));
 
         if ($variation) {
             return $variation;
         }
         return null;
-    }
-
-    /**
-     * Get param
-     *
-     * @param array $post
-     * @param [type] $field
-     * @return void
-     */
-    protected static function getParamPost(array $post, $field)
-    {
-        return sanitize_text_field($post[$field]);
     }
 
     /**
@@ -182,13 +170,13 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return;
         }
 
-        $frenet = new WC_Frenet(self::getParamPost($post, 'instance_id'));
+        $frenet = new WC_Frenet(sanitize_text_field($post['instance_id']));
 
         $package = array();
-        $package['destination']['postcode'] = self::getParamPost($post, 'zipcode');
+        $package['destination']['postcode'] = sanitize_text_field($post['zipcode']);
         $package['destination']['country'] = 'BR';
         $package['contents'][0]['data'] = $variation;
-        $package['contents'][0]['quantity'] = self::getParamPost($post, 'quantity');
+        $package['contents'][0]['quantity'] = sanitize_text_field($post['quantity']);
 
         $frenet->quoteByProduct=true;
         $shippingValues = $frenet->frenet_calculate($package, 'JSON');
