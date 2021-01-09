@@ -66,7 +66,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             $ids = array();
 
             foreach ($product->get_available_variations() as $variation) {
-                $_variation = get_product($variation['variation_id']);
+                $_variation = self::getProduct($variation);
                 $ids[] = $_variation->variation_id;
             }
 

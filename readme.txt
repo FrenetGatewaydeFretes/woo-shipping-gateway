@@ -5,8 +5,8 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 5.6
-Version: 2.1.8
-Stable tag: 2.1.8
+Version: 2.1.9
+Stable tag: 2.1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,6 +89,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 
 == Changelog ==
 
+= 2.1.9 - 09/01/2021 =
+
+* Remover função get_product
+
 = 2.1.8 - 28/12/2020 =
 
 * Ajustes de nova padronização do Woocommerce 
@@ -146,6 +150,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 2.1.9 - 09/01/2021 =
+
+* Remover função get_product
 
 = 2.1.4 - 05/06/2018 =
 
