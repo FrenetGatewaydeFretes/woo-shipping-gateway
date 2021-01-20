@@ -5,8 +5,8 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 5.6
-Version: 2.1.9
-Stable tag: 2.1.9
+Version: 2.1.10
+Stable tag: 2.1.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 1. Configurações do plugin.
 
 == Changelog ==
+
+= 2.1.10 - 20/01/2021 =
+
+* Corrigido problemas de logs, CRITICAL Uncaught Error: Cannot use object of type WP_Error as array
 
 = 2.1.9 - 09/01/2021 =
 
