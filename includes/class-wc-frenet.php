@@ -636,14 +636,16 @@ class WC_Frenet extends WC_Shipping_Method {
                 "Authorization" => $this->token
             ]
         ];
+
         $curlResponse = wp_remote_post($this->urlShipQuote, $paramsRequest);
-        $this->log('Curl response: ' . $curlResponse['body']);
         
         if ( is_wp_error( $curlResponse ) ) {
             $this->log('WP_Error: ' . $curlResponse->get_error_message());
             return $values;
         } 
         
+        $this->log('Curl response: ' . $curlResponse['body']);
+
         $response = json_decode($curlResponse['body']);
         if ( !isset( $response->ShippingSevicesArray ) ) {
             return $values;
