@@ -28,7 +28,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          *
          * @var string
          */
-        const VERSION = '2.1.9';
+        const VERSION = '2.1.10';
 
         /**
          * Instance of this class.
