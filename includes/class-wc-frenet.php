@@ -227,7 +227,7 @@ class WC_Frenet extends WC_Shipping_Method {
 			$is_available = false;
 		}
 
-		return apply_filters( 'woocommerce_shipping_' . $this->id . '_is_available', $is_available, $package );
+		return apply_filters( 'woocommerce_shipping_' . $this->id . '_is_available', $is_available, $package, $this );
 	}
 
 	/**
