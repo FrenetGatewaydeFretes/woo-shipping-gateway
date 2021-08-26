@@ -156,7 +156,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      *
      * @return string
      */
-    public function ajax_simulator()
+    public static function ajax_simulator()
     {
         $post = $_POST;
         $shippingValues = [];
