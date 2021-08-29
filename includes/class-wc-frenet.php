@@ -30,6 +30,16 @@ class WC_Frenet extends WC_Shipping_Method {
 	}
 
 	/**
+	 * Convert class to string.
+	 *
+	 * @return string Class ID.
+	 */
+	public function __toString()
+	{
+	    return 'WC_Frenet::' . $this->id . '::' . $this->instance_id . '::' . $this->method_title;
+	}
+
+	/**
 	 * Initializes the method.
 	 *
 	 * @return void
