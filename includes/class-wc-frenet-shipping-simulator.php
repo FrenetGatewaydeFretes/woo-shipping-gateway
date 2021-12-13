@@ -83,7 +83,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             $additional_time = $options['additional_time'];
 
             $current_user = get_current_user_id();
-            $zipcode = get_user_meta($current_user, 'shipping_postcode', true);
+            $zipcode = get_user_meta($current_user, 'shipping_postcode', true).trim(' ');
 
             wc_get_template('single-product/shipping-simulator.php', array(
                 'instance_id' => $instance_id,

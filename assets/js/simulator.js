@@ -32,7 +32,7 @@ jQuery(document).ready(function ($) {
         var content = $('#shipping-simulator #simulator-data');
 
         var type = simulator.data('product-type');
-        var zipcode = $('#shipping-simulator #zipcode').val();
+        var zipcode = $('#shipping-simulator #zipcode').val().trim(' ');
         var additional_time = $('#additional_time').val();
         var instance_id = $('#instance_id').val();
         var variation_id = $('.cart input[name="variation_id"]').val();
