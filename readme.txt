@@ -4,9 +4,9 @@ Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
-Tested up to: 5.6
-Version: 2.1.10
-Stable tag: 2.1.10
+Tested up to: 5.9.1
+Version: 2.1.11
+Stable tag: 2.1.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,11 +20,11 @@ The Frenet freight shipping gateway is able to integrate and process tables of f
 
 It provides to the store owners, major carriers in Brazil to transport large volumes as well as Jamef, Jadlog, TNT, Braspress, Direct among others
 
-It's required to create an account at [Frenet Administrative website](https://painel.frenet.com.br/)  to get access token and configure carriers that you will use. This plugin is free, but to get all the functionalities it is necessary to sign a monthly payment plan according to the policy published on our website: [http://www.frenet.com.br/precos.html](http://www.frenet.com.br/precos.html)
+It's required to create an account at [Frenet Administrative website](https://painel.frenet.com.br/)  to get access token and configure carriers that you will use. This plugin is free, but to get all the functionalities it is necessary to sign a monthly payment plan according to the policy published on our website: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/)
 
 Please notice that WooCommerce must be installed and active.
 
-WOOCOMMERCE: Tested up to 4.6.0
+WOOCOMMERCE: Tested up to 6.2.1
 
 ### Descrição em Português: ###
 
@@ -32,9 +32,9 @@ O gateway de fretes Frenet é capaz de integrar e processar tabelas de fretes de
 
 Disponibiliza aos lojistas as principais transportadoras do Brasil para transporte de grandes volumes, assim como Jamef, Jadlog, TNT, Braspress, Direct Log, Total Express, Exporta Fácil entre outras.
 
-É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [http://www.frenet.com.br/precos.html](http://www.frenet.com.br/precos.html) 
+É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/) 
 
-WOOCOMMERCE: Testado até a versão 4.6.0
+WOOCOMMERCE: Testado até a versão 6.2.1
 
 [Frenet](http://www.frenet.com.br/)
 
@@ -46,8 +46,9 @@ Confira o nosso guia de instalação e configuração na aba [Installation](http
 
 Você pode esclarecer suas dúvidas usando:
 
-* Central de ajuda [Central de ajuda](https://frenet.zendesk.com).
+* Central de ajuda [Central de ajuda](https://ajuda.frenet.com.br/s/).
 * Criando um tópico no [fórum de ajuda do WordPress](http://wordpress.org/support/plugin/woo-shipping-gateway) (apenas em inglês).
+* Enviando um e-mail para nosso suporte técnico suporte@frenet.com.br .
 
 == Installation ==
 
@@ -88,6 +89,10 @@ Alternativamente, você pode configurar apenas o peso e deixar as dimensões em 
 1. Configurações do plugin.
 
 == Changelog ==
+
+= 2.1.11 - 24/02/2022 =
+
+* Validações e testes para garantir estabilidade do módulo com as novas versões do Wordpress e Woocommerce
 
 = 2.1.10 - 20/01/2021 =
 
