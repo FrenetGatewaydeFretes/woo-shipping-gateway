@@ -5,7 +5,7 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.1.10
+ * Version: 2.1.12
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
@@ -28,7 +28,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          *
          * @var string
          */
-        const VERSION = '2.1.10';
+        const VERSION = '2.1.12';
 
         /**
          * Instance of this class.
@@ -122,6 +122,22 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
             $methods['frenet'] = 'WC_Frenet';
 
             return $methods;
+        }
+
+        function wcfrenet_extensions_missing_notice() {
+            ?>
+            <div class="notice notice-error is-dismissible">
+            <p><?php _e( 'FRENET: Você precisa ativar a extensão do php SimpleXmlElement' ); ?></p>
+            </div>
+            <?php
+        }
+            
+        function wcfrenet_woocommerce_fallback_notice() {
+            ?>
+            <div class="notice notice-error is-dismissible">
+            <p><?php _e( 'FRENET: Instale o woocomerce para poder usar esta extensão' ); ?></p>
+            </div>
+            <?php
         }
 
     }
