@@ -422,6 +422,10 @@ class WC_Frenet extends WC_Shipping_Method {
 
                 $product = $values['data'];
                 $qty = $values['quantity'];
+                if (!is_numeric($qty)) {
+                    $this->log('there is a package configuration mistake in store, numeric expected, but string found '.$qty);
+                    $qty = 0;
+                }
 
                 if ( 'yes' == $this->debug ) {
                     $this->log->add( $this->id, 'Product: ' . print_r($product, true));
@@ -467,8 +471,14 @@ class WC_Frenet extends WC_Shipping_Method {
                     $shippingItem->Width = $_width;
                     $shippingItem->Diameter = 0;
                     $shippingItem->SKU = $product->get_sku();
+                    $price = $product->get_price();
 
-                    $shipmentInvoiceValue += $product->get_price() * $qty;
+                    if (!is_numeric($price)) {
+                        $this->log('there is a package price configuration mistake in store, numeric expected, but string found '.$price);
+                        $price = 0.0;
+                    }
+
+                    $shipmentInvoiceValue += $price * $qty;
 
                     // wp_get_post_terms( your_id, 'product_cat' );
                     if ( version_compare( WOOCOMMERCE_VERSION, '3.0', '>=' ) ) {
@@ -560,11 +570,16 @@ class WC_Frenet extends WC_Shipping_Method {
                         $this->log->add( $this->id, 'WP_Error: ' . $response->get_error_message() );
                     }
                 } else {
-                    if ( isset( $response->GetShippingQuoteResult ) ) {
-                        if(count($response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices)==1)
+                    if ( isset( $response->GetShippingQuoteResult ) && isset( $response->GetShippingQuoteResult->ShippingSevicesArray ) && isset( $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices ) ) {
+                        if (is_array($response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices)) {
+                            if(count($response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices)==1)
+                                $servicosArray[0] = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
+                            else
+                                $servicosArray = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
+                        }
+                        else {
                             $servicosArray[0] = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
-                        else
-                            $servicosArray = $response->GetShippingQuoteResult->ShippingSevicesArray->ShippingSevices;
+                        }
 
                         if(!empty($servicosArray))
                         {
@@ -643,7 +658,7 @@ class WC_Frenet extends WC_Shipping_Method {
             'body' => wp_json_encode($serviceParam),
             'headers' => [
                 "Content-Type" =>  "application/json",
-                "Authorization" => $this->token
+                "token" => $this->token
             ]
         ];
 
