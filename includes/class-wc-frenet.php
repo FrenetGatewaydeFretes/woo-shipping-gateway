@@ -266,16 +266,16 @@ class WC_Frenet extends WC_Shipping_Method {
             )
         );
 
-$this->form_fields = $this->instance_form_fields;
-}
+        $this->form_fields = $this->instance_form_fields;
+
+    }
 
 	/**
 	 * Frenet options page.
 	 *
 	 * @return void
 	 */
-    public function admin_options() 
-    {
+    public function admin_options() {
         $html = '<h3>' . esc_html($this->method_title) . '</h3>';
         $html .= '<p>' . __( esc_html('Frenet is a brazilian delivery method.'), 'woo-shipping-gateway' ) . '</p>';
         $html .= '<table class="form-table">';
@@ -401,7 +401,8 @@ $this->form_fields = $this->instance_form_fields;
                             'meta_data' => array( 'FRENET_ID' => 'FRENET_' . $shipping->ServiceCode )
                         ),
                         $this,
-                        $shipping
+                        $shipping,
+                        $package
                     )
                 );
             }
