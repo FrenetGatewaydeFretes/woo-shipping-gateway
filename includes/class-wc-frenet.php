@@ -4,6 +4,68 @@
  */
 class WC_Frenet extends WC_Shipping_Method {
 
+    /**
+     * @var string
+     */
+    private $webservice;
+
+    /**
+     * @var string
+     */
+    private $zip_origin;
+
+    /**
+     * @var mixed
+     */
+    private $minimum_height;
+
+    /**
+     * @var mixed
+     */
+    private $minimum_width;
+
+    /**
+     * @var mixed
+     */
+    private $minimum_length;
+
+    /**
+     * @var mixed
+     */
+    private $display_date;
+
+    /**
+     * @var string
+     */
+    private $login;
+
+    /**
+     * @var string
+     */
+    private $password;
+
+    /**
+     * @var mixed
+     */
+    private $additional_time;
+
+    /**
+     * @var string
+     */
+    private $token;
+
+    /**
+     * @var mixed
+     */
+    private $log;
+
+
+    /**
+     * @var mixed
+     */
+    private $debug;
+
+
     public $quoteByProduct = false;
 
     /**
@@ -19,15 +81,15 @@ class WC_Frenet extends WC_Shipping_Method {
 	public function __construct($instance_id = 0 ) {
         $this->id           = 'frenet';
         $this->instance_id 	= absint( $instance_id );
-		$this->method_title = __( 'Frenet', 'woo-shipping-gateway' );
+        $this->method_title = __( 'Frenet', 'woo-shipping-gateway' );
 
         $this->supports              = array(
             'shipping-zones',
             'instance-settings'
         );
 
-		$this->init();
-	}
+        $this->init();
+    }
 
 	/**
 	 * Convert class to string.
@@ -36,32 +98,32 @@ class WC_Frenet extends WC_Shipping_Method {
 	 */
 	public function __toString()
 	{
-	    return 'WC_Frenet::' . $this->id . '::' . $this->instance_id . '::' . $this->method_title;
-	}
+       return 'WC_Frenet::' . $this->id . '::' . $this->instance_id . '::' . $this->method_title;
+   }
 
 	/**
 	 * Initializes the method.
 	 *
 	 * @return void
 	 */
-	public function init() {
-		// Frenet Web Service.
-		$this->webservice = 'http://services.frenet.com.br/logistics/ShippingQuoteWS.asmx?wsdl';
+    public function init() {
+        // Frenet Web Service.
+        $this->webservice = 'http://services.frenet.com.br/logistics/ShippingQuoteWS.asmx?wsdl';
 
-		// Load the form fields.
-		$this->init_form_fields();
+        // Load the form fields.
+        $this->init_form_fields();
 
-		// Load the settings.
-		$this->init_settings();
+        // Load the settings.
+        $this->init_settings();
 
-		// Define user set variables.
-		$this->enabled            = $this->get_option('enabled');
-		$this->title              = $this->get_option('title');
-		$this->zip_origin         = $this->get_option('zip_origin');
-		$this->minimum_height     = $this->get_option('minimum_height');
-		$this->minimum_width      = $this->get_option('minimum_width');
-		$this->minimum_length     = $this->get_option('minimum_length');
-		$this->debug              = $this->get_option('debug');
+        // Define user set variables.
+        $this->enabled            = $this->get_option('enabled');
+        $this->title              = $this->get_option('title');
+        $this->zip_origin         = $this->get_option('zip_origin');
+        $this->minimum_height     = $this->get_option('minimum_height');
+        $this->minimum_width      = $this->get_option('minimum_width');
+        $this->minimum_length     = $this->get_option('minimum_length');
+        $this->debug              = $this->get_option('debug');
         $this->display_date       = $this->get_option('display_date');
         $this->login              = $this->get_option('login');
         $this->password           = $this->get_option('password');
@@ -69,18 +131,18 @@ class WC_Frenet extends WC_Shipping_Method {
         $this->debug              = $this->get_option( 'debug' );
         $this->token              = $this->get_option('token');
 
-		// Active logs.
-		if ( 'yes' == $this->debug ) {
-			if ( class_exists( 'WC_Logger' ) ) {
-				$this->log = new WC_Logger();
-			} else {
-				$this->log = $this->woocommerce_method()->logger();
-			}
-		}
+        // Active logs.
+        if ( 'yes' == $this->debug ) {
+            if ( class_exists( 'WC_Logger' ) ) {
+                $this->log = new WC_Logger();
+            } else {
+                $this->log = $this->woocommerce_method()->logger();
+            }
+        }
 
-		// Actions.
+        // Actions.
         add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
-	}
+    }
 
 	/**
 	 * Backwards compatibility with version prior to 2.1.
@@ -164,48 +226,48 @@ class WC_Frenet extends WC_Shipping_Method {
                 'description'      => __( 'Your Frenet token.', 'woo-shipping-gateway' ),
                 'desc_tip'         => true
             ),
-			'package_standard' => array(
-				'title'            => __( 'Package Standard', 'woo-shipping-gateway' ),
-				'type'             => 'title',
-				'description'      => __( 'Sets a minimum measure for the package.', 'woo-shipping-gateway' ),
-				'desc_tip'         => true,
-			),
-			'minimum_height' => array(
-				'title'            => __( 'Minimum Height', 'woo-shipping-gateway' ),
-				'type'             => 'text',
-				'description'      => __( 'Minimum height of the package. Frenet needs at least 2 cm.', 'woo-shipping-gateway' ),
-				'desc_tip'         => true,
-				'default'          => '2'
-			),
-			'minimum_width' => array(
-				'title'            => __( 'Minimum Width', 'woo-shipping-gateway' ),
-				'type'             => 'text',
-				'description'      => __( 'Minimum width of the package. Frenet needs at least 11 cm.', 'woo-shipping-gateway' ),
-				'desc_tip'         => true,
-				'default'          => '11'
-			),
-			'minimum_length' => array(
-				'title'            => __( 'Minimum Length', 'woo-shipping-gateway' ),
-				'type'             => 'text',
-				'description'      => __( 'Minimum length of the package. Frenet needs at least 16 cm.', 'woo-shipping-gateway' ),
-				'desc_tip'         => true,
-				'default'          => '16'
-			),
-			'testing' => array(
-				'title'            => __( 'Testing', 'woo-shipping-gateway' ),
-				'type'             => 'title'
-			),
-			'debug' => array(
-				'title'            => __( 'Debug Log', 'woo-shipping-gateway' ),
-				'type'             => 'checkbox',
-				'label'            => __( 'Enable logging', 'woo-shipping-gateway' ),
-				'default'          => 'no',
-				'description'      => sprintf( __( 'Log Frenet events, such as WebServices requests, inside %s.', 'woo-shipping-gateway' ), '<code>woocommerce/logs/frenet-' . sanitize_file_name( wp_hash( 'frenet' ) ) . '.txt</code>' )
-			)
-		);
+            'package_standard' => array(
+                'title'            => __( 'Package Standard', 'woo-shipping-gateway' ),
+                'type'             => 'title',
+                'description'      => __( 'Sets a minimum measure for the package.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+            ),
+            'minimum_height' => array(
+                'title'            => __( 'Minimum Height', 'woo-shipping-gateway' ),
+                'type'             => 'text',
+                'description'      => __( 'Minimum height of the package. Frenet needs at least 2 cm.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => '2'
+            ),
+            'minimum_width' => array(
+                'title'            => __( 'Minimum Width', 'woo-shipping-gateway' ),
+                'type'             => 'text',
+                'description'      => __( 'Minimum width of the package. Frenet needs at least 11 cm.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => '11'
+            ),
+            'minimum_length' => array(
+                'title'            => __( 'Minimum Length', 'woo-shipping-gateway' ),
+                'type'             => 'text',
+                'description'      => __( 'Minimum length of the package. Frenet needs at least 16 cm.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => '16'
+            ),
+            'testing' => array(
+                'title'            => __( 'Testing', 'woo-shipping-gateway' ),
+                'type'             => 'title'
+            ),
+            'debug' => array(
+                'title'            => __( 'Debug Log', 'woo-shipping-gateway' ),
+                'type'             => 'checkbox',
+                'label'            => __( 'Enable logging', 'woo-shipping-gateway' ),
+                'default'          => 'no',
+                'description'      => sprintf( __( 'Log Frenet events, such as WebServices requests, inside %s.', 'woo-shipping-gateway' ), '<code>woocommerce/logs/frenet-' . sanitize_file_name( wp_hash( 'frenet' ) ) . '.txt</code>' )
+            )
+        );
 
-        $this->form_fields = $this->instance_form_fields;
-	}
+$this->form_fields = $this->instance_form_fields;
+}
 
 	/**
 	 * Frenet options page.
@@ -221,7 +283,7 @@ class WC_Frenet extends WC_Shipping_Method {
         $this->generate_settings_html();
         $html = '</table>';
         echo $html;
-	}
+    }
 
 	/**
 	 * Checks if the method is available.
@@ -330,11 +392,16 @@ class WC_Frenet extends WC_Shipping_Method {
 
                 array_push(
                     $rates,
-                    array(
-                        'id'    => 'FRENET_' . $shipping->ServiceCode,
-                        'label' => $label,
-                        'cost'  => $cost,
-						'meta_data' => array( 'FRENET_ID' => 'FRENET_' . $shipping->ServiceCode )
+                    apply_filters(
+                        'frenet_rate',
+                        array(
+                            'id'    => 'FRENET_' . $shipping->ServiceCode,
+                            'label' => $label,
+                            'cost'  => $cost,
+                            'meta_data' => array( 'FRENET_ID' => 'FRENET_' . $shipping->ServiceCode )
+                        ),
+                        $this,
+                        $shipping
                     )
                 );
             }
@@ -343,7 +410,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 $this->add_rate( $rate );
             }
         }
-	}
+    }
 
     /**
      * Estimating Delivery.
@@ -373,9 +440,9 @@ class WC_Frenet extends WC_Shipping_Method {
      * Getting the coupom
      */
     protected function get_coupom($package) {
-        $coupom = "";
-        if (in_array( "applied_coupons", array_keys( $package ) ) && count($package["applied_coupons"]) > 0) {
-            $coupom = $package["applied_coupons"][0];
+        $coupom = '';
+        if (array_key_exists('applied_coupons', $package) && count($package['applied_coupons']) > 0) {
+            $coupom = $package['applied_coupons'][0];
         }
         return $coupom;
     }
@@ -499,7 +566,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
                     }
 
-					$categories = '';
+                    $categories = '';
                     foreach ($terms as $term) {
                         $categories =  $categories . $term->slug . '|';
                     }
