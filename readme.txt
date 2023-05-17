@@ -4,7 +4,7 @@ Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
-Tested up to: 6.0.1
+Tested up to: 6.2.1
 Version: 2.1.13
 Stable tag: 2.1.13
 License: GPLv2 or later
@@ -67,7 +67,7 @@ E você ainda pode aproveitar:
 Não perca tempo e instale o plugin agora mesmo! É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/) 
 [Frenet](http://www.frenet.com.br/)
 
-WOOCOMMERCE: Testado até a versão 6.2.1
+WOOCOMMERCE: Testado até a versão 7.7.0
 
 ### English Description: ###
 
@@ -87,7 +87,7 @@ It's required to create an account at [Frenet Administrative website](https://pa
 
 Please notice that WooCommerce must be installed and active.
 
-WOOCOMMERCE: Tested up to 6.2.1
+WOOCOMMERCE: Tested up to 7.7.0
 
 
 = INSTALAÇÃO E MAIS DETALHES: =
