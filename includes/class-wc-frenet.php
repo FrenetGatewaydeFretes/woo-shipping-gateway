@@ -667,7 +667,15 @@ class WC_Frenet extends WC_Shipping_Method {
         if ( is_wp_error( $curlResponse ) ) {
             $this->log('WP_Error: ' . $curlResponse->get_error_message());
             return $values;
-        } 
+        }
+
+        // Pega os headers da resposta
+        $headers = wp_remote_retrieve_headers($curlResponse);
+        // Verifica o Content-Type
+        if (isset($headers['content-type']) && !str_contains($headers["content-type"], "application/json")) {
+            $this->log('WP_Error: O Content-Type retornado não é application/json, mas sim: ' . $headers['content-type']);
+            return $values;
+        }
         
         $this->log('Curl response: ' . $curlResponse['body']);
 
