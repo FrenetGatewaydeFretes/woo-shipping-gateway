@@ -5,6 +5,18 @@
 class WC_Frenet extends WC_Shipping_Method {
 
     public $quoteByProduct = false;
+    public $webservice;
+    public $zip_origin;
+    public $minimum_height;
+    public $minimum_width;
+    public $minimum_length;
+    public $debug;
+    public $display_date;
+    public $login;
+    public $password;
+    public $additional_time;
+    public $token;
+    public $log;
 
     /**
      * @var string
@@ -212,7 +224,7 @@ class WC_Frenet extends WC_Shipping_Method {
 	 *
 	 * @return void
 	 */
-    public function admin_options() 
+    public function admin_options()
     {
         $html = '<h3>' . esc_html($this->method_title) . '</h3>';
         $html .= '<p>' . __( esc_html('Frenet is a brazilian delivery method.'), 'woo-shipping-gateway' ) . '</p>';
@@ -663,7 +675,7 @@ class WC_Frenet extends WC_Shipping_Method {
         ];
 
         $curlResponse = wp_remote_post($this->urlShipQuote, $paramsRequest);
-        
+
         if ( is_wp_error( $curlResponse ) ) {
             $this->log('WP_Error: ' . $curlResponse->get_error_message());
             return $values;
@@ -676,7 +688,7 @@ class WC_Frenet extends WC_Shipping_Method {
             $this->log('WP_Error: O Content-Type retornado não é application/json, mas sim: ' . $headers['content-type']);
             return $values;
         }
-        
+
         $this->log('Curl response: ' . $curlResponse['body']);
 
         $response = json_decode($curlResponse['body']);
@@ -684,7 +696,7 @@ class WC_Frenet extends WC_Shipping_Method {
             return $values;
         }
         $servicosArray = (array)$response->ShippingSevicesArray;
-        
+
         if(empty($servicosArray)) {
             return $values;
         }
