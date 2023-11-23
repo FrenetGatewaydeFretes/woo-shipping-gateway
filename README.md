@@ -1,22 +1,13 @@
 ## Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio
 Contributors: frenet  
-
 Donate link: http://www.frenet.com.br/  
-
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
-
 Requires at least: 3.5  
-
 Tested up to: 6.2.1  
-
 Version: 2.1.15  
-
 Stable tag: 2.1.15  
-
 License: GPLv2 or later  
-
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
-
 
 A gente descomplica o frete para você vender mais  
 
