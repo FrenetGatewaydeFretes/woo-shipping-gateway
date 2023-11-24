@@ -320,7 +320,7 @@ class WC_Frenet extends WC_Shipping_Method {
             $shipping_values = $this->frenet_calculate($package, 'SOAP');
         }
 
-        if (! $this->has_the_same_shipping_class($package)) {
+        if (!$this->has_shipping_class($package)) {
             return;
         }
 
@@ -665,9 +665,9 @@ class WC_Frenet extends WC_Shipping_Method {
      * @param  array $package
      * @return bool
      */
-    protected function has_the_same_shipping_class($package) {
+    protected function has_shipping_class($package) {
         $same_class = true;
-        $class_id = $this->get_option('shipping_class_id');
+        $class_id = (int) $this->get_option('shipping_class_id');
 
         if ($class_id === -1) {
             return $same_class;
