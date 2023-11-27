@@ -163,7 +163,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         if (!self::validateData($post)) {
             echo wp_json_encode($shippingValues);
             return;
-        } 
+        }
 
         if(!($variation = self::getProduct($post))) {
             echo wp_json_encode($shippingValues);
@@ -180,6 +180,10 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
 
         $frenet->quoteByProduct=true;
         $shippingValues = $frenet->frenet_calculate($package, 'JSON');
+
+        if (isset($shippingValues['data'])) {
+            $shippingValues['display_date'] = $frenet->get_option('display_date') === 'yes';
+        }
 
         echo wp_json_encode($shippingValues);
         die;
