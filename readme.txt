@@ -1,12 +1,11 @@
-﻿
 === Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio ===
 Contributors: frenet
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 6.2.1
-Version: 2.1.13
-Stable tag: 2.1.13
+Version: 2.1.15
+Stable tag: 2.1.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -148,6 +147,18 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 
 == Changelog ==
 
+= 2.1.15 - 19/08/2022 =
+
+* Atualiza $variation->variation_id para $variation->get_id()
+
+= 2.1.14 - 18/10/2023 =
+
+* Tratamento das informações de produto que estão disponiveis no html padrão do simulador de frete
+
+= 2.1.13 - 04/11/2022 =
+
+* Alteração na descrição de testes de versionamento do WooCommerce e Wordpress
+
 = 2.1.12 - 19/08/2022 =
 
 * Corrigido problemas se desativar Woocommerce e não desativar o plugin Frenet
@@ -222,6 +233,18 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 
 == Upgrade Notice ==
 
+= 2.1.15 - 19/08/2022 =
+
+* Atualiza $variation->variation_id para $variation->get_id()
+
+= 2.1.14 - 18/10/2023 =
+
+* Tratamento das informações de produto que estão disponiveis no html padrão do simulador de frete
+
+= 2.1.13 - 04/11/2022 =
+
+* Alteração na descrição de testes de versionamento do WooCommerce e Wordpress
+
 = 2.1.12 - 19/08/2022 =
 
 * Corrigido problemas se desativar Woocommerce e não desativar o plugin Frenet
@@ -286,3 +309,6 @@ WooCommerce Frenet is free software: you can redistribute it and/or modify it un
 WooCommerce Frenet is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with WooCommerce Frenet. If not, see <http://www.gnu.org/licenses/>.
+apps-fileview.texmex_20231109.01_p2
+readme.txt
+Exibindo readme.txt…
