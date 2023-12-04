@@ -1,11 +1,11 @@
 === Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio ===
-Contributors: frenet
+Contributors: frenet, apiki, aguiart0
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
-Tested up to: 6.2.1
-Version: 2.1.15
-Stable tag: 2.1.15
+Tested up to: 6.4.1
+Version: 2.1.16
+Stable tag: 2.1.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,7 +63,7 @@ E você ainda pode aproveitar:
 - Coleta gratuita no seu endereço para os fretes da transportadora Sequoia (consulte disponibilidade).
 - Atendimento e suporte técnico.
 
-Não perca tempo e instale o plugin agora mesmo! É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/) 
+Não perca tempo e instale o plugin agora mesmo! É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/)
 [Frenet](http://www.frenet.com.br/)
 
 WOOCOMMERCE: Testado até a versão 7.7.0
@@ -76,7 +76,7 @@ With the Frenet plugin for WooCommerce, you can integrate multiple delivery ways
 ### MAIN BENEFITS:
 - Automate your shipping calculation
 - Increase your sales with cheaper shipping
-- Don't miss out on sales because of expensive shipping 
+- Don't miss out on sales because of expensive shipping
 - Print labels with automatic tracking
 - Use multiple delivery ways on a single platform
 
@@ -109,7 +109,7 @@ Você pode esclarecer suas dúvidas de várias formas:
 
 ### Instalação e configuração (Português): ###
 
-Instale a Frenet no seu WooCommerce seguindo o passo a passo do [tutorial de integração](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) em nossa Central de Ajuda. 
+Instale a Frenet no seu WooCommerce seguindo o passo a passo do [tutorial de integração](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) em nossa Central de Ajuda.
 
 Após a instalação, aprenda como [integrar seus pedidos](https://ajuda.frenet.com.br/s/article/configurar-e-sincronizar-os-pedidos-do-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) na Frenet e gerar etiquetas de frete com apenas um clique.
 
@@ -147,6 +147,12 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 
 == Changelog ==
 
+= 2.1.16 - 04/12/2023 =
+
+* Adaptação do plugin para classes de entrega
+* Compatibilidade da calculadora de frete para produtos do tipo Composite Products
+* Correção da opção de não mostrar estimativa de entrega na página de produtos
+
 = 2.1.15 - 19/08/2022 =
 
 * Atualiza $variation->variation_id para $variation->get_id()
@@ -177,7 +183,7 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 
 = 2.1.8 - 28/12/2020 =
 
-* Ajustes de nova padronização do Woocommerce 
+* Ajustes de nova padronização do Woocommerce
 
 = 2.1.7 - 07/02/2019 =
 
@@ -297,7 +303,7 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 
 Não somos uma transportadora. A Frenet realiza cálculos de frete automatizados, integrando transportadoras e formas de entrega à sua loja virtual.
 
-= Preciso pagar algo para usar a Frenet? = 
+= Preciso pagar algo para usar a Frenet? =
 
 Possuímos um plano gratuito e outras opções com mensalidade. Você pode começar utilizando o plugin no nosso plano gratuito sem nenhum custo. E, posteriormente, pode fazer um upgrade para ter mais funcionalidades.
 
