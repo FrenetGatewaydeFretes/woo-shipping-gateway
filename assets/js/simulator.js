@@ -18,9 +18,8 @@ var simulatorHelper = {
         var simulator = jQuery('#shipping-simulator');
         var type = simulator.data('product-type');
 
-        if ('simple' == type) {
-            product_id = simulator.data('product-ids');
-        } else {
+        product_id = simulator.data('product-ids');
+        if ('variable' === type) {
             product_id = jQuery('input[name="product_id"]').val();
         }
 
