@@ -2,11 +2,40 @@
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
+
+$has_shipping_class = false;
+$product_shipping_class = false;
+$shipping_classes = WC()->shipping->get_shipping_classes();
+$helper = new WC_Frenet_Helper();
+
+foreach (WC()->shipping->get_shipping_classes() as $class) {
+    if ($class->slug === $product->get_shipping_class()) {
+        $product_shipping_class = $class;
+    }
+
+    if ($product->get_shipping_class() === '') {
+        $product_shipping_class = new stdClass();
+        $product_shipping_class->term_id = 0;
+    }
+}
+
+foreach ($helper->get_instance_ids() as $object) {
+    $frenet = new WC_Frenet($object->instance_id);
+    $class_id = $product_shipping_class->term_id;
+
+    if ($class_id === (int)$frenet->get_option('shipping_class_id')
+            || (int)$frenet->get_option('shipping_class_id') === -1) {
+        $has_shipping_class = true;
+    }
+}
+
+if (!$has_shipping_class) return;
+
 ?>
 
 <div id="shipping-simulator" style="<?php echo esc_attr($style); ?>"
         data-product-ids="<?php echo esc_attr($ids); ?>"
-        data-product-type="<?php echo esc_attr($product->product_type); ?>">
+        data-product-type="<?php echo esc_attr($product->get_type()); ?>">
     <form method="post" class="cart">
 
         <label for="shipping">Calcular Frete <br>

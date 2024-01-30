@@ -20,6 +20,19 @@ class WC_Frenet_Helper
         return $instance_id;
     }
 
+    public function get_instance_ids(){
+        global $wpdb;
+
+        //get enable instance_id to identify method shipping;
+        $instance_ids = $wpdb->get_results($wpdb->prepare("SELECT instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE is_enabled = %d AND method_id = %s ", 1, 'frenet'));
+
+        if ($instance_ids && is_array($instance_ids)) {
+            return $instance_ids;
+        }
+
+        return false;
+    }
+
     /**
      * Retrieve shipping options
      * @return array
