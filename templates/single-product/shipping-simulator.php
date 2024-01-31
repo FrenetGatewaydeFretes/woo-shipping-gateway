@@ -21,6 +21,7 @@ foreach (WC()->shipping->get_shipping_classes() as $class) {
 
 foreach ($helper->get_instance_ids() as $object) {
     $frenet = new WC_Frenet($object->instance_id);
+    $instance_id = $object->instance_id;
     $class_id = $product_shipping_class->term_id;
 
     if ($class_id === (int)$frenet->get_option('shipping_class_id')

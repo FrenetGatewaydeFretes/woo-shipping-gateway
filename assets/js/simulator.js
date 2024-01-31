@@ -10,6 +10,17 @@ var simulatorHelper = {
         jQuery('#shipping-simulator #simulator-data').empty();
     },
 
+    variableValidate: function(variations) {
+        let valid = true;
+        variations.forEach((variation) => {
+            if (!variation.value) {
+                valid = false;
+            }
+        })
+
+        return valid
+    },
+
     /**
      * product ids are depends with product type, now same mode for getting product ids in quotation will be applied in page load
      */
@@ -37,17 +48,19 @@ jQuery(document).ready(function ($) {
         jQuery('.qty_simulator').attr('value', jQuery(this).val());
     });
 
-    jQuery('body').on('show_variation', function () {
+    const variations = document.querySelectorAll('.variations select');
+    variations.forEach((variation) => {
+        variation.addEventListener('change', () => {
+            if (simulatorHelper.variableValidate(variations)) {
+                jQuery('#shipping-simulator').slideDown(200);
+            } else {
+                jQuery('#shipping-simulator').hide();
+            }
 
-        var ids = simulatorHelper.getProductIds().toString().split(',');
-        var variation_id = jQuery('.cart input[name="variation_id"]').val();
+            simulatorHelper.simulatorClean();
+        })
+    })
 
-        if (-1 < jQuery.inArray(variation_id, ids)) {
-            jQuery('#shipping-simulator').slideDown(200);
-        }
-
-        simulatorHelper.simulatorClean();
-    });
 
     jQuery('#shipping-simulator').on('click', '.button', function (e) {
 
@@ -70,7 +83,7 @@ jQuery(document).ready(function ($) {
         if (!variation_id) {
             variation_id = product_id;
         }
-        console.log(additional_time);
+
         if (!additional_time) {
             additional_time = 0;
         } else {
