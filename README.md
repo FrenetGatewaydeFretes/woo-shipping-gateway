@@ -64,7 +64,7 @@ E você ainda pode aproveitar:
 Não perca tempo e instale o plugin agora mesmo! É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/) 
 [Frenet](http://www.frenet.com.br/)
 
-WOOCOMMERCE: Testado até a versão 7.7.0
+WOOCOMMERCE: Testado até a versão 8.5.2
 
 ### English Description: ###
 
@@ -84,7 +84,7 @@ It's required to create an account at [Frenet Administrative website](https://pa
 
 Please notice that WooCommerce must be installed and active.
 
-WOOCOMMERCE: Tested up to 7.7.0
+WOOCOMMERCE: Tested up to 8.5.2
 
 
 = INSTALAÇÃO E MAIS DETALHES: =
