@@ -1,13 +1,24 @@
-/** 
+/**
  * operations helpers for simulator
 */
 var simulatorHelper = {
 
     /**
-     * clean old data showed page by the simulator 
+     * clean old data showed page by the simulator
      */
     simulatorClean: function () {
         jQuery('#shipping-simulator #simulator-data').empty();
+    },
+
+    variableValidate: function(variations) {
+        let valid = true;
+        variations.forEach((variation) => {
+            if (!variation.value) {
+                valid = false;
+            }
+        })
+
+        return valid
     },
 
     /**
@@ -18,9 +29,8 @@ var simulatorHelper = {
         var simulator = jQuery('#shipping-simulator');
         var type = simulator.data('product-type');
 
-        if ('simple' == type) {
-            product_id = simulator.data('product-ids');
-        } else {
+        product_id = simulator.data('product-ids');
+        if ('variable' === type) {
             product_id = jQuery('input[name="product_id"]').val();
         }
 
@@ -38,17 +48,19 @@ jQuery(document).ready(function ($) {
         jQuery('.qty_simulator').attr('value', jQuery(this).val());
     });
 
-    jQuery('body').on('show_variation', function () {
-        
-        var ids = simulatorHelper.getProductIds().toString().split(',');
-        var variation_id = jQuery('.cart input[name="variation_id"]').val();
+    const variations = document.querySelectorAll('.variations select');
+    variations.forEach((variation) => {
+        variation.addEventListener('change', () => {
+            if (simulatorHelper.variableValidate(variations)) {
+                jQuery('#shipping-simulator').slideDown(200);
+            } else {
+                jQuery('#shipping-simulator').hide();
+            }
 
-        if (-1 < jQuery.inArray(variation_id, ids)) {
-            jQuery('#shipping-simulator').slideDown(200);
-        }
+            simulatorHelper.simulatorClean();
+        })
+    })
 
-        simulatorHelper.simulatorClean();
-    });
 
     jQuery('#shipping-simulator').on('click', '.button', function (e) {
 
@@ -103,31 +115,44 @@ jQuery(document).ready(function ($) {
                 response = jQuery.parseJSON(response);
                 jQuery('#loading_simulator').hide();
 
-                var shipping = '<div>';
+                const shippingDiv = document.createElement('div');
 
                 if (jQuery.isEmptyObject(response)) {
-                    shipping += '<p>Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor.</p>';
+                    const shippingErrorMessage = document.createElement('p');
+
+                    shippingErrorMessage.innerText = "Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor."
+                    shippingDiv.appendChild(shippingErrorMessage)
                 } else {
 
-                    // if (response.data.weight == undefined || response.data.weight == "") {
-                    // shipping += '<p>Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor.</p>';
-                    // }else {
+                    const shippingUl = document.createElement('ul');
+                    shippingUl.setAttribute('id', 'shipping-rates');
 
-                    shipping += '<ul id="shipping-rates">';
                     jQuery.each(response, function (key, value) {
                         if (value.ServiceDescription !== undefined) {
-                            var EstimatingDelivery = parseInt(value.DeliveryTime, 10) + parseInt(additional_time, 10);
-                            shipping += '<li class="li-frenet"><span class="span-frenet">' + value.ServiceDescription + '</span>: R$ ' + value.ShippingPrice + ' (Entrega em ' + EstimatingDelivery + ' dias úteis)</li>';
+                            let EstimatingDelivery = parseInt(value.DeliveryTime, 10) + parseInt(additional_time, 10);
+
+                            const shippingLi = document.createElement('li');
+                            shippingLi.classList.add('li-frenet');
+
+                            const shippingSpan = document.createElement('span');
+                            shippingSpan.classList.add('span-frenet');
+                            shippingSpan.innerText = value.ServiceDescription + ': ';
+
+                            shippingLi.appendChild(shippingSpan);
+                            shippingLi.innerText += 'R$' + value.ShippingPrice;
+
+                            if (response.display_date === true) {
+                                shippingLi.innerText += ' (Entrega em ' + EstimatingDelivery + ' dias úteis)';
+                            }
+
+                            shippingUl.appendChild(shippingLi);
                         }
                     });
-                    shipping += '</ul>';
 
-                    // }
-
+                    shippingDiv.appendChild(shippingUl);
                 }
 
-                shipping += '</div>';
-                content.prepend(shipping);
+                content.prepend(shippingDiv);
             }
         });
 

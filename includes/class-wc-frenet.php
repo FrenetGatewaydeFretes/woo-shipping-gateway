@@ -122,6 +122,14 @@ class WC_Frenet extends WC_Shipping_Method {
                 'description'      => __( 'Zip Code from where the requests are sent.', 'woo-shipping-gateway' ),
                 'desc_tip'         => true
             ),
+            'shipping_class_id'  => array(
+                'title'       => __( 'Shipping Class', 'woo-shipping-gateway' ),
+                'type'        => 'select',
+                'description' => __( 'Select a shipping class to use with this method.', 'woo-shipping-gateway' ),
+                'desc_tip'    => true,
+                'default'     => '',
+                'options'     => $this->get_shipping_classes(),
+            ),
             'simulator' => array(
                 'title' => __('Shipping Simulator', 'woo-shipping-gateway'),
                 'type' => 'checkbox',
@@ -212,7 +220,7 @@ class WC_Frenet extends WC_Shipping_Method {
 	 *
 	 * @return void
 	 */
-    public function admin_options() 
+    public function admin_options()
     {
         $html = '<h3>' . esc_html($this->method_title) . '</h3>';
         $html .= '<p>' . __( esc_html('Frenet is a brazilian delivery method.'), 'woo-shipping-gateway' ) . '</p>';
@@ -302,43 +310,50 @@ class WC_Frenet extends WC_Shipping_Method {
 	 *
 	 * @return void
 	 */
-	public function calculate_shipping( $package = array() ) {
-		$rates  = array();
-        $errors = array();
-        if (isset($this->token) && $this->token != '')
-            $shipping_values = $this->frenet_calculate( $package, 'JSON' );
-        else
-            $shipping_values = $this->frenet_calculate( $package, 'SOAP');
+	public function calculate_shipping( $package = [] ) {
+		$rates  = [];
+        $errors = [];
+
+        if (isset($this->token) && $this->token != '') {
+            $shipping_values = $this->frenet_calculate($package, 'JSON');
+        } else {
+            $shipping_values = $this->frenet_calculate($package, 'SOAP');
+        }
+
+        if (!$this->has_shipping_class($package)) {
+            return;
+        }
 
         if ( ! empty( $shipping_values ) ) {
             foreach ( $shipping_values as $code => $shipping ) {
 
-                if(!isset($shipping->ShippingPrice))
+                if (!isset($shipping->ShippingPrice)) {
                     continue;
+                }
 
-                // Set the shipping rates.
                 $label='';
                 $date=0;
-                if(isset($shipping->ServiceDescription) )
+                if (isset($shipping->ServiceDescription) ) {
                     $label=$shipping->ServiceDescription;
+                }
 
-                if (isset($shipping->DeliveryTime))
+                if (isset($shipping->DeliveryTime)) {
                     $date=$shipping->DeliveryTime;
+                }
 
-                $label = ( 'yes' == $this->display_date ) ? $this->estimating_delivery( $label, $date, $this->additional_time ) : $label;
-                $cost  = floatval(str_replace(",", ".", (string) $shipping->ShippingPrice));
+                $label = ( 'yes' === $this->display_date )
+                    ? $this->estimating_delivery( $label, $date, $this->additional_time )
+                    : $label;
+                $cost  = (float) str_replace(",", ".", (string) $shipping->ShippingPrice);
 
-                array_push(
-                    $rates,
-                    array(
-                        'id'    => 'FRENET_' . $shipping->ServiceCode,
-                        'label' => $label,
-                        'cost'  => $cost,
-						'meta_data' => array( 'FRENET_ID' => 'FRENET_' . $shipping->ServiceCode )
-                    )
+                $rates[] = array(
+                    'id' => 'FRENET_' . $shipping->ServiceCode,
+                    'label' => $label,
+                    'cost' => $cost,
+                    'meta_data' => array('FRENET_ID' => 'FRENET_' . $shipping->ServiceCode)
                 );
             }
-            // Add rates.
+
             foreach ( $rates as $rate ) {
                 $this->add_rate( $rate );
             }
@@ -630,6 +645,48 @@ class WC_Frenet extends WC_Shipping_Method {
     }
 
     /**
+     * @return array
+     */
+    protected function get_shipping_classes() {
+        $shipping_classes = WC()->shipping->get_shipping_classes();
+        $options          = array(
+            '-1' => __( 'Any Shipping Class', 'woo-shipping-gateway' ),
+            '0'  => __( 'No Shipping Class', 'woo-shipping-gateway' ),
+        );
+
+        if (!empty($shipping_classes)) {
+            $options += wp_list_pluck($shipping_classes, 'name', 'term_id');
+        }
+
+        return $options;
+    }
+
+    /**
+     * @param  array $package
+     * @return bool
+     */
+    protected function has_shipping_class($package) {
+        $same_class = true;
+        $class_id = (int) $this->get_option('shipping_class_id');
+
+        if ($class_id === -1) {
+            return $same_class;
+        }
+
+        foreach ($package['contents'] as $item) {
+            $product  = $item['data'];
+            $quantity = $item['quantity'];
+
+            if (($quantity > 0 && $product->needs_shipping()) && $class_id !== $product->get_shipping_class_id()) {
+                $same_class = false;
+                break;
+            }
+        }
+
+        return $same_class;
+    }
+
+    /**
      * Log message
      *
      * @param string $mensage
@@ -663,7 +720,7 @@ class WC_Frenet extends WC_Shipping_Method {
         ];
 
         $curlResponse = wp_remote_post($this->urlShipQuote, $paramsRequest);
-        
+
         if ( is_wp_error( $curlResponse ) ) {
             $this->log('WP_Error: ' . $curlResponse->get_error_message());
             return $values;
@@ -676,7 +733,7 @@ class WC_Frenet extends WC_Shipping_Method {
             $this->log('WP_Error: O Content-Type retornado não é application/json, mas sim: ' . $headers['content-type']);
             return $values;
         }
-        
+
         $this->log('Curl response: ' . $curlResponse['body']);
 
         $response = json_decode($curlResponse['body']);
@@ -684,7 +741,7 @@ class WC_Frenet extends WC_Shipping_Method {
             return $values;
         }
         $servicosArray = (array)$response->ShippingSevicesArray;
-        
+
         if(empty($servicosArray)) {
             return $values;
         }

@@ -61,7 +61,10 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return;
         }
 
-        if ('variable' == $product->get_type()) {
+        $style = '';
+        $ids = $product->get_id();
+
+        if ('variable' === $product->get_type()) {
             $style = 'display: none';
             $ids = array();
 
@@ -71,12 +74,9 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             }
 
             $ids = implode(',', array_filter($ids));
-        } else {
-            $style = '';
-            $ids = $product->get_id();
         }
 
-        if ($product->is_in_stock() && in_array($product->get_type(), array('simple', 'variable'))) {
+        if ($product->is_in_stock() && in_array($product->get_type(), array('simple', 'variable', 'composite'))) {
 
             $options = $helper->get_options();
             $instance_id = $helper->get_instance_id();
@@ -163,7 +163,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         if (!self::validateData($post)) {
             echo wp_json_encode($shippingValues);
             return;
-        } 
+        }
 
         if(!($variation = self::getProduct($post))) {
             echo wp_json_encode($shippingValues);
@@ -180,6 +180,10 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
 
         $frenet->quoteByProduct=true;
         $shippingValues = $frenet->frenet_calculate($package, 'JSON');
+
+        if (isset($shippingValues['data'])) {
+            $shippingValues['display_date'] = $frenet->get_option('display_date') === 'yes';
+        }
 
         echo wp_json_encode($shippingValues);
         die;
