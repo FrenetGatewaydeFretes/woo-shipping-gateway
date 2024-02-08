@@ -667,9 +667,9 @@ class WC_Frenet extends WC_Shipping_Method {
      */
     protected function has_shipping_class($package) {
         $same_class = true;
-        $class_id = (int) $this->get_option('shipping_class_id');
+        $class_id = $this->get_option('shipping_class_id');
 
-        if ($class_id === -1) {
+        if ($class_id === '' || (int) $class_id === -1) {
             return $same_class;
         }
 
