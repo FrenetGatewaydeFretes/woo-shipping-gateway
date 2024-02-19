@@ -23,9 +23,9 @@ foreach ($helper->get_instance_ids() as $object) {
     $frenet = new WC_Frenet($object->instance_id);
     $instance_id = $object->instance_id;
     $class_id = $product_shipping_class->term_id;
+    $frenet_class_id = $frenet->get_option('shipping_class_id') ? (int)$frenet->get_option('shipping_class_id') : -1;
 
-    if ($class_id === (int)$frenet->get_option('shipping_class_id')
-            || (int)$frenet->get_option('shipping_class_id') === -1) {
+    if ($class_id === $frenet_class_id || (int)$frenet_class_id === -1) {
         $has_shipping_class = true;
     }
 }
