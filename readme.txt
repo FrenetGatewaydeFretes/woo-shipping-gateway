@@ -1,11 +1,11 @@
 === Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio ===
-Contributors: frenet
+Contributors: frenet, apiki, aguiart0
 Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
 Requires at least: 3.5
 Tested up to: 6.4.1
-Version: 2.1.17
-Stable tag: 2.1.17
+Version: 2.1.18
+Stable tag: 2.1.18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,7 +147,11 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 
 == Changelog ==
 
-= 2.1.17 - 08/02/2023 =
+= 2.1.18 - 05/03/2024 =
+
+* Corrige verificação de classe de entrega. Para exibição no checkout.
+
+= 2.1.17 - 08/02/2024 =
 
 * Verifica se a loja já possui a configuração de classe de entrega. Caso não possua utiliza 'Qualquer classe de entrega' como padrão
 

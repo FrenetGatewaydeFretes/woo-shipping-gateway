@@ -673,11 +673,13 @@ class WC_Frenet extends WC_Shipping_Method {
             return $same_class;
         }
 
+        $class_id = (int) $class_id;
+
         foreach ($package['contents'] as $item) {
             $product  = $item['data'];
             $quantity = $item['quantity'];
 
-            if (($quantity > 0 && $product->needs_shipping()) && $class_id !== $product->get_shipping_class_id()) {
+            if (($quantity > 0 && $product->needs_shipping()) && $class_id !== (int)$product->get_shipping_class_id()) {
                 $same_class = false;
                 break;
             }
