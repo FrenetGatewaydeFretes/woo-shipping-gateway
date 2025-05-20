@@ -15,6 +15,19 @@
  * Tags: shipping, woocommerce, frete, gateway
  */
 
+/**
+ * Informs WooCommerce that the plugin is compatible with the custom order tables feature.
+ */
+ add_action('before_woocommerce_init', function() {
+    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            __FILE__,
+            true
+        );
+    }
+});
+
 define( 'WOO_FRENET_PATH', plugin_dir_path( __FILE__ ) );
 
 if ( ! defined( 'ABSPATH' ) ) {
