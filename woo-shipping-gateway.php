@@ -5,11 +5,28 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.1.18
+ * Version: 2.1.19
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
+ * Tested up to: 6.8.1
+ * Requires at least: 3.5
+ * WC tested up to: 9.8.5
+ * Tags: shipping, woocommerce, frete, gateway
  */
+
+/**
+ * Informs WooCommerce that the plugin is compatible with the custom order tables feature.
+ */
+ add_action('before_woocommerce_init', function() {
+    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            __FILE__,
+            true
+        );
+    }
+});
 
 define( 'WOO_FRENET_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -28,7 +45,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          *
          * @var string
          */
-        const VERSION = '2.1.18';
+        const VERSION = '2.1.19';
 
         /**
          * Instance of this class.

@@ -774,6 +774,9 @@ class WC_Frenet extends WC_Shipping_Method {
     protected function safe_load_xml( $source, $options = 0 ) {
         $old = null;
 
+        /**
+         *  OLD
+         */
         if ( function_exists( 'libxml_disable_entity_loader' ) ) {
             $old = libxml_disable_entity_loader( true );
         }
@@ -782,6 +785,9 @@ class WC_Frenet extends WC_Shipping_Method {
 
         $return = $dom->loadXML( $source, $options );
 
+        /**
+         *  OLD
+         */
         if ( ! is_null( $old ) ) {
             libxml_disable_entity_loader( $old );
         }
