@@ -139,6 +139,15 @@ jQuery(document).ready(function ($) {
                             shippingSpan.innerText = value.ServiceDescription + ': ';
 
                             shippingLi.appendChild(shippingSpan);
+
+                            /*
+                             Caso haja configuração de desconto no frete na plataforma, o valor original aparece taxado, reforçando a promoção para o cliente/usuário
+                            (https://www.frenet.com.br/blog/criar-regra-de-frete-e-simples-assim/)
+                            */
+                            if(value.OriginalShippingPrice > value.ShippingPrice + 0.1) {
+                                shippingLi.innerText += 'de: <s>R$' + value.OriginalShippingPrice + '</s> por: '
+                            }
+                            
                             shippingLi.innerText += 'R$' + value.ShippingPrice;
 
                             if (response.display_date === true) {
