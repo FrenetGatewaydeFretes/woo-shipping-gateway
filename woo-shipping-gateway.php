@@ -5,13 +5,13 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.1.19
+ * Version: 2.1.20
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
- * Tested up to: 6.8.1
+ * Tested up to: 6.8.2
  * Requires at least: 3.5
- * WC tested up to: 9.8.5
+ * WC tested up to: 10.0.4
  * Tags: shipping, woocommerce, frete, gateway
  */
 
@@ -45,7 +45,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          *
          * @var string
          */
-        const VERSION = '2.1.19';
+        const VERSION = '2.1.20';
 
         /**
          * Instance of this class.

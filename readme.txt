@@ -1,151 +1,345 @@
-=== Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio ===
-Contributors: frenet, apiki, aguiart0
-Donate link: http://www.frenet.com.br/
-Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress
-Requires at least: 3.5
-Tested up to: 6.8.1
-Version: 2.1.19
-Stable tag: 2.1.19
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+## Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio
+Contributors: frenet, apiki, aguiart0, pedroasa
+Donate link: http://www.frenet.com.br/  
+Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
+Requires at least: 3.5  
+Tested up to: 6.8.2  
+Version: 2.1.20
+Stable tag: 2.1.20 
+License: GPLv2 or later  
+License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
-A gente descomplica o frete para você vender mais
+Frete inteligente, simples e acessível para negócios que querem crescer  
 
-== Description ==
+### Frete inteligente, simples e acessível para negócios que querem crescer ###
 
-### A gente descomplica o frete para você vender mais ###
+Com a Frenet, você centraliza toda a sua operação de frete em uma única plataforma, com tecnologia robusta, integração fácil e recursos completos para vender mais e entregar com agilidade.
 
-Descomplicamos o frete para que você possa fazer o que faz de melhor: cuidar do seu e-commerce e aumentar as vendas. Com o plugin da Frenet para WooCommerce, você terá liberdade para integrar várias formas de entrega na sua loja e oferecer as melhores opções de frete para os seus clientes.
+O plugin da Frenet para WooCommerce conecta sua loja às principais transportadoras do Brasil com fretes até 90% mais baratos, cálculo automático no checkout, emissão de etiquetas, rastreio automático, regras personalizadas e muito mais, tudo em um só lugar.
 
 #### PRINCIPAIS BENEFÍCIOS:
 
-- Automatize seu cálculo de frete
-- Venda mais com fretes mais baratos
-- Não perca vendas por causa do frete caro
-- Imprima etiquetas com rastreio automático
-- Use várias formas de entrega em uma única plataforma
+- Cálculo automático de frete no checkout com alta performance
+- Fretes com até 90% de desconto, sem contrato nem mensalidade
+- Emissão de etiquetas com rastreio automático
+- Logística reversa simplificada com PAC e Sedex
+- Integração com +700 transportadoras e +200 plataformas
+- Regras de frete personalizadas para promoções, restrições e prazos
+- Frete próprio, retirada na loja e cálculo para motoboys
+- Plataforma fácil de usar, com instalação rápida e suporte completo
+- SOS Proteção de Envios para cobertura contra roubo, perda e danos
+- Cotações Frenet apenas para as classes de entrega que desejar
 
-Com a Frenet você consegue configurar todas as necessidades de frete da sua loja online no WordPress, independente do tamanho ou nicho. Instale o plugin hoje mesmo e aproveite toda a praticidade de ter tudo o que você precisa sobre o frete da sua loja em um só lugar.
+Com a Frenet, você tem liberdade para configurar sua logística do jeito certo para o seu e-commerce no WordPress, em qualquer estágio de crescimento.
+Instale o plugin hoje mesmo e experimente!
 
 #### FUNCIONALIDADES:
 
-- **Cotação (cálculo de frete) automático**
+- **Cálculo de frete automático no checkout**
 
-Calcule o frete no checkout mostrando preços e prazos de entrega, usando Correios (com ou sem contrato próprio), Jadlog, Sequoia e outras transportadoras.
+Mostre aos seus clientes os valores e prazos de entrega em tempo real, usando transportadoras como Correios, Jadlog, Loggi, entre outras. Compatível com produtos variáveis e com opção de exibir ou ocultar prazos de entrega.
 
-- **Emissão de etiquetas na hora**
+- **Emissão de etiquetas com desconto**
 
-Emita etiquetas dos Correios, Jadlog e Sequoia sem necessidade de contrato, sem mínimo de envios mensais e com até 90% de desconto. Além disso, se tiver contrato próprio dos Correios, integre-o também e gerencie mais essa opção de entrega.
+Gere etiquetas dos Correios, Jadlog, Loggi e mais transportadoras com até 90% de desconto, sem precisar de contrato próprio ou mínimo de envios mensais. Se já tiver contrato com os Correios, você também pode integrar.
 
-- **Integração com outras transportadoras**
+- **Integração com transportadoras próprias**
 
-Já utiliza e confia em alguma transportadora? Integre-a com sua tabela de preços própria e tenha todas as suas opções de frete em uma única plataforma. Também oferecemos um sistema automatizado de indicação de transportadoras.
+Conecte transportadoras que você já utiliza com suas próprias tabelas de frete. A Frenet também ajuda a indicar a melhor transportadora para seu tipo de produto ou região.
 
-- **Integração automática dos pedidos**
+- **Integração automática de pedidos**
 
 As informações dos pedidos da sua loja são integradas automaticamente, o que significa que você não precisa ter trabalho manual digitando as informações das etiquetas.
 
 - **Rastreio automático**
 
-As etiquetas geradas através da Frenet (Correios, Jadlog e Sequoia) e do contrato próprio com os Correios, possuem rastreio automático e envios de e-mail de notificação. Assim, você reduz tempo e investimento em suporte, pois os clientes não precisarão entrar em contato para verificar o status da entrega.
+As etiquetas geradas pela Frenet contam com rastreamento automático e notificações por e-mail, mantendo seus clientes sempre informados sobre o status da entrega.
+
+- **Logística reversa descomplicada**
+
+Ofereça devoluções e trocas com facilidade usando PAC e Sedex, direto na plataforma da Frenet, sem burocracia.
 
 - **Regras de frete personalizadas**
 
-Você pode criar regras de frete para todas as necessidades da sua loja, como frete grátis, valor fixo, aumento ou redução do preço/prazo, restrições de entrega por local ou características do produto, e mais.
+Crie regras para frete grátis, faixas de preço, aumento/redução de prazo, restrições por região, tipo de produto, valor do pedido e muito mais.
+
+- **SOS Proteção de Envios**
+
+Mais segurança para os envios com proteção que cabe no seu bolso. Cobertura contra roubo, perda e danos, com processo de reembolso simples e direto. Mais tranquilidade para você e seu cliente.
+
+- **Segmentação por classe de entrega**
+
+Configure a Frenet para realizar cotações apenas para produtos vinculados a determinadas classes de entrega, garantindo flexibilidade na sua estratégia logística.
 
 #### MAIS VANTAGENS:
-Com o frete mais barato, sua loja terá menos carrinhos abandonados. A forma mais fácil de começar a usar a Frenet é emitindo etiquetas de frete usando os nossos contratos com as transportadoras Correios, Jadlog e Sequoia, aproveitando valores de frete muito mais atrativos e sem precisar ter contrato próprio.
 
-E você ainda pode aproveitar:
-- Cálculo de frete para veículos próprios, motoboys e retirada na loja.
-- Plataforma fácil e intuitiva. Instale e comece a usar rapidamente!
-- Estabilidade garantida nas cotações na loja.
-- Coleta gratuita no seu endereço para os fretes da transportadora Sequoia (consulte disponibilidade).
-- Atendimento e suporte técnico.
+- Menos abandono de carrinho com fretes mais atrativos
+- Emissão de etiquetas com desconto com ativação imediata
+- Cálculo de frete para veículos próprios, motoboys e retirada na loja
+- Plataforma fácil e painel super intuitivo
+- Estabilidade nas cotações em tempo real
+- Suporte e atendimento técnico especializados
 
-Não perca tempo e instale o plugin agora mesmo! É necessario criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/) para obter um token de acesso. Este plugin é gratuito, mas para acessar a todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/)
-[Frenet](http://www.frenet.com.br/)
+Não perca tempo e instale o plugin agora mesmo para experimentar!
 
-WOOCOMMERCE: Testado até a versão 9.8.5
+#### INSTALAÇÃO E MAIS DETALHES:
+
+Confira o tutorial de integração na aba “Instalação” ou [acesse o artigo](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) na Central de Ajuda. 
+
+Após a instalação, é necessário criar uma conta no painel administrativo Frenet para obter um token de acesso. Este plugin é gratuito, mas para acessar todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [Planos e Preços Frenet](https://www.frenet.com.br/planos-e-precos/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria).
+
+WOOCOMMERCE: Testado até a versão 10.0.4
+
+#### DÚVIDAS?
+
+Tire suas dúvidas de várias formas:
+
+- Visite a [Central de Ajuda](https://ajuda.frenet.com.br/s/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
+- Visite o [site da Frenet](https://www.frenet.com.br/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
+- Crie um tópico no fórum de ajuda do WordPress (apenas em inglês)
+- Envie um e-mail para o suporte técnico em [suporte@frenet.com.br](suporte@frenet.com.br)
+
+#### LICENÇA
+
+WooCommerce Frenet é um software livre: você pode redistribuí-lo e/ou modificá-lo sob os termos da GNU (General Public License) conforme publicado pela Free Software Foundation, seja a versão 3 da licença ou (a seu critério) qualquer versão posterior.
+
+WooCommerce Frenet é distribuído na esperança de que seja útil, mas SEM QUALQUER GARANTIA; nem mesmo a garantia implícita de COMERCIALIZAÇÃO ou ADEQUAÇÃO À UM DETERMINADO FIM. Confira a GNU para mais detalhes.
+
+Você já deve ter recebido uma cópia da GNU junto com o WooCommerce Frenet. Caso contrário, consulte em [GNU](http://www.gnu.org/licenses/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria).
+
+== Screenshots ==
+
+1. Cálculo de frete automático no checkout da sua loja.
+2. Emissão de etiquetas com até 90% de desconto.
+3. Integração com mais transportadoras.
+4. Rastreio automático com envio de e-mails para os clientes.
+5. Regras de frete personalizadas e logística reversa.
+6. SOS Proteção de Envios para cobertura contra roubo, perda e danos.
+7. Solução completa de frete na palma da mão.
+8. Plataforma intuitiva em qualquer dispositivo.
+
 
 ### English Description: ###
 
-We simplify shipping so you can focus on what you do best: manage your store and increase your sales.
-With the Frenet plugin for WooCommerce, you can integrate multiple delivery ways and offer the best shipping options to your customers.
+With Frenet, you centralize your entire shipping operation on a single platform, with robust technology, easy integration, and a full set of features to help you sell more and deliver faster.
+The Frenet plugin for WooCommerce connects your store to the main carriers in Brazil with shipping up to 90% cheaper, automatic rate calculation at checkout, label printing, auto-tracking, custom rules, and much more, all in one place.
 
-### MAIN BENEFITS:
-- Automate your shipping calculation
-- Increase your sales with cheaper shipping
-- Don't miss out on sales because of expensive shipping
-- Print labels with automatic tracking
-- Use multiple delivery ways on a single platform
+### KEY BENEFITS:
 
-With the Frenet plugin, you can organize all the shipping ways you need for your store, regardless of business size or niche. Install the plugin today and enjoy all the convenience of having everything you need to manage your store's shipping in one place.
+- High-performance automatic shipping calculation at checkout
+- Discounts of up to 90% with no contracts or monthly fees
+- Label printing with automatic tracking
+- Simplified reverse logistics with PAC and Sedex
+- Integration with 700+ carriers and 200+ platforms
+- Custom shipping rules for promotions, restrictions, and delivery times
+- Support for own delivery, in-store pickup, and motorcycle couriers
+- Easy-to-use platform with fast setup and full support
+- SOS Shipping Protection for theft, loss, and damage coverage
+- Frenet quotes only for selected shipping classes
 
-It's required to create an account at [Frenet Administrative website](https://painel.frenet.com.br/)  to get access token and configure carriers that you will use. This plugin is free, but to get all the functionalities it is necessary to sign a monthly payment plan according to the policy published on our website: [https://www.frenet.com.br/planos-e-precos/](https://www.frenet.com.br/planos-e-precos/)
+With Frenet, you’re free to set up your logistics the right way for your WordPress e-commerce, at any growth stage.
 
-Please notice that WooCommerce must be installed and active.
+Install the plugin today and try it out!
 
-WOOCOMMERCE: Tested up to 9.8.5
+### FEATURES:
+
+**Automatic shipping calculation at checkout**
+
+Show your customers real-time delivery times and shipping costs using carriers like Correios, Jadlog, Loggi, and more. Compatible with variable products and optional delivery time display.
+
+**Discounted label printing**
+
+Generate shipping labels from Correios, Jadlog, Loggi, and other carriers with up to 90% off, no need for your own contract or a minimum shipment volume. Already have a Correios contract? You can integrate that too.
+
+**Integration with your own carriers**
+
+Connect carriers you already use with your own shipping rate tables. Frenet also helps you find the best carrier for your product or region.
+
+**Automatic order integration**
+
+Order data from your store is automatically synced, so you don’t have to manually enter label information.
+
+**Automatic tracking**
+
+Labels generated through Frenet come with auto-tracking and email notifications, keeping your customers updated about delivery status.
+
+**Simplified reverse logistics**
+
+Easily handle returns and exchanges via PAC and Sedex directly in the Frenet platform without any hassle.
+
+**Custom shipping rules**
+
+Create rules for free shipping, price ranges, delivery time adjustments, regional or product restrictions, order value filters, and more.
+
+**SOS Shipping Protection**
+
+More safety for your shipments at a fair price. Coverage for theft, loss, and damages with a straightforward reimbursement process. Peace of mind for you and your customers.
+
+**Shipping class targeting**
+
+Set Frenet to quote rates only for products linked to specific shipping classes, giving you more flexibility in your logistics strategy.
+
+### MORE ADVANTAGES:
+
+- Reduce cart abandonment with more attractive shipping rates
+- Discounted label printing with instant activation
+- Shipping calculations for in-store pickup, own vehicles, and motorcycle couriers
+- Easy-to-use platform with an intuitive dashboard
+- Stable real-time quoting
+- Specialized tech support and customer service
+
+Don’t waste time, install the plugin now and give it a try!
+
+### INSTALLATION AND MORE DETAILS: 
+
+- Check the integration tutorial under the "Installation" tab or visit [the Help Center article.](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
+After installation, create an account in the Frenet admin panel to obtain an access token. This plugin is free, but accessing all features requires a paid plan according to the pricing policy on our website: Frenet Plans and Pricing.
+
+WOOCOMMERCE: Tested up to 10.0.4
+
+### QUESTIONS?
+
+You can get support in several ways:
+- Visit the [Help Center](https://ajuda.frenet.com.br/s/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
+- Visit the [Frenet website](https://www.frenet.com.br/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
+- Open a topic in the WordPress support forum (English only)
+- Email our support team at [suporte@frenet.com.br](suporte@frenet.com.br)
+
+### LICENSE
+
+WooCommerce Frenet is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the license or (at your discretion) any later version.
+
+WooCommerce Frenet is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU License for more details.
+
+You should have received a copy of the GNU License along with WooCommerce Frenet. If not, visit [GNU](http://www.gnu.org/licenses/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria).
+
+== Screenshots ==
+
+1. Automatic shipping calculation at your store's checkout.
+2. Print shipping labels with up to 90% discount.
+3. Integration with more carriers.
+4. Auto-tracking with email updates for your customers.
+5. Custom shipping rules and reverse logistics.
+6. SOS Shipping Protection for coverage against theft, loss, and damage.
+7. Full-featured shipping solution at your fingertips.
+8. Easy-to-use platform on any device.
 
 
-= INSTALAÇÃO E MAIS DETALHES: =
+== Frequently Asked Questions ==
 
-Confira o nosso guia de instalação e configuração na aba [Installation](http://wordpress.org/plugins/woo-shipping-gateway/installation/).
+= Qual é a licença do plugin? =
 
-= DÚVIDAS? =
+* Este plugin está licenciado como GNU (General Public License).
 
-Você pode esclarecer suas dúvidas de várias formas:
-* Visite a nossa [Central de Ajuda](https://ajuda.frenet.com.br/s/).
-* Crie um tópico no [fórum de ajuda do WordPress](http://wordpress.org/support/plugin/woo-shipping-gateway) (apenas em inglês).
-* Envie um e-mail para o nosso suporte técnico em suporte@frenet.com.br .
+= O que eu preciso para utilizar este plugin? =
+
+* Ter instalado o plugin WooCommerce;
+* Possuir instalada em sua hospedagem a extensão de SimpleXML;
+* Configurar o seu acesso nas configurações do plugin;
+* Adicionar peso e dimensões dos produtos que pretende enviar;
+* Criar uma conta no painel administrativo da Frenet.
+
+**Atenção**: É obrigatório ter o peso configurado em cada produto para que seja possível calcular o frete de forma eficiente. As dimensões podem ficar em branco e, neste caso, serão utilizadas as medidas da opção Pacote Padrão da configuração do plugin. Porém, é recomendado que cada produto tenha suas configurações próprias de peso e dimensão.
+
+= A Frenet é uma transportadora? =
+
+Não somos uma transportadora. A Frenet é uma plataforma completa de frete que conecta sua loja às principais transportadoras do mercado, automatizando o cálculo, emissão de etiquetas, rastreio e gestão logística, tudo em um só lugar, com foco em performance, economia e simplicidade.
+
+= Preciso pagar algo para usar a Frenet? =
+
+Temos um plano gratuito e outras opções com mensalidade. Você pode começar utilizando o plugin sem nenhum custo e, posteriormente, pode fazer um upgrade para ter mais funcionalidades se assim desejar.
+
+### English FAQ: ###
+
+= What is the license of the plugin? =
+
+* This plugin is licensed under the GNU General Public License.
+
+= What do I need to use this plugin? =
+
+* WooCommerce installed;
+* SimpleXML extension installed on your hosting (included by default in PHP 5);
+* Plugin access configured;
+* Weight and dimensions added to products you want to deliver;
+* [Create an account](https://cadastro.frenet.com.br/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) in the Frenet admin panel.
+
+**Note:** Each product must have its weight configured to allow accurate shipping calculations. If dimensions are left blank, the plugin will use the Default Package settings, but it's best to provide weight and dimensions for each product.
+
+**Is Frenet a carrier?**
+We are not a carrier. Frenet is a full-featured shipping platform that connects your store to the leading carriers in the market, automating rate calculation, label printing, tracking, and logistics management, all in one place, with a focus on performance, savings, and simplicity.
+
+**Do I have to pay to use Frenet?**
+We offer a free plan and other subscription options. You can start using the plugin at no cost and upgrade later if you need more features.
+
+
 
 == Installation ==
 
-* Upload plugin files to your plugins folder, or install using WordPress built-in Add New Plugin installer;
-* Activate the plugin;
-* Navigate to WooCommerce -> Settings -> Shipping, choose Frenet and fill settings.
-* Register to the back end (https://painel.frenet.com.br) and get an access key.
+Instale a Frenet no seu WooCommerce seguindo o passo a passo do [tutorial de integração](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) disponível na Central de Ajuda. 
 
-### Instalação e configuração (Português): ###
-
-Instale a Frenet no seu WooCommerce seguindo o passo a passo do [tutorial de integração](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) em nossa Central de Ajuda.
+**Importante**: Para integrar a Frenet, é necessário realizar a instalação do plugin. Este plugin não está disponível para contas de teste. Sendo assim, você precisa ter um plano assinado no WooCommerce. 
 
 Após a instalação, aprenda como [integrar seus pedidos](https://ajuda.frenet.com.br/s/article/configurar-e-sincronizar-os-pedidos-do-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) na Frenet e gerar etiquetas de frete com apenas um clique.
 
 = Instalação do plugin: =
 
-* Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress.
-* Ative o plugin.
-* Vá para WooCommerce > Configurações > Entrega, escolha Frenet e preencha as configurações;
-* Cadastre-se no Painel Administrativo (https://painel.frenet.com.br) e obtenha uma chave de acesso.
+- Envie os arquivos do plugin para o seu diretório de plugins ou instale usando a ferramenta “Adicionar novo plugin” do WordPress;
+- Ative o plugin;
+- Visite WooCommerce > Configurações > Entrega, escolha Frenet e preencha as configurações;
+- Cadastre-se no [Painel Administrativo Frenet](https://painel.frenet.com.br/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) e obtenha uma chave de acesso.
 
 = Requerimentos: =
 
-Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o PHP 5).
+Possuir instalada a extensão SimpleXML (que já é instalada por padrão com o PHP 5).
 
-= Configurações do plugin: =
+= CONFIGURAÇÕES DO PLUGIN: =
 
-- Com o plugin instalado navegue até "WooCommerce" > "Configurações" > "Entrega" > "Frenet".
-- Nesta tela configure seu **Token**.
-- Também é possível configurar um **Pacote Padrão** que será utilizando para definir as medidas mínimas do pacote de entraga.
+- Com o plugin instalado, navegue até WooCommerce > Configurações > Entrega > Frenet;
+- Nesta tela configure a sua chave de acesso e senha;
+- Também é possível configurar um “Pacote Padrão” que será utilizado para definir as medidas mínimas do pacote de entrega.
 
-= Configurações dos produtos =
+= CONFIGURAÇÕES DOS PRODUTOS: =
 
-- Para que seja possível cotar o frete, os seus produtos precisam ser do tipo **simples** ou **variável** e não estarem marcados com *virtual* ou *baixável* (qualquer outro tipo de produto será ignorado na cotação).
-- É necessário configurar o **peso** e **dimensões** de todos os seus produtos, caso você queria que a cotação de frete seja exata.
-- Alternativamente, você pode configurar apenas o peso e deixar as dimensões em branco, pois neste caso serão utilizadas as configurações do **Pacote Padrão** para as dimensões (neste caso pode ocorrer uma variação no valor do frete).
+- Para que seja possível calcular o frete, os seus produtos precisam ser do tipo simples ou variável, e não estarem marcados com “virtual” ou “baixável”. Qualquer outro tipo de produto será ignorado na cotação;
+- É necessário configurar o peso e dimensões de todos os seus produtos, caso você queira que a cotação de frete seja exata;
+- Alternativamente, você pode configurar apenas o peso e deixar as dimensões em branco, pois neste caso serão utilizadas as configurações do Pacote Padrão para as dimensões. Porém, neste caso, pode ocorrer uma variação no valor do frete.
 
-== Screenshots ==
+### English INSTALLATION: ###
 
-1. Cálculo de frete.
-2. Emissão de etiquetas.
-3. Integração de transportadoras.
-4. Rastreio
-5. Versão mobile
-6. Versão mobile
+Install Frenet in your WooCommerce store by following the [integration tutorial](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) available in our Help Center.
+
+**Important:** To use Frenet, you need to install the plugin. It’s not available for test accounts. You must have a signed WooCommerce plan.
+
+After installation, learn how to [integrate your orders](https://ajuda.frenet.com.br/s/article/configurar-e-sincronizar-os-pedidos-do-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) in Frenet and generate shipping labels with just one click.
+
+= PLUGIN INSTALLATION: =
+
+- Upload the plugin files to your plugin directory or use the “Add New Plugin” feature in WordPress;
+- Activate the plugin;
+- Go to WooCommerce > Settings > Shipping, select Frenet, and fill in the configuration fields;
+- Sign up in the [Frenet Admin Panel](https://painel.frenet.com.br/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) and get your access key.
+
+= REQUIREMENTS: =  
+
+SimpleXML extension (already included in PHP 5).
+
+= PLUGIN SETTINGS: =
+- With the plugin installed, go to WooCommerce > Settings > Shipping > Frenet; 
+- On this screen, enter your access key and password; 
+- You can also configure a "Default Package" to define minimum package dimensions.
+
+= PRODUCT SETTINGS: = 
+
+- To allow shipping calculation, products must be simple or variable and not marked as "virtual" or "downloadable". Any other type of product will be ignored in the quote;
+- Weight and dimensions must be configured for accurate quoting;
+- If only weight is set, the system will use Default Package dimensions, which may result in variations in shipping cost.
+
 
 == Changelog ==
+
+= 2.1.20 - 05/08/2025 =
+
+* Rebranding.
 
 = 2.1.19 - 20/05/2025 =
 
@@ -195,7 +389,7 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 
 = 2.1.8 - 28/12/2020 =
 
-* Ajustes de nova padronização do Woocommerce
+* Ajustes de nova padronização do Woocommerce 
 
 = 2.1.7 - 07/02/2019 =
 
@@ -294,39 +488,3 @@ Possuir instalado a extensão SimpleXML (que já é instalado por padrão com o 
 = 2.1.1 - 12/01/2017 =
 
 * Bug Fix - Cálculo na página do produto - valor e quantidade; Quantidade do mesmo produto;
-
-== Frequently Asked Questions ==
-
-= What is the plugin license? =
-
-* This plugin is released under a GPL license.
-
-= O que eu preciso para utilizar este plugin? =
-
-* Ter instalado o plugin WooCommerce.
-* Possuir instalado em sua hospedagem a extensão de SimpleXML.
-* Configurar o seu acesso nas configurações do plugin.
-* Adicionar peso e dimensões nos produtos que pretende entregar.
-* Criar uma conta no [painel administrativo Frenet](https://painel.frenet.com.br/).
-
-**Atenção**: É obrigatório ter o **peso** configurado em cada produto para que seja possível cotar o frete de forma eficiente. As dimensões podem ficar em branco e neste caso, serão utilizadas as medidas da opção **Pacote Padrão** da configuração do plugin, mas é **recomendado** que cada produto tenha suas configurações próprias de **peso** e **dimensões**.
-
-= A Frenet é uma transportadora? =
-
-Não somos uma transportadora. A Frenet realiza cálculos de frete automatizados, integrando transportadoras e formas de entrega à sua loja virtual.
-
-= Preciso pagar algo para usar a Frenet? =
-
-Possuímos um plano gratuito e outras opções com mensalidade. Você pode começar utilizando o plugin no nosso plano gratuito sem nenhum custo. E, posteriormente, pode fazer um upgrade para ter mais funcionalidades.
-
-
-== License ==
-
-WooCommerce Frenet is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-WooCommerce Frenet is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with WooCommerce Frenet. If not, see <http://www.gnu.org/licenses/>.
-apps-fileview.texmex_20231109.01_p2
-readme.txt
-Exibindo readme.txt…
