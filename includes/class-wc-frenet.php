@@ -5,6 +5,18 @@
 class WC_Frenet extends WC_Shipping_Method {
 
     public $quoteByProduct = false;
+    public $webservice;
+    public $zip_origin;
+    public $minimum_height;
+    public $minimum_width;
+    public $minimum_length;
+    public $debug;
+    public $display_date;
+    public $login;
+    public $password;
+    public $additional_time;
+    public $token;
+    public $log;
 
     /**
      * @var string
