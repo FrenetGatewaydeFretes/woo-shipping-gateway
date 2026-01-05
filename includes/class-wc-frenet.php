@@ -4,6 +4,18 @@
  */
 class WC_Frenet extends WC_Shipping_Method {
 
+    protected $webservice;
+    protected $zip_origin;
+    protected $minimum_height;
+    protected $minimum_width;
+    protected $minimum_length;
+    protected $debug;
+    protected $display_date;
+    protected $login;
+    protected $password;
+    protected $additional_time;
+    protected $token;
+    protected $log;
     public $quoteByProduct = false;
 
     /**

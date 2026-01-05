@@ -3,9 +3,9 @@ Contributors: frenet, apiki, aguiart0, pedroasa
 Donate link: http://www.frenet.com.br/  
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
 Requires at least: 3.5  
-Tested up to: 6.8.2  
-Version: 2.1.20
-Stable tag: 2.1.20 
+Tested up to: 6.8.3  
+Version: 2.1.21
+Stable tag: 2.1.21 
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -88,7 +88,7 @@ Confira o tutorial de integração na aba “Instalação” ou [acesse o artigo
 
 Após a instalação, é necessário criar uma conta no painel administrativo Frenet para obter um token de acesso. Este plugin é gratuito, mas para acessar todas as funcionalidades é necessário assinar um plano de pagamentos de acordo com a política de preços publicada em nosso site: [Planos e Preços Frenet](https://www.frenet.com.br/planos-e-precos/?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria).
 
-WOOCOMMERCE: Testado até a versão 10.0.4
+WOOCOMMERCE: Testado até a versão 10.3.5
 
 #### DÚVIDAS?
 
@@ -195,7 +195,7 @@ Don’t waste time, install the plugin now and give it a try!
 - Check the integration tutorial under the "Installation" tab or visit [the Help Center article.](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
 After installation, create an account in the Frenet admin panel to obtain an access token. This plugin is free, but accessing all features requires a paid plan according to the pricing policy on our website: Frenet Plans and Pricing.
 
-WOOCOMMERCE: Tested up to 10.0.4
+WOOCOMMERCE: Tested up to 10.3.5
 
 ### QUESTIONS?
 
@@ -336,6 +336,10 @@ SimpleXML extension (already included in PHP 5).
 
 
 == Changelog ==
+
+= 2.1.21 - 05/01/2026 =
+
+* Atualização de compatibilidade com o WooCommerce e o WordPress, incluindo melhorias na proteção de variáveis.
 
 = 2.1.20 - 05/08/2025 =
 
