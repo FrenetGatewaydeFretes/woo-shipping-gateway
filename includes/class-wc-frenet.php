@@ -401,8 +401,8 @@ class WC_Frenet extends WC_Shipping_Method {
      */
     protected function get_coupom($package) {
         $coupom = "";
-        if (in_array( "applied_coupons", array_keys( $package ) ) && count($package["applied_coupons"]) > 0) {
-            $coupom = $package["applied_coupons"][0];
+        if ( ! empty( $package["applied_coupons"] ) ) {
+            $coupom = reset( $package["applied_coupons"] );
         }
         return $coupom;
     }
@@ -754,6 +754,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
         $response = json_decode($curlResponse['body']);
         if ( !isset( $response->ShippingSevicesArray ) ) {
+            $this->log( 'Frenet response missing ShippingSevicesArray. Raw body: ' . $curlResponse['body'] );
             return $values;
         }
         $servicosArray = (array)$response->ShippingSevicesArray;
