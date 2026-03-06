@@ -92,6 +92,9 @@ class WC_Frenet extends WC_Shipping_Method {
 
 		// Actions.
         add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
+
+		// Save product dimensions to the order shipping item for label generation.
+		add_action( 'woocommerce_checkout_create_order_shipping_item', array( $this, 'save_shipping_item_dimensions' ), 10, 4 );
 	}
 
 	/**
@@ -700,6 +703,84 @@ class WC_Frenet extends WC_Shipping_Method {
         }
 
         return $same_class;
+    }
+
+    /**
+     * Save product dimensions to the order shipping item.
+     * This allows Frenet to use volume data when generating the shipping label.
+     *
+     * @param WC_Order_Item_Shipping $item
+     * @param int                    $package_key
+     * @param array                  $package
+     * @param WC_Order               $order
+     *
+     * @return void
+     */
+    public function save_shipping_item_dimensions( $item, $package_key, $package, $order ) {
+
+        // Check if the chosen method for this package is Frenet.
+        $chosen_methods = WC()->session ? WC()->session->get( 'chosen_shipping_methods' ) : array();
+        if ( ! isset( $chosen_methods[ $package_key ] ) ) {
+            return;
+        }
+
+        if ( strpos( $chosen_methods[ $package_key ], 'frenet' ) === false ) {
+            return;
+        }
+
+        $total_weight = 0.0;
+        $max_length   = 0.0;
+        $max_width    = 0.0;
+        $total_height = 0.0;
+
+        foreach ( $package['contents'] as $values ) {
+            $product = $values['data'];
+            $qty     = (int) $values['quantity'];
+
+            if ( $qty <= 0 || ! $product->needs_shipping() ) {
+                continue;
+            }
+
+            if ( version_compare( WOOCOMMERCE_VERSION, '3.0', '>=' ) ) {
+                $_weight = (float) wc_get_weight( $this->fix_format( $product->get_weight() ), 'kg' );
+                $_length = (float) wc_get_dimension( $this->fix_format( $product->get_length() ), 'cm' );
+                $_width  = (float) wc_get_dimension( $this->fix_format( $product->get_width() ), 'cm' );
+                $_height = (float) wc_get_dimension( $this->fix_format( $product->get_height() ), 'cm' );
+            } else {
+                $_weight = (float) wc_get_weight( $this->fix_format( $product->weight ), 'kg' );
+                $_length = (float) wc_get_dimension( $this->fix_format( $product->length ), 'cm' );
+                $_width  = (float) wc_get_dimension( $this->fix_format( $product->width ), 'cm' );
+                $_height = (float) wc_get_dimension( $this->fix_format( $product->height ), 'cm' );
+            }
+
+            if ( empty( $_weight ) ) $_weight = 1.0;
+            if ( empty( $_length ) ) $_length = (float) $this->minimum_length;
+            if ( empty( $_width ) )  $_width  = (float) $this->minimum_width;
+            if ( empty( $_height ) ) $_height = (float) $this->minimum_height;
+
+            $total_weight += $_weight * $qty;
+            $max_length    = max( $max_length, $_length );
+            $max_width     = max( $max_width, $_width );
+            $total_height += $_height * $qty;
+        }
+
+        $item->add_meta_data( '_frenet_volume_weight', round( $total_weight, 3 ) );
+        $item->add_meta_data( '_frenet_volume_length', round( $max_length, 2 ) );
+        $item->add_meta_data( '_frenet_volume_width',  round( $max_width, 2 ) );
+        $item->add_meta_data( '_frenet_volume_height', round( $total_height, 2 ) );
+
+        if ( 'yes' === $this->debug ) {
+            $this->log->add(
+                $this->id,
+                sprintf(
+                    'Dimensions saved to shipping item: Weight=%.3f kg | Length=%.2f cm | Width=%.2f cm | Height=%.2f cm',
+                    round( $total_weight, 3 ),
+                    round( $max_length, 2 ),
+                    round( $max_width, 2 ),
+                    round( $total_height, 2 )
+                )
+            );
+        }
     }
 
     /**

@@ -4,8 +4,8 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
 Requires at least: 3.5  
 Tested up to: 6.9
-Version: 2.1.22
-Stable tag: 2.1.22 
+Version: 2.1.23
+Stable tag: 2.1.23 
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -336,6 +336,10 @@ SimpleXML extension (already included in PHP 5).
 
 
 == Changelog ==
+
+= 2.1.23 - 06/03/2026 =
+
+* Corrige problema em que os dados de volume (peso, comprimento, largura e altura) não eram salvos no pedido do WooCommerce durante o checkout. Com isso, ao importar o pedido na Frenet para geração de etiqueta, os campos de volume ficavam em branco.
 
 = 2.1.22 - 19/01/2026 =
 
