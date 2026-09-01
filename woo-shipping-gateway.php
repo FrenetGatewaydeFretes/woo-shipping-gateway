@@ -5,7 +5,7 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.1.22
+ * Version: 2.1.23
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
@@ -45,7 +45,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          *
          * @var string
          */
-        const VERSION = '2.1.22';
+        const VERSION = '2.1.23';
 
         /**
          * Instance of this class.
@@ -70,6 +70,15 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-shipping-simulator.php';
 
                 add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
+
+                // Blocks checkout while the last live Frenet quote failed (see method docblock).
+                add_action( 'woocommerce_checkout_validate_order_before_payment', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
+                add_action( 'woocommerce_after_checkout_validation', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
+
+                // While a quote is flagged as failed, keep expiring WooCommerce's shipping-rate
+                // cache so the next page load re-quotes Frenet instead of serving the stale
+                // "no rates" result (see method docblock).
+                add_action( 'woocommerce_before_calculate_totals', array( $this, 'expire_shipping_cache_after_frenet_failure' ), 5 );
 
             } else {
                 add_action( 'admin_notices', array( $this, 'wcfrenet_woocommerce_fallback_notice' ) );
@@ -139,6 +148,72 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
             $methods['frenet'] = 'WC_Frenet';
 
             return $methods;
+        }
+
+        /**
+         * Rejects checkout while WC_Frenet::mark_quote_result() flagged the last live quote as
+         * failed, but only when the customer is actually shipping with Frenet. If every package
+         * uses another carrier, the failed Frenet quote is irrelevant and the order proceeds.
+         *
+         * @param mixed     $order_or_data Order object (blocks) or posted data (classic).
+         * @param \WP_Error $errors
+         * @return void
+         */
+        public function block_checkout_if_frenet_quote_failed( $order_or_data, $errors ) {
+            if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+                return;
+            }
+
+            if ( ! WC()->session->get( WC_Frenet::SESSION_KEY_QUOTE_FAILED ) ) {
+                return;
+            }
+
+            $chosen_methods = (array) WC()->session->get( 'chosen_shipping_methods', array() );
+            $shipping_with_frenet = false;
+
+            foreach ( $chosen_methods as $chosen_method ) {
+                if ( 0 === strpos( (string) $chosen_method, 'FRENET_' ) ) {
+                    $shipping_with_frenet = true;
+                    break;
+                }
+            }
+
+            if ( ! $shipping_with_frenet ) {
+                return;
+            }
+
+            $errors->add(
+                'frenet_quote_failed',
+                __( 'Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order.', 'woo-shipping-gateway' )
+            );
+        }
+
+        /**
+         * Expires WooCommerce's shipping-rate cache while the last Frenet quote is flagged as
+         * failed, so an unchanged cart re-quotes on the next request instead of being stuck
+         * with the cached "no Frenet rate" result until the cart or address changes.
+         *
+         * Throttled with a short transient: the shipping cache version is global, so bumping
+         * it on every request during an outage would force every shopper to recompute
+         * shipping on every page load.
+         *
+         * @return void
+         */
+        public function expire_shipping_cache_after_frenet_failure() {
+            if ( ! function_exists( 'WC' ) || ! WC()->session || ! class_exists( 'WC_Cache_Helper' ) ) {
+                return;
+            }
+
+            if ( ! WC()->session->get( WC_Frenet::SESSION_KEY_QUOTE_FAILED ) ) {
+                return;
+            }
+
+            if ( false !== get_transient( 'wc_frenet_shipping_cache_expired' ) ) {
+                return;
+            }
+
+            set_transient( 'wc_frenet_shipping_cache_expired', 1, 30 );
+            WC_Cache_Helper::get_transient_version( 'shipping', true );
         }
 
         function wcfrenet_extensions_missing_notice() {

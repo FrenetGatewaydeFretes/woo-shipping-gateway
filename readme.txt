@@ -4,8 +4,8 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
 Requires at least: 3.5  
 Tested up to: 6.9
-Version: 2.1.22
-Stable tag: 2.1.22 
+Version: 2.1.23
+Stable tag: 2.1.23
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -295,7 +295,7 @@ Possuir instalada a extensão SimpleXML (que já é instalada por padrão com o 
 = CONFIGURAÇÕES DO PLUGIN: =
 
 - Com o plugin instalado, navegue até WooCommerce > Configurações > Entrega > Frenet;
-- Nesta tela configure a sua chave de acesso e senha;
+- Nesta tela configure o seu Token, obtido no Painel Administrativo Frenet;
 - Também é possível configurar um “Pacote Padrão” que será utilizado para definir as medidas mínimas do pacote de entrega.
 
 = CONFIGURAÇÕES DOS PRODUTOS: =
@@ -325,7 +325,7 @@ SimpleXML extension (already included in PHP 5).
 
 = PLUGIN SETTINGS: =
 - With the plugin installed, go to WooCommerce > Settings > Shipping > Frenet; 
-- On this screen, enter your access key and password; 
+- On this screen, enter your Token, obtained from the Frenet Admin Panel;
 - You can also configure a "Default Package" to define minimum package dimensions.
 
 = PRODUCT SETTINGS: = 
@@ -336,6 +336,21 @@ SimpleXML extension (already included in PHP 5).
 
 
 == Changelog ==
+
+= 2.1.23 - 31/08/2026 =
+
+* Corrige aviso de PHP no simulador de frete quando a loja não possui nenhuma classe de entrega cadastrada.
+* Remove a autenticação legada por usuário/senha e o webservice SOAP, que não é mais aceito pela Frenet. A cotação passa a exigir um Token, configurado no campo já existente.
+* Adiciona timeout configurável (2 a 10 segundos) para a requisição de cotação à API da Frenet.
+* Adiciona número de tentativas configurável (1 a 3) com nova tentativa automática em caso de falha.
+* Para de tentar novamente quando a Frenet responde com um erro do cliente (ex.: token inválido), evitando esperar todas as tentativas numa requisição que nunca vai funcionar.
+* Passa a validar a resposta da API (erro de rede, status HTTP, Content-Type e JSON), em vez de tratar qualquer falha como "sem frete disponível".
+* Passa a tratar como falha também a resposta HTTP 200 sem transportadoras utilizáveis (retorno vazio ou todas as transportadoras com erro), e não apenas erros de rede/HTTP.
+* Passa a registrar erros de cotação sempre no log do WooCommerce (independente da opção "Debug Log"), identificando a sessão/carrinho e a instância/zona de frete afetados.
+* Quando a cotação da Frenet falha, avisa o cliente e bloqueia a finalização do pedido apenas se a forma de entrega escolhida for da Frenet; com outra transportadora selecionada, o pedido segue normalmente.
+* Expira o cache de frete do WooCommerce enquanto a cotação da Frenet está falhando, para que a loja volte a cotar a Frenet assim que a API se recuperar, sem o cliente precisar alterar o carrinho ou o endereço.
+* Exibe um aviso no painel quando o Tempo Limite ou as Tentativas configuradas estão fora da faixa permitida e são ajustadas automaticamente.
+* Traduz para pt-BR os textos dos novos campos de configuração (Tempo Limite, Tentativas) e do aviso de falha de cotação.
 
 = 2.1.22 - 19/01/2026 =
 
@@ -452,6 +467,11 @@ SimpleXML extension (already included in PHP 5).
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 2.1.23 - 31/08/2026 =
+
+* IMPORTANTE: a autenticação por usuário/senha (webservice SOAP) foi removida, pois não é mais aceita pela Frenet. Se sua loja ainda não tem um Token configurado, configure um em WooCommerce > Configurações > Entrega > Frenet antes de atualizar, ou o cálculo de frete vai parar de funcionar.
+* Corrige o problema em que uma falha temporária na cotação da Frenet podia deixar o pedido ser finalizado sem cobrar frete. Agora, quando a cotação falha, o cliente é avisado e a finalização fica bloqueada enquanto a Frenet for a forma de entrega escolhida — com outra transportadora selecionada o pedido segue normalmente.
 
 = 2.1.15 - 19/08/2022 =
 
