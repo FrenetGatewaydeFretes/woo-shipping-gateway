@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 $has_shipping_class = false;
-$product_shipping_class = false;
+$product_shipping_class = (object) array('term_id' => 0);
 $shipping_classes = WC()->shipping->get_shipping_classes();
 $helper = new WC_Frenet_Helper();
 
