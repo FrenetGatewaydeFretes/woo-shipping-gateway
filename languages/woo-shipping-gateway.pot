@@ -127,9 +127,9 @@ msgstr ""
 msgid "Enable logging"
 msgstr ""
 
-#: includes/class-wc-frenet.php:163
+#: includes/class-wc-frenet.php:304
 #, php-format
-msgid "Log Frenet events, such as WebServices requests, inside %s."
+msgid "Log Frenet events, such as WebServices requests, inside %s. Quote failures are always logged to the WooCommerce log regardless of this setting."
 msgstr ""
 
 #: includes/class-wc-frenet.php:175
@@ -149,4 +149,38 @@ msgstr ""
 #: woo-shipping-gateway.php:28
 #, php-format
 msgid "WooCommerce Frenet depends to %s to work!"
+msgstr ""
+
+#: includes/class-wc-frenet.php:245
+msgid "Request Timeout (seconds)"
+msgstr ""
+
+#: includes/class-wc-frenet.php:247
+msgid "How long to wait for the Frenet API to respond before giving up and retrying. Recommended: between 2 and 10 seconds."
+msgstr ""
+
+#: includes/class-wc-frenet.php:257
+msgid "Request Attempts"
+msgstr ""
+
+#: includes/class-wc-frenet.php:259
+msgid "How many times to try the Frenet API before giving up (1 = no retry). Each attempt can take up to the Request Timeout above, so the worst case is Attempts × Timeout."
+msgstr ""
+
+#: includes/class-wc-frenet.php:331
+#, php-format
+msgid "Frenet: Request Timeout must be between %2$d and %3$d seconds. %1$d was adjusted to %4$d."
+msgstr ""
+
+#: includes/class-wc-frenet.php:362
+#, php-format
+msgid "Frenet: Request Attempts must be between %2$d and %3$d. %1$d was adjusted to %4$d."
+msgstr ""
+
+#: includes/class-wc-frenet.php:1055
+msgid "Frenet shipping quote is currently unavailable. Refresh the page or re-enter the zip code to try again, or select another shipping method."
+msgstr ""
+
+#: woo-shipping-gateway.php:180
+msgid "Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order."
 msgstr ""
