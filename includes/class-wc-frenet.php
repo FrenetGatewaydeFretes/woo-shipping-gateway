@@ -200,7 +200,7 @@ class WC_Frenet extends WC_Shipping_Method {
 				'type'             => 'checkbox',
 				'label'            => __( 'Enable logging', 'woo-shipping-gateway' ),
 				'default'          => 'no',
-				'description'      => sprintf( __( 'Log Frenet events, such as WebServices requests, inside %s.', 'woo-shipping-gateway' ), '<code>woocommerce/logs/frenet-' . sanitize_file_name( wp_hash( 'frenet' ) ) . '.txt</code>' )
+				'description'      => sprintf( __( 'Log Frenet events, such as WebServices requests, inside %s. Quote failures are always logged to the WooCommerce log regardless of this setting.', 'woo-shipping-gateway' ), '<code>woocommerce/logs/frenet-' . sanitize_file_name( wp_hash( 'frenet' ) ) . '.txt</code>' )
 			)
 		);
 
@@ -391,6 +391,7 @@ class WC_Frenet extends WC_Shipping_Method {
     protected function frenet_calculate( $package ){
 
         $values = array();
+        $context = $this->describe_package( $package );
 
         try {
             $RecipientCEP = $package['destination']['postcode'];
@@ -398,16 +399,12 @@ class WC_Frenet extends WC_Shipping_Method {
 
             // Checks if services and zipcode is empty.
             if (empty( $RecipientCEP ) && $RecipientCountry =='BR') {
-                if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id,"ERRO: CEP destino não informado");
-                }
+                $this->log_error( "Frenet quote skipped: destination postcode (RecipientCEP) is empty. [{$context}]" );
                 return $values;
             }
 
             if (empty( $this->zip_origin )) {
-                if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id,"ERRO: CEP origem não configurado");
-                }
+                $this->log_error( "Frenet quote skipped: origin postcode (zip_origin) is not configured on the shipping method. [{$context}]" );
                 return $values;
             }
 
@@ -541,7 +538,7 @@ class WC_Frenet extends WC_Shipping_Method {
             );
             $values = $this->requestJson($serviceParam, $values);
         } catch (Exception $e) {
-            $this->log(print_r($e->getMessage(), true));
+            $this->log_error( 'Frenet quote raised an unexpected exception: ' . $e->getMessage() . " [{$context}]" );
         }
 
         return $values;
@@ -667,6 +664,54 @@ class WC_Frenet extends WC_Shipping_Method {
             $values[ $code ] = $servicos;
         }
         return $values;
+    }
+
+    /**
+     * Builds a compact "which cart" identifier (session, user, postcode, items) for logs.
+     *
+     * @param array $package
+     * @return string
+     */
+    protected function describe_package( $package ) {
+        $parts = array( 'instance=' . $this->instance_id );
+
+        if ( function_exists( 'WC' ) && WC()->session ) {
+            $parts[] = 'session=' . WC()->session->get_customer_id();
+        }
+
+        $customer_id = get_current_user_id();
+        if ( $customer_id ) {
+            $parts[] = 'user=' . $customer_id;
+        }
+
+        if ( ! empty( $package['destination']['postcode'] ) ) {
+            $parts[] = 'postcode=' . $package['destination']['postcode'];
+        }
+
+        $items = array();
+        foreach ( (array) ( $package['contents'] ?? array() ) as $item ) {
+            $product = isset( $item['data'] ) ? $item['data'] : null;
+            $id      = ( $product && is_object( $product ) && method_exists( $product, 'get_id' ) ) ? $product->get_id() : '?';
+            $qty     = isset( $item['quantity'] ) ? $item['quantity'] : '?';
+            $items[] = "{$id}x{$qty}";
+        }
+        $parts[] = 'items=' . ( $items ? implode( ',', $items ) : '(none)' );
+
+        return implode( ' | ', $parts );
+    }
+
+    /**
+     * Logs an error unconditionally, independent of the Debug Log setting.
+     *
+     * @param string $message
+     * @return void
+     */
+    protected function log_error( $message ) {
+        if ( function_exists( 'wc_get_logger' ) ) {
+            wc_get_logger()->error( $message, array( 'source' => $this->id ) );
+        }
+
+        $this->log( $message );
     }
 
     /**
