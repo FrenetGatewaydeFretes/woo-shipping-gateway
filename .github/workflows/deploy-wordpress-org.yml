@@ -1,0 +1,77 @@
+name: Deploy to WordPress.org
+
+# Pré-requisito: dois secrets cadastrados em Settings > Secrets and variables > Actions:
+#   - SVN_USERNAME: usuário da conta wordpress.org com acesso de commit ao plugin
+#     (aparece como Committer em wordpress.org/plugins/woo-shipping-gateway/advanced/)
+#   - SVN_PASSWORD: senha ESPECÍFICA DE SVN, não a senha de login. Desde out/2024 o
+#     wordpress.org exige 2FA na conta + uma senha de SVN gerada em
+#     profiles.wordpress.org/me/profile/edit/group/3/ (seção "SVN password").
+# Sem esses secrets o job "deploy" falha na autenticação com o SVN.
+#
+# Como publicar: criar uma Release no GitHub com a tag = versão (ex.: 2.1.23). O trigger
+# "release: published" dispara a publicação real no SVN (trunk + tags/<versão> + assets).
+# Para testar sem publicar: aba Actions > Run workflow, com dry_run marcado.
+
+permissions:
+  contents: read
+
+on:
+  release:
+    types: [published]
+
+  # Permite rodar manualmente pelo GitHub (aba Actions > Deploy to WordPress.org > Run
+  # workflow), útil pra um primeiro teste com dry-run sem precisar publicar uma Release de
+  # verdade.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag a publicar (ex.: v2.1.23 ou 2.1.23)'
+        required: true
+      dry_run:
+        description: 'Rodar em modo dry-run (não publica de verdade no SVN)'
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Determinar a versão (remove um "v" inicial da tag, ex. v2.1.23 -> 2.1.23)
+        id: version
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Verificar consistência de versão (cabeçalho do plugin, const VERSION, readme Stable tag)
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          HEADER_VERSION=$(grep -m1 '^ \* Version:' woo-shipping-gateway.php | sed -E 's/^[^:]+:\s*//')
+          CONST_VERSION=$(grep -m1 'const VERSION' woo-shipping-gateway.php | sed -E "s/.*'([^']+)'.*/\1/")
+          STABLE_TAG=$(grep -m1 '^Stable tag:' readme.txt | sed -E 's/^[^:]+:\s*//')
+
+          echo "Tag (sem v):    $VERSION"
+          echo "Header Version: $HEADER_VERSION"
+          echo "const VERSION:  $CONST_VERSION"
+          echo "Stable tag:     $STABLE_TAG"
+
+          if [ "$VERSION" != "$HEADER_VERSION" ] || [ "$VERSION" != "$CONST_VERSION" ] || [ "$VERSION" != "$STABLE_TAG" ]; then
+            echo "::error::Versoes divergentes — corrija antes de publicar. Tag=$VERSION Header=$HEADER_VERSION Const=$CONST_VERSION Stable=$STABLE_TAG"
+            exit 1
+          fi
+
+      - name: Deploy para o SVN do WordPress.org
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: false
+          dry-run: ${{ inputs.dry_run || false }}
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: woo-shipping-gateway
+          VERSION: ${{ steps.version.outputs.version }}
+          ASSETS_DIR: .wordpress-org
