@@ -4,6 +4,12 @@
  */
 class WC_Frenet extends WC_Shipping_Method {
 
+    /**
+     * Allowed range for the "timeout" setting, in seconds.
+     */
+    const MIN_TIMEOUT = 2;
+    const MAX_TIMEOUT = 10;
+
     protected $zip_origin;
     protected $minimum_height;
     protected $minimum_width;
@@ -12,6 +18,7 @@ class WC_Frenet extends WC_Shipping_Method {
     protected $display_date;
     protected $additional_time;
     protected $token;
+    protected $timeout;
     protected $log;
     public $quoteByProduct = false;
 
@@ -72,6 +79,7 @@ class WC_Frenet extends WC_Shipping_Method {
         $this->additional_time    = $this->get_option('additional_time');
         $this->debug              = $this->get_option( 'debug' );
         $this->token              = $this->get_option('token');
+        $this->timeout            = $this->get_timeout_option();
 
 		// Active logs.
 		if ( 'yes' == $this->debug ) {
@@ -84,6 +92,23 @@ class WC_Frenet extends WC_Shipping_Method {
 
 		// Actions.
         add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
+	}
+
+	/**
+	 * Reads the "timeout" setting, clamped to the supported range.
+	 *
+	 * @return int
+	 */
+	protected function get_timeout_option() {
+		$timeout = (int) $this->get_option( 'timeout', 5 );
+
+		if ( $timeout < self::MIN_TIMEOUT ) {
+			$timeout = self::MIN_TIMEOUT;
+		} elseif ( $timeout > self::MAX_TIMEOUT ) {
+			$timeout = self::MAX_TIMEOUT;
+		}
+
+		return $timeout;
 	}
 
 	/**
@@ -164,6 +189,18 @@ class WC_Frenet extends WC_Shipping_Method {
                 'description'      => __( 'Your Frenet token.', 'woo-shipping-gateway' ),
                 'desc_tip'         => true
             ),
+            'timeout' => array(
+                'title'             => __( 'Request Timeout (seconds)', 'woo-shipping-gateway' ),
+                'type'              => 'number',
+                'description'       => __( 'How long to wait for the Frenet API to respond before giving up and retrying. Recommended: between 2 and 10 seconds.', 'woo-shipping-gateway' ),
+                'desc_tip'          => true,
+                'default'           => '5',
+                'custom_attributes' => array(
+                    'min'  => self::MIN_TIMEOUT,
+                    'max'  => self::MAX_TIMEOUT,
+                    'step' => 1,
+                ),
+            ),
 			'package_standard' => array(
 				'title'            => __( 'Package Standard', 'woo-shipping-gateway' ),
 				'type'             => 'title',
@@ -205,6 +242,37 @@ class WC_Frenet extends WC_Shipping_Method {
 		);
 
         $this->form_fields = $this->instance_form_fields;
+	}
+
+	/**
+	 * Validates the "timeout" field, clamping it to the supported range.
+	 *
+	 * @param string $key Field key.
+	 * @param string $value Posted value.
+	 * @return string
+	 */
+	public function validate_timeout_field( $key, $value ) {
+		$original = (int) $value;
+		$clamped  = $original;
+
+		if ( $clamped < self::MIN_TIMEOUT ) {
+			$clamped = self::MIN_TIMEOUT;
+		} elseif ( $clamped > self::MAX_TIMEOUT ) {
+			$clamped = self::MAX_TIMEOUT;
+		}
+
+		if ( $clamped !== $original ) {
+			$this->add_error( sprintf(
+				/* translators: 1: submitted value, 2: minimum allowed, 3: maximum allowed, 4: value actually saved */
+				__( 'Frenet: Request Timeout must be between %2$d and %3$d seconds. %1$d was adjusted to %4$d.', 'woo-shipping-gateway' ),
+				$original,
+				self::MIN_TIMEOUT,
+				self::MAX_TIMEOUT,
+				$clamped
+			) );
+		}
+
+		return (string) $clamped;
 	}
 
 	/**
@@ -615,6 +683,7 @@ class WC_Frenet extends WC_Shipping_Method {
         $this->log('URL: ' . $this->urlShipQuote);
 
         $paramsRequest = [
+            'timeout' => $this->timeout,
             'body' => wp_json_encode($serviceParam),
             'headers' => [
                 "Content-Type" =>  "application/json",
