@@ -75,6 +75,11 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
                 add_action( 'woocommerce_checkout_validate_order_before_payment', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
                 add_action( 'woocommerce_after_checkout_validation', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
 
+                // While a quote is flagged as failed, keep expiring WooCommerce's shipping-rate
+                // cache so the next page load re-quotes Frenet instead of serving the stale
+                // "no rates" result (see method docblock).
+                add_action( 'woocommerce_before_calculate_totals', array( $this, 'expire_shipping_cache_after_frenet_failure' ), 5 );
+
             } else {
                 add_action( 'admin_notices', array( $this, 'wcfrenet_woocommerce_fallback_notice' ) );
             }
@@ -181,6 +186,34 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
                 'frenet_quote_failed',
                 __( 'Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order.', 'woo-shipping-gateway' )
             );
+        }
+
+        /**
+         * Expires WooCommerce's shipping-rate cache while the last Frenet quote is flagged as
+         * failed, so an unchanged cart re-quotes on the next request instead of being stuck
+         * with the cached "no Frenet rate" result until the cart or address changes.
+         *
+         * Throttled with a short transient: the shipping cache version is global, so bumping
+         * it on every request during an outage would force every shopper to recompute
+         * shipping on every page load.
+         *
+         * @return void
+         */
+        public function expire_shipping_cache_after_frenet_failure() {
+            if ( ! function_exists( 'WC' ) || ! WC()->session || ! class_exists( 'WC_Cache_Helper' ) ) {
+                return;
+            }
+
+            if ( ! WC()->session->get( WC_Frenet::SESSION_KEY_QUOTE_FAILED ) ) {
+                return;
+            }
+
+            if ( false !== get_transient( 'wc_frenet_shipping_cache_expired' ) ) {
+                return;
+            }
+
+            set_transient( 'wc_frenet_shipping_cache_expired', 1, 30 );
+            WC_Cache_Helper::get_transient_version( 'shipping', true );
         }
 
         function wcfrenet_extensions_missing_notice() {
