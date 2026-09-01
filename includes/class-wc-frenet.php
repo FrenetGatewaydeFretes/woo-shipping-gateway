@@ -17,6 +17,12 @@ class WC_Frenet extends WC_Shipping_Method {
     const MIN_ATTEMPTS = 1;
     const MAX_ATTEMPTS = 3;
 
+    /**
+     * WC session key: whether the last live quote attempt failed. Read by
+     * WC_Frenet_Main::block_checkout_if_frenet_quote_failed().
+     */
+    const SESSION_KEY_QUOTE_FAILED = 'frenet_last_quote_failed';
+
     protected $zip_origin;
     protected $minimum_height;
     protected $minimum_width;
@@ -554,10 +560,10 @@ class WC_Frenet extends WC_Shipping_Method {
             $shipmentInvoiceValue=0;
 
             // Shipping per item.
-            foreach ( $package['contents'] as $item_id => $values ) {
+            foreach ( $package['contents'] as $cart_item ) {
 
-                $product = $values['data'];
-                $qty = $values['quantity'];
+                $product = $cart_item['data'];
+                $qty = $cart_item['quantity'];
                 if (!is_numeric($qty)) {
                     $this->log('there is a package configuration mistake in store, numeric expected, but string found '.$qty);
                     $qty = 0;
@@ -685,6 +691,7 @@ class WC_Frenet extends WC_Shipping_Method {
             // Catches Throwable, not just Exception: a TypeError or other Error must not turn
             // into a fatal error / white screen on the cart or checkout page.
             $this->log_error( 'Frenet quote raised an unexpected exception: ' . $e->getMessage() . " [{$context}]" );
+            $this->mark_quote_result( true );
         }
 
         return $values;
@@ -765,6 +772,7 @@ class WC_Frenet extends WC_Shipping_Method {
 
         // Every attempt failed at the transport level (already logged by the retry helper).
         if ( null === $response ) {
+            $this->mark_quote_result( true );
             return $values;
         }
 
@@ -786,10 +794,16 @@ class WC_Frenet extends WC_Shipping_Method {
             $values[ (string) $service->ServiceCode ] = $service;
         }
 
+        // HTTP 200 but nothing usable came back: empty ShippingSevicesArray, or every carrier
+        // reported an error. Treat it as a failed quote so the result is not cached by
+        // WooCommerce and, when Frenet is the chosen method, checkout stays blocked.
         if ( empty( $values ) ) {
             $this->log_error( "Frenet quote returned HTTP 200 with no usable carrier (empty or all-error ShippingSevicesArray). [{$context}]" );
+            $this->mark_quote_result( true );
+            return $values;
         }
 
+        $this->mark_quote_result( false );
         return $values;
     }
 
@@ -867,6 +881,36 @@ class WC_Frenet extends WC_Shipping_Method {
         $this->log_error( "Frenet quote request gave up after {$attempts_made} {$attempt_word}. Last error: {$last_error} [{$context}]" );
 
         return null;
+    }
+
+
+    /**
+     * Records in the WC session whether the last live quote attempt failed.
+     *
+     * @param bool $failed
+     * @return void
+     */
+    protected function mark_quote_result( $failed ) {
+        if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+            return;
+        }
+
+        $was_already_failed = (bool) WC()->session->get( self::SESSION_KEY_QUOTE_FAILED );
+
+        WC()->session->set( self::SESSION_KEY_QUOTE_FAILED, (bool) $failed );
+
+        // Inform the shopper, but as a non-error notice: an "error" notice makes the Store
+        // API reject the whole checkout (HTTP 409), which would block the order even when
+        // another carrier is selected. Blocking checkout while Frenet is the chosen method
+        // is done separately by WC_Frenet_Main::block_checkout_if_frenet_quote_failed().
+        // Only queued on the transition into a failed state, so repeatedly reloading the
+        // same broken cart page does not stack duplicate notices.
+        if ( $failed && ! $was_already_failed && function_exists( 'wc_add_notice' ) ) {
+            wc_add_notice(
+                __( 'Frenet shipping quote is currently unavailable. Refresh the page or re-enter the zip code to try again, or select another shipping method.', 'woo-shipping-gateway' ),
+                'notice'
+            );
+        }
     }
 
     /**

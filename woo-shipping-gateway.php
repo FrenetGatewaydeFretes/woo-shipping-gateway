@@ -71,6 +71,10 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
 
                 add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
 
+                // Blocks checkout while the last live Frenet quote failed (see method docblock).
+                add_action( 'woocommerce_checkout_validate_order_before_payment', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
+                add_action( 'woocommerce_after_checkout_validation', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
+
             } else {
                 add_action( 'admin_notices', array( $this, 'wcfrenet_woocommerce_fallback_notice' ) );
             }
@@ -139,6 +143,44 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
             $methods['frenet'] = 'WC_Frenet';
 
             return $methods;
+        }
+
+        /**
+         * Rejects checkout while WC_Frenet::mark_quote_result() flagged the last live quote as
+         * failed, but only when the customer is actually shipping with Frenet. If every package
+         * uses another carrier, the failed Frenet quote is irrelevant and the order proceeds.
+         *
+         * @param mixed     $order_or_data Order object (blocks) or posted data (classic).
+         * @param \WP_Error $errors
+         * @return void
+         */
+        public function block_checkout_if_frenet_quote_failed( $order_or_data, $errors ) {
+            if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+                return;
+            }
+
+            if ( ! WC()->session->get( WC_Frenet::SESSION_KEY_QUOTE_FAILED ) ) {
+                return;
+            }
+
+            $chosen_methods = (array) WC()->session->get( 'chosen_shipping_methods', array() );
+            $shipping_with_frenet = false;
+
+            foreach ( $chosen_methods as $chosen_method ) {
+                if ( 0 === strpos( (string) $chosen_method, 'FRENET_' ) ) {
+                    $shipping_with_frenet = true;
+                    break;
+                }
+            }
+
+            if ( ! $shipping_with_frenet ) {
+                return;
+            }
+
+            $errors->add(
+                'frenet_quote_failed',
+                __( 'Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order.', 'woo-shipping-gateway' )
+            );
         }
 
         function wcfrenet_extensions_missing_notice() {
