@@ -39,7 +39,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          # On a published Release, check out its tag. On a manual run (dry-run before the
+          # tag exists), check out the branch it was dispatched from; `inputs.tag` is still
+          # used below only to derive the version string for the consistency check.
+          ref: ${{ github.event.release.tag_name || github.ref_name }}
 
       - name: Determinar a versão (remove um "v" inicial da tag, ex. v2.1.23 -> 2.1.23)
         id: version
