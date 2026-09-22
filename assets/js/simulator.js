@@ -124,6 +124,20 @@ jQuery(document).ready(function ($) {
                     shippingDiv.appendChild(shippingErrorMessage)
                 } else {
 
+                    const shippingHeader = document.createElement('div');
+                    shippingHeader.classList.add('frenet-quote-header');
+
+                    const headerService = document.createElement('span');
+                    headerService.classList.add('frenet-quote-col-service');
+                    headerService.innerText = 'Entrega';
+
+                    const headerPrice = document.createElement('span');
+                    headerPrice.classList.add('frenet-quote-col-price');
+                    headerPrice.innerText = 'Custo';
+
+                    shippingHeader.appendChild(headerService);
+                    shippingHeader.appendChild(headerPrice);
+
                     const shippingUl = document.createElement('ul');
                     shippingUl.setAttribute('id', 'shipping-rates');
 
@@ -134,21 +148,33 @@ jQuery(document).ready(function ($) {
                             const shippingLi = document.createElement('li');
                             shippingLi.classList.add('li-frenet');
 
+                            const serviceCol = document.createElement('div');
+                            serviceCol.classList.add('frenet-quote-service');
+
                             const shippingSpan = document.createElement('span');
                             shippingSpan.classList.add('span-frenet');
-                            shippingSpan.innerText = value.ServiceDescription + ': ';
-
-                            shippingLi.appendChild(shippingSpan);
-                            shippingLi.innerText += 'R$' + value.ShippingPrice;
+                            shippingSpan.innerText = value.ServiceDescription;
+                            serviceCol.appendChild(shippingSpan);
 
                             if (response.display_date === true) {
-                                shippingLi.innerText += ' (Entrega em ' + EstimatingDelivery + ' dias úteis)';
+                                const deliverySpan = document.createElement('span');
+                                deliverySpan.classList.add('frenet-quote-delivery');
+                                deliverySpan.innerText = 'Receba até ' + EstimatingDelivery + (1 === EstimatingDelivery ? ' dia útil' : ' dias úteis');
+                                serviceCol.appendChild(deliverySpan);
                             }
+
+                            const priceSpan = document.createElement('span');
+                            priceSpan.classList.add('frenet-quote-price');
+                            priceSpan.innerText = 'R$' + value.ShippingPrice;
+
+                            shippingLi.appendChild(serviceCol);
+                            shippingLi.appendChild(priceSpan);
 
                             shippingUl.appendChild(shippingLi);
                         }
                     });
 
+                    shippingDiv.appendChild(shippingHeader);
                     shippingDiv.appendChild(shippingUl);
                 }
 

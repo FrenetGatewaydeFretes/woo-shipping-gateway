@@ -181,7 +181,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $frenet->quoteByProduct=true;
         $shippingValues = $frenet->frenet_calculate($package, 'JSON');
 
-        if (isset($shippingValues['data'])) {
+        if (!empty($shippingValues)) {
             $shippingValues['display_date'] = $frenet->get_option('display_date') === 'yes';
         }
 
