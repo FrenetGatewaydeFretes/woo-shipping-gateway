@@ -21,9 +21,6 @@ msgid_plural "Delivery in %d working days"
 msgstr[0] "Entrega em %d dia útil"
 msgstr[1] "Entrega em %d dias úteis"
 
-msgid "Invalid zip code."
-msgstr "CEP inválido."
-
 msgid "Shipping"
 msgstr "Entrega"
 
@@ -72,18 +69,6 @@ msgstr "Dias adicionais"
 msgid "Additional days to the estimated delivery."
 msgstr "Dias adicionais para a entrega estimada."
 
-msgid "User"
-msgstr "Chave de acesso"
-
-msgid "Your Frenet access key."
-msgstr "Chave de acesso ao Frenet"
-
-msgid "Password"
-msgstr "Senha de acesso"
-
-msgid "Your Frenet access key password."
-msgstr "Senha da chave de acesso ao Frenet"
-
 msgid "Sets a minimum measure for the package."
 msgstr "Defina uma medida mínima para o pacote."
 
@@ -119,18 +104,6 @@ msgstr ""
 "Registrar log de eventos do Frenet, como solicitações de API, dentro do "
 "arquivo %s. Falhas de cotação são sempre registradas no log do WooCommerce, "
 "independente desta opção."
-
-msgid "WooCommerce Frenet"
-msgstr "WooCommerce Frenet"
-
-msgid "Settings"
-msgstr "Configurações"
-
-msgid "WooCommerce Frenet depends on the last version of %s to work!"
-msgstr "WooCommerce Frenet depende da última versão do %s para funcionar!"
-
-msgid "WooCommerce"
-msgstr "WooCommerce"
 
 msgid "https://github.com/FrenetGatewaydeFretes/woo-shipping-gateway"
 msgstr "https://github.com/FrenetGatewaydeFretes/woo-shipping-gateway"

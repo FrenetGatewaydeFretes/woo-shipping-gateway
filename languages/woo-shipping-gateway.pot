@@ -67,22 +67,6 @@ msgstr ""
 msgid "Additional days to the estimated delivery."
 msgstr ""
 
-#: includes/class-wc-frenet.php:116
-msgid "User"
-msgstr ""
-
-#: includes/class-wc-frenet.php:118
-msgid "Your Frenet access key."
-msgstr ""
-
-#: includes/class-wc-frenet.php:122
-msgid "Password"
-msgstr ""
-
-#: includes/class-wc-frenet.php:124
-msgid "Your Frenet access key password."
-msgstr ""
-
 #: includes/class-wc-frenet.php:128
 msgid "Package Standard"
 msgstr ""
@@ -139,16 +123,6 @@ msgstr ""
 #: includes/class-wc-frenet.php:317 includes/class-wc-frenet.php:320
 #, php-format
 msgid "Delivery in %d working day"
-msgstr ""
-
-#: woo-shipping-gateway.php:21
-#, php-format
-msgid "WooCommerce Frenet depends on %s to work!"
-msgstr ""
-
-#: woo-shipping-gateway.php:28
-#, php-format
-msgid "WooCommerce Frenet depends to %s to work!"
 msgstr ""
 
 #: includes/class-wc-frenet.php:245
