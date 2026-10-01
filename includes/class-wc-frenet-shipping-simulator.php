@@ -257,6 +257,19 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
     }
 
     /**
+     * Formats a Frenet shipping price with the store currency settings.
+     *
+     * @param string $price
+     * @return string
+     */
+    protected static function format_shipping_price($price)
+    {
+        $amount = (float) str_replace(',', '.', (string) $price);
+
+        return html_entity_decode(wp_strip_all_tags(wc_price($amount)), ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
      * Simulator ajax response.
      *
      * @return string
@@ -287,6 +300,10 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
 
         $frenet->quoteByProduct=true;
         $shippingValues = $frenet->frenet_calculate($package, 'JSON');
+
+        foreach ($shippingValues as $service) {
+            $service->ShippingPriceFormatted = self::format_shipping_price($service->ShippingPrice);
+        }
 
         if (!empty($shippingValues)) {
             $shippingValues['display_date'] = $frenet->get_option('display_date') === 'yes';

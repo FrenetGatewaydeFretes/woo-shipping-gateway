@@ -246,7 +246,7 @@ jQuery(document).ready(function ($) {
 
                             const priceSpan = document.createElement('span');
                             priceSpan.classList.add('frenet-quote-price');
-                            priceSpan.innerText = 'R$' + value.ShippingPrice;
+                            priceSpan.innerText = value.ShippingPriceFormatted;
 
                             shippingLi.appendChild(serviceCol);
                             shippingLi.appendChild(priceSpan);
