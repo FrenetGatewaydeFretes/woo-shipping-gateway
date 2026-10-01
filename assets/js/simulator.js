@@ -71,6 +71,24 @@ var simulatorHelper = {
         return quantity > 0 ? quantity : (this.field('qty_simulator').val() || 1);
     },
 
+    watchBlockProductForm: function () {
+        var $form = this.productForm();
+        var variationField = $form.find('input[name="variation_id"]')[0];
+
+        if (!variationField || $form.hasClass('variations_form')) {
+            return;
+        }
+
+        var syncVariation = function () {
+            var variationId = $form.hasClass('is-invalid') ? '' : variationField.value;
+
+            simulatorHelper.setVariation(variationId ? { variation_id: variationId } : null);
+        };
+
+        new MutationObserver(syncVariation).observe($form[0], { attributes: true, childList: true, subtree: true });
+        syncVariation();
+    },
+
     /**
      * product ids are depends with product type, now same mode for getting product ids in quotation will be applied in page load
      */
@@ -114,6 +132,8 @@ jQuery(document).ready(function ($) {
             simulatorHelper.setVariation({ variation_id: variationId });
         }
     });
+
+    simulatorHelper.watchBlockProductForm();
 
     jQuery('#shipping-simulator').on('submit', 'form', function (e) {
 
