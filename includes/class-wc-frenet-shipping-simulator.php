@@ -24,6 +24,16 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
     }
 
     /**
+     * Returns the delivery time message in singular and plural forms.
+     *
+     * @return array
+     */
+    protected static function delivery_time_message()
+    {
+        return _n_noop('Delivery in %d working day', 'Delivery in %d working days', 'woo-shipping-gateway');
+    }
+
+    /**
      * Returns the simulator quote limit per IP.
      *
      * @return int
@@ -100,8 +110,12 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             'shipping_simulator',
             array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'error_message' => __('Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor'),
+                'error_message' => __('Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost.', 'woo-shipping-gateway'),
                 'rate_limit_message' => __('Too many shipping simulations in a short time. Please wait a few minutes and try again.', 'woo-shipping-gateway'),
+                'shipping_label' => __('Shipping', 'woo-shipping-gateway'),
+                'cost_label' => __('Cost', 'woo-shipping-gateway'),
+                'delivery_time_singular' => translate_nooped_plural(self::delivery_time_message(), 1, 'woo-shipping-gateway'),
+                'delivery_time_plural' => translate_nooped_plural(self::delivery_time_message(), 2, 'woo-shipping-gateway'),
             )
         );
     }

@@ -21,6 +21,12 @@ var simulatorHelper = {
         jQuery('#shipping-simulator #simulator-data').empty().append(message);
     },
 
+    deliveryTimeText: function (days) {
+        var message = 1 === days ? shipping_simulator.delivery_time_singular : shipping_simulator.delivery_time_plural;
+
+        return message.replace('%d', days);
+    },
+
     isSimulatedProductForm: function ($form) {
         var productId = jQuery('#shipping-simulator').data('product-id');
 
@@ -191,7 +197,7 @@ jQuery(document).ready(function ($) {
                 if (jQuery.isEmptyObject(response)) {
                     const shippingErrorMessage = document.createElement('p');
 
-                    shippingErrorMessage.innerText = "Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor."
+                    shippingErrorMessage.innerText = shipping_simulator.error_message;
                     shippingDiv.appendChild(shippingErrorMessage)
                 } else {
 
@@ -200,11 +206,11 @@ jQuery(document).ready(function ($) {
 
                     const headerService = document.createElement('span');
                     headerService.classList.add('frenet-quote-col-service');
-                    headerService.innerText = 'Entrega';
+                    headerService.innerText = shipping_simulator.shipping_label;
 
                     const headerPrice = document.createElement('span');
                     headerPrice.classList.add('frenet-quote-col-price');
-                    headerPrice.innerText = 'Custo';
+                    headerPrice.innerText = shipping_simulator.cost_label;
 
                     shippingHeader.appendChild(headerService);
                     shippingHeader.appendChild(headerPrice);
@@ -230,7 +236,7 @@ jQuery(document).ready(function ($) {
                             if (response.display_date === true) {
                                 const deliverySpan = document.createElement('span');
                                 deliverySpan.classList.add('frenet-quote-delivery');
-                                deliverySpan.innerText = 'Receba até ' + EstimatingDelivery + (1 === EstimatingDelivery ? ' dia útil' : ' dias úteis');
+                                deliverySpan.innerText = simulatorHelper.deliveryTimeText(EstimatingDelivery);
                                 serviceCol.appendChild(deliverySpan);
                             }
 

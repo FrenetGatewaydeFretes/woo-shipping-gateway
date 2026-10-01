@@ -40,7 +40,7 @@ if (!$has_shipping_class) return;
         data-product-type="<?php echo esc_attr($product->get_type()); ?>">
     <form method="post" class="cart">
 
-        <label for="shipping">Calcular Frete <br>
+        <label for="shipping"><?php esc_html_e('Calculate shipping', 'woo-shipping-gateway'); ?> <br>
             <input required type="text" name="zipcode" id="zipcode" maxlength="9" placeholder="00000-000"
                     value="<?php echo $zipcode; ?>">
         </label>
@@ -48,11 +48,11 @@ if (!$has_shipping_class) return;
         <input type="hidden" name="instance_id" id="instance_id" value="<?php echo $instance_id; ?>">
         <input type="hidden" name="additional_time" id="additional_time" value="<?php echo $additional_time; ?>">
         <input type="hidden" name="qty_simulator" id="qty_simulator" class="qty_simulator" value="1">
-        <button name="idx-calc_shipping" id="idx-calc_shipping" value="1" class="button">Ok</button>
+        <button name="idx-calc_shipping" id="idx-calc_shipping" value="1" class="button"><?php esc_html_e('OK', 'woo-shipping-gateway'); ?></button>
         <br class="clear"/>
         <br>
         <div id='loading_simulator' style='display:none'>
-            <p>Aguarde...</p>
+            <p><?php esc_html_e('Please wait...', 'woo-shipping-gateway'); ?></p>
         </div>
         <div id="simulator-data"></div>
         <!--display data -->
