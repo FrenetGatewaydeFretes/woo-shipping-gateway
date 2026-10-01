@@ -174,13 +174,6 @@ jQuery(document).ready(function ($) {
             additional_time = parseInt(additional_time, 10);
         }
 
-        /*
-        console.log('ID do produto: ' + product_id);
-        console.log('ID da variacão (se for variavel): ' + variation_id);
-        console.log('CEP: ' + zipcode);
-        console.log('Additional Time: ' + additional_time);
-        */
-
         simulatorHelper.xhr = jQuery.ajax({
             type: 'POST',
             url: shipping_simulator.ajax_url,

@@ -55,7 +55,6 @@ if (!$has_shipping_class) return;
             <p><?php esc_html_e('Please wait...', 'woo-shipping-gateway'); ?></p>
         </div>
         <div id="simulator-data"></div>
-        <!--display data -->
 
     </form>
 
