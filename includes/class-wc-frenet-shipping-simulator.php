@@ -6,6 +6,19 @@
 class WC_Frenet_Shipping_Simulator extends WC_Frenet
 {
     /**
+     * Returns the asset version: plugin version plus the file modification time.
+     *
+     * @param string $relative_path
+     * @return string
+     */
+    protected static function asset_version($relative_path)
+    {
+        $file = plugin_dir_path(dirname(__FILE__)) . $relative_path;
+
+        return WC_Frenet_Main::VERSION . (is_readable($file) ? '.' . filemtime($file) : '');
+    }
+
+    /**
      * Shipping simulator actions.
      */
     public function __construct()
@@ -30,8 +43,8 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return;
         }
 
-        wp_enqueue_style('shipping-simulator', plugins_url('assets/css/simulator.css', plugin_dir_path(__FILE__)), array(), WC_Frenet_Main::VERSION, 'all');
-        wp_enqueue_script('shipping-simulator', plugins_url('assets/js/simulator.js', plugin_dir_path(__FILE__)), array('jquery'), WC_Frenet_Main::VERSION, true);
+        wp_enqueue_style('shipping-simulator', plugins_url('assets/css/simulator.css', plugin_dir_path(__FILE__)), array(), self::asset_version('assets/css/simulator.css'), 'all');
+        wp_enqueue_script('shipping-simulator', plugins_url('assets/js/simulator.js', plugin_dir_path(__FILE__)), array('jquery'), self::asset_version('assets/js/simulator.js'), true);
         wp_localize_script(
             'shipping-simulator',
             'shipping_simulator',
