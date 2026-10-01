@@ -163,7 +163,7 @@ jQuery(document).ready(function ($) {
                 }
 
                 jQuery('#loading_simulator').hide();
-                simulatorHelper.showMessage(shipping_simulator.error_message);
+                simulatorHelper.showMessage(429 === xhr.status ? shipping_simulator.rate_limit_message : shipping_simulator.error_message);
             },
             complete: function (xhr) {
                 if (simulatorHelper.xhr === xhr) {

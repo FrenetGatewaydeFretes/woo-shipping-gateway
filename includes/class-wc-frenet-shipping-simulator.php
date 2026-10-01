@@ -6,6 +6,16 @@
 class WC_Frenet_Shipping_Simulator extends WC_Frenet
 {
     /**
+     * Default simulator quote limit per IP.
+     */
+    const RATE_LIMIT = 60;
+
+    /**
+     * Rate limit window in seconds.
+     */
+    const RATE_LIMIT_WINDOW = 600;
+
+    /**
      * Returns the asset version: plugin version plus the file modification time.
      *
      * @param string $relative_path
@@ -16,6 +26,34 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $file = plugin_dir_path(dirname(__FILE__)) . $relative_path;
 
         return WC_Frenet_Main::VERSION . (is_readable($file) ? '.' . filemtime($file) : '');
+    }
+
+    /**
+     * Counts the request for the visitor IP and checks whether it exceeded the limit.
+     *
+     * @return bool
+     */
+    protected static function is_rate_limited()
+    {
+        $limit = (int) apply_filters('wc_frenet_simulator_rate_limit', self::RATE_LIMIT);
+        $window = (int) apply_filters('wc_frenet_simulator_rate_limit_window', self::RATE_LIMIT_WINDOW);
+
+        if ($limit <= 0 || $window <= 0) {
+            return false;
+        }
+
+        $key = 'wc_frenet_simulator_rl_' . md5(WC_Geolocation::get_ip_address());
+        $now = time();
+        $hits = get_transient($key);
+
+        if (!is_array($hits) || !isset($hits['count'], $hits['expires']) || $hits['expires'] <= $now) {
+            $hits = array('count' => 0, 'expires' => $now + $window);
+        }
+
+        $hits['count']++;
+        set_transient($key, $hits, max(1, $hits['expires'] - $now));
+
+        return $hits['count'] > $limit;
     }
 
     /**
@@ -50,7 +88,8 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             'shipping_simulator',
             array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'error_message' => __('Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor')
+                'error_message' => __('Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor'),
+                'rate_limit_message' => __('Too many shipping simulations in a short time. Please wait a few minutes and try again.', 'woo-shipping-gateway'),
             )
         );
     }
@@ -171,6 +210,10 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      */
     public static function ajax_simulator()
     {
+        if (self::is_rate_limited()) {
+            wp_send_json(array(), 429);
+        }
+
         $post = $_POST;
         $shippingValues = [];
         if (!self::validateData($post)) {
