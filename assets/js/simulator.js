@@ -12,6 +12,8 @@ var simulatorHelper = {
 
     variationId: '',
 
+    xhr: null,
+
     showMessage: function (text) {
         var message = document.createElement('p');
 
@@ -107,6 +109,10 @@ jQuery(document).ready(function ($) {
             return;
         }
 
+        if (simulatorHelper.xhr) {
+            simulatorHelper.xhr.abort();
+        }
+
         jQuery('#loading_simulator').show();
         simulatorHelper.simulatorClean();
 
@@ -137,7 +143,7 @@ jQuery(document).ready(function ($) {
         console.log('Additional Time: ' + additional_time);
         */
 
-        jQuery.ajax({
+        simulatorHelper.xhr = jQuery.ajax({
             type: 'POST',
             url: shipping_simulator.ajax_url,
             dataType: 'json',
@@ -151,13 +157,26 @@ jQuery(document).ready(function ($) {
                 additional_time: additional_time,
                 quantity: quantity
             },
-            error: function () {
+            error: function (xhr, status) {
+                if ('abort' === status) {
+                    return;
+                }
+
                 jQuery('#loading_simulator').hide();
                 simulatorHelper.showMessage(shipping_simulator.error_message);
+            },
+            complete: function (xhr) {
+                if (simulatorHelper.xhr === xhr) {
+                    simulatorHelper.xhr = null;
+                }
             },
             success: function (response) {
 
                 jQuery('#loading_simulator').hide();
+
+                if ('variable' === type && variation_id !== simulatorHelper.variationId) {
+                    return;
+                }
 
                 const shippingDiv = document.createElement('div');
 
