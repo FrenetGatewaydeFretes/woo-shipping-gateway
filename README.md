@@ -350,7 +350,7 @@ SimpleXML extension (already included in PHP 5).
 * Exibe o valor do frete no simulador com a formatação de moeda da loja.
 * Passa a cotar a quantidade informada no formulário do próprio produto, sem interferência de outros campos de quantidade da página.
 * Corrige o simulador que ficava preso em "Aguarde..." ao clicar em OK com o CEP vazio, e o resultado duplicado ao clicar em OK mais de uma vez.
-* Adiciona um limite de cotações do simulador por visitante (padrão: 60 por minuto), configurável no novo campo "Limite de Cotações do Simulador" (0 desativa o limite), para proteger a cota da sua API Frenet.
+* Adiciona um limite de cotações do simulador por visitante (padrão: 60 por minuto), configurável no novo campo "Limite de Cotações do Simulador" (0 desativa o limite), para proteger a cota da sua API Frenet. Quando um visitante atinge o limite, o bloqueio é registrado em WooCommerce > Status > Logs (origem "frenet") com o IP e, se houver, o ID e o nome da conta.
 * Passa a validar no servidor os dados da cotação do simulador (quantidade, produto, variação e forma de entrega).
 * Correção de segurança: o CEP salvo do cliente passa a ser escapado ao ser exibido no simulador.
 * Evita conflitos do simulador com temas e outros plugins (formulário e campos com identificação própria) e corrige o rótulo do campo de CEP.

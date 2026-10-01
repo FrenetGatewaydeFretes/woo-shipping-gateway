@@ -64,7 +64,8 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return false;
         }
 
-        $key = 'wc_frenet_simulator_rl_' . md5(WC_Geolocation::get_ip_address());
+        $ip = WC_Geolocation::get_ip_address();
+        $key = 'wc_frenet_simulator_rl_' . md5($ip);
         $now = time();
         $hits = get_transient($key);
 
@@ -75,7 +76,32 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $hits['count']++;
         set_transient($key, $hits, max(1, $hits['expires'] - $now));
 
+        if ($hits['count'] === $limit + 1) {
+            self::log_rate_limit_reached($ip, $limit, $window);
+        }
+
         return $hits['count'] > $limit;
+    }
+
+    /**
+     * Logs the IP, and the account when logged in, that reached the simulator quote limit.
+     *
+     * @param string $ip
+     * @param int $limit
+     * @param int $window
+     * @return void
+     */
+    protected static function log_rate_limit_reached($ip, $limit, $window)
+    {
+        $user = wp_get_current_user();
+        $account = $user->exists()
+            ? sprintf('account #%d %s (%s)', $user->ID, $user->user_login, $user->display_name)
+            : 'no account (guest)';
+
+        wc_get_logger()->warning(
+            sprintf('Shipping simulator quote limit reached (%d quotes per %d seconds): IP %s blocked, %s.', $limit, $window, $ip ?: 'unknown', $account),
+            array('source' => 'frenet')
+        );
     }
 
     /**
