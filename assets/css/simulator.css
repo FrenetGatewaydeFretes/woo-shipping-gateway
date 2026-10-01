@@ -137,3 +137,11 @@
     text-align: right;
     white-space: nowrap;
 }
+
+.theme-storefront.single-product div.product #shipping-simulator .frenet-shipping-simulator-form {
+    padding: 1em 0;
+}
+
+.theme-kadence.woocommerce div.product #shipping-simulator .frenet-shipping-simulator-form {
+    margin-bottom: 2em;
+}
