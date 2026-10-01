@@ -130,14 +130,8 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
 
         if ('variable' === $product->get_type()) {
             $style = 'display: none';
-            $ids = array();
 
-            foreach ($product->get_available_variations() as $variation) {
-                $_variation = self::getProduct($variation);
-                $ids[] = $_variation->get_id();
-            }
-
-            $ids = implode(',', array_filter($ids));
+            $ids = implode(',', $product->get_visible_children());
         }
 
         if ($product->is_in_stock() && $product->needs_shipping() && in_array($product->get_type(), array('simple', 'variable', 'composite'))) {
