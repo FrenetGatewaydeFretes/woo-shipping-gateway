@@ -35,6 +35,7 @@ if (!$has_shipping_class) return;
 ?>
 
 <div id="shipping-simulator" style="<?php echo esc_attr($style); ?>"
+        data-product-id="<?php echo esc_attr($product->get_id()); ?>"
         data-product-ids="<?php echo esc_attr($ids); ?>"
         data-product-type="<?php echo esc_attr($product->get_type()); ?>">
     <form method="post" class="cart">

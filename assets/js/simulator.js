@@ -10,15 +10,27 @@ var simulatorHelper = {
         jQuery('#shipping-simulator #simulator-data').empty();
     },
 
-    variableValidate: function(variations) {
-        let valid = true;
-        variations.forEach((variation) => {
-            if (!variation.value) {
-                valid = false;
-            }
-        })
+    variationId: '',
 
-        return valid
+    isSimulatedProductForm: function ($form) {
+        var productId = jQuery('#shipping-simulator').data('product-id');
+
+        return !productId || String($form.data('product_id')) === String(productId);
+    },
+
+    setVariation: function (variation) {
+        var variationId = variation && variation.variation_id ? String(variation.variation_id) : '';
+
+        if (variationId !== this.variationId) {
+            this.simulatorClean();
+        }
+        this.variationId = variationId;
+
+        if (this.variationId) {
+            jQuery('#shipping-simulator').slideDown(200);
+        } else {
+            jQuery('#shipping-simulator').hide();
+        }
     },
 
     /**
@@ -31,7 +43,7 @@ var simulatorHelper = {
 
         product_id = simulator.data('product-ids');
         if ('variable' === type) {
-            product_id = jQuery('input[name="product_id"]').val();
+            product_id = simulator.data('product-id') || jQuery('input[name="product_id"]').val();
         }
 
         // avoid error caused for product ids not found
@@ -48,19 +60,26 @@ jQuery(document).ready(function ($) {
         jQuery('.qty_simulator').attr('value', jQuery(this).val());
     });
 
-    const variations = document.querySelectorAll('.variations select');
-    variations.forEach((variation) => {
-        variation.addEventListener('change', () => {
-            if (simulatorHelper.variableValidate(variations)) {
-                jQuery('#shipping-simulator').slideDown(200);
-            } else {
-                jQuery('#shipping-simulator').hide();
-            }
+    jQuery(document).on('found_variation', '.variations_form', function (event, variation) {
+        if (simulatorHelper.isSimulatedProductForm(jQuery(this))) {
+            simulatorHelper.setVariation(variation);
+        }
+    });
 
-            simulatorHelper.simulatorClean();
-        })
-    })
+    jQuery(document).on('reset_data', '.variations_form', function () {
+        if (simulatorHelper.isSimulatedProductForm(jQuery(this))) {
+            simulatorHelper.setVariation(null);
+        }
+    });
 
+    jQuery('.variations_form').each(function () {
+        var $form = jQuery(this);
+        var variationId = $form.find('input[name="variation_id"]').val();
+
+        if (variationId && '0' !== variationId && simulatorHelper.isSimulatedProductForm($form)) {
+            simulatorHelper.setVariation({ variation_id: variationId });
+        }
+    });
 
     jQuery('#shipping-simulator').on('click', '.button', function (e) {
 
@@ -76,7 +95,7 @@ jQuery(document).ready(function ($) {
         var zipcode = jQuery('#shipping-simulator #zipcode').val().trim(' ');
         var additional_time = jQuery('#additional_time').val();
         var instance_id = jQuery('#instance_id').val();
-        var variation_id = jQuery('.cart input[name="variation_id"]').val();
+        var variation_id = simulatorHelper.variationId;
         var quantity = jQuery('#qty_simulator').val();
         var product_id = simulatorHelper.getProductIds();
 
