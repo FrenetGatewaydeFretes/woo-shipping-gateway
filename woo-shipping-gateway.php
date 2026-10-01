@@ -108,6 +108,12 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          */
         public function load_plugin_textdomain() {
             load_plugin_textdomain( 'woo-shipping-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+
+            $locale  = apply_filters( 'plugin_locale', determine_locale(), 'woo-shipping-gateway' );
+            $mo_file = 'woo-shipping-gateway-' . $locale . '.mo';
+
+            load_textdomain( 'woo-shipping-gateway', WP_LANG_DIR . '/plugins/' . $mo_file, $locale );
+            load_textdomain( 'woo-shipping-gateway', WOO_FRENET_PATH . 'languages/' . $mo_file, $locale );
         }
 
         /**
