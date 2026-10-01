@@ -8,7 +8,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
     /**
      * Rate limit window in seconds.
      */
-    const RATE_LIMIT_WINDOW = 600;
+    const RATE_LIMIT_WINDOW = MINUTE_IN_SECONDS;
 
     /**
      * Returns the asset version: plugin version plus the file modification time.
@@ -111,7 +111,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'error_message' => __('Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost.', 'woo-shipping-gateway'),
-                'rate_limit_message' => __('Too many shipping simulations in a short time. Please wait a few minutes and try again.', 'woo-shipping-gateway'),
+                'rate_limit_message' => __('Too many shipping simulations in a short time. Please wait a minute and try again.', 'woo-shipping-gateway'),
                 'shipping_label' => __('Shipping', 'woo-shipping-gateway'),
                 'cost_label' => __('Cost', 'woo-shipping-gateway'),
                 'delivery_time_singular' => translate_nooped_plural(self::delivery_time_message(), 1, 'woo-shipping-gateway'),

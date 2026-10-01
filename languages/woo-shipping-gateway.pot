@@ -164,11 +164,11 @@ msgid "Simulator Quote Limit"
 msgstr ""
 
 #: includes/class-wc-frenet.php:211
-msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) every 10 minutes. Protects your Frenet API quota from abuse. Use 0 for no limit."
+msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) per minute. Protects your Frenet API quota from abuse. Use 0 for no limit."
 msgstr ""
 
 #: includes/class-wc-frenet-shipping-simulator.php:114
-msgid "Too many shipping simulations in a short time. Please wait a few minutes and try again."
+msgid "Too many shipping simulations in a short time. Please wait a minute and try again."
 msgstr ""
 
 #: includes/class-wc-frenet-shipping-simulator.php:113

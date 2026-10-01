@@ -207,7 +207,7 @@ class WC_Frenet extends WC_Shipping_Method {
             'simulator_rate_limit' => array(
                 'title'             => __( 'Simulator Quote Limit', 'woo-shipping-gateway' ),
                 'type'              => 'number',
-                'description'       => __( 'Maximum number of quotes the product page shipping simulator allows per visitor (IP address) every 10 minutes. Protects your Frenet API quota from abuse. Use 0 for no limit.', 'woo-shipping-gateway' ),
+                'description'       => __( 'Maximum number of quotes the product page shipping simulator allows per visitor (IP address) per minute. Protects your Frenet API quota from abuse. Use 0 for no limit.', 'woo-shipping-gateway' ),
                 'desc_tip'          => true,
                 'default'           => (string) self::DEFAULT_SIMULATOR_RATE_LIMIT,
                 'custom_attributes' => array(

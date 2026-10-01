@@ -297,7 +297,7 @@ Possuir instalada a extensão SimpleXML (que já é instalada por padrão com o 
 - Com o plugin instalado, navegue até WooCommerce > Configurações > Entrega > Frenet;
 - Nesta tela configure o seu Token, obtido no Painel Administrativo Frenet;
 - Também é possível configurar um “Pacote Padrão” que será utilizado para definir as medidas mínimas do pacote de entrega.
-- Na mesma tela, em “Limite de Cotações do Simulador”, defina quantas cotações o simulador de frete da página do produto aceita por visitante a cada 10 minutos (padrão: 60; use 0 para não limitar).
+- Na mesma tela, em “Limite de Cotações do Simulador”, defina quantas cotações o simulador de frete da página do produto aceita por visitante por minuto (padrão: 60; use 0 para não limitar).
 
 = CONFIGURAÇÕES DOS PRODUTOS: =
 
@@ -328,7 +328,7 @@ SimpleXML extension (already included in PHP 5).
 - With the plugin installed, go to WooCommerce > Settings > Shipping > Frenet; 
 - On this screen, enter your Token, obtained from the Frenet Admin Panel;
 - You can also configure a "Default Package" to define minimum package dimensions.
-- On the same screen, "Simulator Quote Limit" sets how many quotes the product page shipping simulator accepts per visitor every 10 minutes (default: 60; use 0 for no limit).
+- On the same screen, "Simulator Quote Limit" sets how many quotes the product page shipping simulator accepts per visitor per minute (default: 60; use 0 for no limit).
 
 = PRODUCT SETTINGS: = 
 
@@ -350,7 +350,7 @@ SimpleXML extension (already included in PHP 5).
 * Exibe o valor do frete no simulador com a formatação de moeda da loja.
 * Passa a cotar a quantidade informada no formulário do próprio produto, sem interferência de outros campos de quantidade da página.
 * Corrige o simulador que ficava preso em "Aguarde..." ao clicar em OK com o CEP vazio, e o resultado duplicado ao clicar em OK mais de uma vez.
-* Adiciona um limite de cotações do simulador por visitante (padrão: 60 a cada 10 minutos), configurável no novo campo "Limite de Cotações do Simulador" (0 desativa o limite), para proteger a cota da sua API Frenet.
+* Adiciona um limite de cotações do simulador por visitante (padrão: 60 por minuto), configurável no novo campo "Limite de Cotações do Simulador" (0 desativa o limite), para proteger a cota da sua API Frenet.
 * Passa a validar no servidor os dados da cotação do simulador (quantidade, produto, variação e forma de entrega).
 * Correção de segurança: o CEP salvo do cliente passa a ser escapado ao ser exibido no simulador.
 * Evita conflitos do simulador com temas e outros plugins (formulário e campos com identificação própria) e corrige o rótulo do campo de CEP.
@@ -493,7 +493,7 @@ SimpleXML extension (already included in PHP 5).
 
 = 2.1.24 - 01/10/2026 =
 
-* O simulador de frete passa a aceitar até 60 cotações a cada 10 minutos por visitante (ajuste em Frenet > "Limite de Cotações do Simulador"; 0 desativa). Temas que personalizam o template do simulador devem atualizar a cópia.
+* O simulador de frete passa a aceitar até 60 cotações por minuto por visitante (ajuste em Frenet > "Limite de Cotações do Simulador"; 0 desativa). Temas que personalizam o template do simulador devem atualizar a cópia.
 
 = 2.1.23 - 31/08/2026 =
 
