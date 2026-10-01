@@ -170,7 +170,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      */
     protected static function validateData(array $post)
     {
-        if (!isset($post['instance_id']) || !$post['instance_id']) {
+        if (!isset($post['instance_id']) || !self::isEnabledInstance($post['instance_id'])) {
             return false;
         }
 
@@ -178,15 +178,48 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return false;
         }
 
-        if (!isset($post['variation_id']) || !$post['variation_id']) {
+        if (!isset($post['variation_id']) || !absint($post['variation_id'])) {
             return false;
         }
 
-        if (!isset($post['quantity']) || !$post['quantity']) {
+        if (!isset($post['quantity']) || wc_stock_amount($post['quantity']) <= 0) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks whether the instance id belongs to an enabled Frenet shipping method.
+     *
+     * @param mixed $instance_id
+     * @return boolean
+     */
+    protected static function isEnabledInstance($instance_id)
+    {
+        $helper = new WC_Frenet_Helper;
+        $instances = $helper->get_instance_ids();
+
+        if (!$instances) {
+            return false;
+        }
+
+        return in_array(absint($instance_id), array_map('absint', wp_list_pluck($instances, 'instance_id')), true);
+    }
+
+    /**
+     * Checks whether the product can be quoted.
+     *
+     * @param WC_Product $product
+     * @return boolean
+     */
+    protected static function isQuotable($product)
+    {
+        if ($product->is_type('variable')) {
+            return false;
+        }
+
+        return $product->is_purchasable() && $product->is_in_stock() && $product->needs_shipping();
     }
 
     /**
@@ -197,17 +230,17 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      */
     protected static function getProduct(array $post)
     {
-        $variation = wc_get_product(sanitize_text_field($post['variation_id']));
+        $variation = wc_get_product(absint($post['variation_id']));
 
         if ($variation) {
             return $variation;
         }
 
-        if (!isset($post['product_id']) || !$post['product_id']) {
+        if (!isset($post['product_id']) || !absint($post['product_id'])) {
             return false;
         }
 
-        $variation = wc_get_product(sanitize_text_field($post['product_id']));
+        $variation = wc_get_product(absint($post['product_id']));
 
         if ($variation) {
             return $variation;
@@ -226,23 +259,23 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             wp_send_json(array(), 429);
         }
 
-        $post = $_POST;
+        $post = wp_unslash($_POST);
         $shippingValues = [];
         if (!self::validateData($post)) {
             wp_send_json($shippingValues);
         }
 
-        if(!($variation = self::getProduct($post))) {
+        if(!($variation = self::getProduct($post)) || !self::isQuotable($variation)) {
             wp_send_json($shippingValues);
         }
 
-        $frenet = new WC_Frenet(sanitize_text_field($post['instance_id']));
+        $frenet = new WC_Frenet(absint($post['instance_id']));
 
         $package = array();
         $package['destination']['postcode'] = sanitize_text_field($post['zipcode']);
         $package['destination']['country'] = 'BR';
         $package['contents'][0]['data'] = $variation;
-        $package['contents'][0]['quantity'] = sanitize_text_field($post['quantity']);
+        $package['contents'][0]['quantity'] = wc_stock_amount($post['quantity']);
 
         $frenet->quoteByProduct=true;
         $shippingValues = $frenet->frenet_calculate($package, 'JSON');
