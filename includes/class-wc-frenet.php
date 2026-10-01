@@ -18,6 +18,11 @@ class WC_Frenet extends WC_Shipping_Method {
     const MAX_ATTEMPTS = 3;
 
     /**
+     * Default simulator quote limit per IP.
+     */
+    const DEFAULT_SIMULATOR_RATE_LIMIT = 60;
+
+    /**
      * WC session key: whether the last live quote attempt failed. Read by
      * WC_Frenet_Main::block_checkout_if_frenet_quote_failed().
      */
@@ -198,6 +203,17 @@ class WC_Frenet extends WC_Shipping_Method {
                 'description' => __('Display shipping simulator in single product', 'woo-shipping-gateway'),
                 'desc_tip' => true,
                 'default' => 'yes'
+            ),
+            'simulator_rate_limit' => array(
+                'title'             => __( 'Simulator Quote Limit', 'woo-shipping-gateway' ),
+                'type'              => 'number',
+                'description'       => __( 'Maximum number of quotes the product page shipping simulator allows per visitor (IP address) every 10 minutes. Protects your Frenet API quota from abuse. Use 0 for no limit.', 'woo-shipping-gateway' ),
+                'desc_tip'          => true,
+                'default'           => (string) self::DEFAULT_SIMULATOR_RATE_LIMIT,
+                'custom_attributes' => array(
+                    'min'  => 0,
+                    'step' => 1,
+                ),
             ),
             'display_date' => array(
                 'title'            => __( 'Estimated delivery', 'woo-shipping-gateway' ),

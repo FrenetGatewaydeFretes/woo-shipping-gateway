@@ -6,11 +6,6 @@
 class WC_Frenet_Shipping_Simulator extends WC_Frenet
 {
     /**
-     * Default simulator quote limit per IP.
-     */
-    const RATE_LIMIT = 60;
-
-    /**
      * Rate limit window in seconds.
      */
     const RATE_LIMIT_WINDOW = 600;
@@ -29,13 +24,30 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
     }
 
     /**
+     * Returns the simulator quote limit per IP.
+     *
+     * @return int
+     */
+    protected static function get_rate_limit_option()
+    {
+        $helper = new WC_Frenet_Helper;
+        $options = $helper->get_options();
+
+        if (!is_array($options) || !isset($options['simulator_rate_limit']) || '' === $options['simulator_rate_limit']) {
+            return self::DEFAULT_SIMULATOR_RATE_LIMIT;
+        }
+
+        return max(0, (int) $options['simulator_rate_limit']);
+    }
+
+    /**
      * Counts the request for the visitor IP and checks whether it exceeded the limit.
      *
      * @return bool
      */
     protected static function is_rate_limited()
     {
-        $limit = (int) apply_filters('wc_frenet_simulator_rate_limit', self::RATE_LIMIT);
+        $limit = (int) apply_filters('wc_frenet_simulator_rate_limit', self::get_rate_limit_option());
         $window = (int) apply_filters('wc_frenet_simulator_rate_limit_window', self::RATE_LIMIT_WINDOW);
 
         if ($limit <= 0 || $window <= 0) {
