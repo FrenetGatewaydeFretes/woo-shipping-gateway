@@ -42,11 +42,11 @@ if (!$has_shipping_class) return;
 
         <label for="frenet-simulator-zipcode"><?php esc_html_e('Calculate shipping', 'woo-shipping-gateway'); ?> <br>
             <input required type="text" name="zipcode" id="frenet-simulator-zipcode" maxlength="9" placeholder="00000-000"
-                    value="<?php echo $zipcode; ?>">
+                    value="<?php echo esc_attr($zipcode); ?>">
         </label>
 
-        <input type="hidden" name="instance_id" value="<?php echo $instance_id; ?>">
-        <input type="hidden" name="additional_time" value="<?php echo $additional_time; ?>">
+        <input type="hidden" name="instance_id" value="<?php echo esc_attr($instance_id); ?>">
+        <input type="hidden" name="additional_time" value="<?php echo esc_attr($additional_time); ?>">
         <input type="hidden" name="qty_simulator" value="1">
         <button name="idx-calc_shipping" id="idx-calc_shipping" value="1" class="button"><?php esc_html_e('OK', 'woo-shipping-gateway'); ?></button>
         <br class="clear"/>
