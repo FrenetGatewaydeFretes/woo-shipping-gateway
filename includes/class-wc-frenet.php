@@ -662,7 +662,7 @@ class WC_Frenet extends WC_Shipping_Method {
             // No shippable items (e.g. cart has only virtual/downloadable products) — skip
             // the request instead of sending an empty payload.
             if ( empty( $shippingItemArray ) ) {
-                $this->log_error( "Frenet quote skipped: the shipping payload has no items (ShippingItemArray is empty). Check that the cart has shippable products with weight/dimensions set. [{$context}]" );
+                $this->log( "Frenet quote skipped: the shipping payload has no items (ShippingItemArray is empty). Check that the cart has shippable products with weight/dimensions set. [{$context}]" );
                 return $values;
             }
 
