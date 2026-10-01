@@ -30,7 +30,7 @@
     color: var(--color-text-primary, #333);
 }
 
-#shipping-simulator #zipcode {
+#shipping-simulator [name="zipcode"] {
     float: left;
     margin-right: 5px;
     height: 28px;
@@ -43,7 +43,7 @@
     transition: border-color 0.2s;
 }
 
-#shipping-simulator #zipcode:focus {
+#shipping-simulator [name="zipcode"]:focus {
     border-color: var(--color-purple, #7B3FF3);
     outline: none;
 }

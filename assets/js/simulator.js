@@ -12,6 +12,10 @@ var simulatorHelper = {
 
     variationId: '',
 
+    field: function (name) {
+        return jQuery('#shipping-simulator [name="' + name + '"]');
+    },
+
     xhr: null,
 
     showMessage: function (text) {
@@ -64,7 +68,7 @@ var simulatorHelper = {
     getQuantity: function () {
         var quantity = parseFloat(this.productForm().find('input[name="quantity"]').first().val());
 
-        return quantity > 0 ? quantity : (jQuery('#qty_simulator').val() || 1);
+        return quantity > 0 ? quantity : (this.field('qty_simulator').val() || 1);
     },
 
     /**
@@ -111,11 +115,11 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    jQuery('#shipping-simulator').on('click', '.button', function (e) {
+    jQuery('#shipping-simulator').on('submit', 'form', function (e) {
 
         e.preventDefault();
 
-        var zipcodeInput = jQuery('#shipping-simulator #zipcode');
+        var zipcodeInput = simulatorHelper.field('zipcode');
         var zipcode = zipcodeInput.val().trim();
 
         if (!zipcode) {
@@ -127,15 +131,15 @@ jQuery(document).ready(function ($) {
             simulatorHelper.xhr.abort();
         }
 
-        jQuery('#loading_simulator').show();
+        jQuery('#shipping-simulator #loading_simulator').show();
         simulatorHelper.simulatorClean();
 
         var simulator = jQuery('#shipping-simulator');
         var content = jQuery('#shipping-simulator #simulator-data');
 
         var type = simulator.data('product-type');
-        var additional_time = jQuery('#additional_time').val();
-        var instance_id = jQuery('#instance_id').val();
+        var additional_time = simulatorHelper.field('additional_time').val();
+        var instance_id = simulatorHelper.field('instance_id').val();
         var variation_id = simulatorHelper.variationId;
         var quantity = simulatorHelper.getQuantity();
         var product_id = simulatorHelper.getProductIds();
@@ -176,7 +180,7 @@ jQuery(document).ready(function ($) {
                     return;
                 }
 
-                jQuery('#loading_simulator').hide();
+                jQuery('#shipping-simulator #loading_simulator').hide();
                 simulatorHelper.showMessage(429 === xhr.status ? shipping_simulator.rate_limit_message : shipping_simulator.error_message);
             },
             complete: function (xhr) {
@@ -186,7 +190,7 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
 
-                jQuery('#loading_simulator').hide();
+                jQuery('#shipping-simulator #loading_simulator').hide();
 
                 if ('variable' === type && variation_id !== simulatorHelper.variationId) {
                     return;
