@@ -49,6 +49,18 @@ var simulatorHelper = {
         }
     },
 
+    productForm: function () {
+        var productId = jQuery('#shipping-simulator').data('product-id');
+
+        return productId ? jQuery('form').has('[name="add-to-cart"][value="' + productId + '"]').first() : jQuery();
+    },
+
+    getQuantity: function () {
+        var quantity = parseFloat(this.productForm().find('input[name="quantity"]').first().val());
+
+        return quantity > 0 ? quantity : (jQuery('#qty_simulator').val() || 1);
+    },
+
     /**
      * product ids are depends with product type, now same mode for getting product ids in quotation will be applied in page load
      */
@@ -71,10 +83,6 @@ var simulatorHelper = {
 
 /* global shipping_simulator */
 jQuery(document).ready(function ($) {
-
-    jQuery(document).on('change', '.quantity .qty', function () {
-        jQuery('.qty_simulator').attr('value', jQuery(this).val());
-    });
 
     jQuery(document).on('found_variation', '.variations_form', function (event, variation) {
         if (simulatorHelper.isSimulatedProductForm(jQuery(this))) {
@@ -123,7 +131,7 @@ jQuery(document).ready(function ($) {
         var additional_time = jQuery('#additional_time').val();
         var instance_id = jQuery('#instance_id').val();
         var variation_id = simulatorHelper.variationId;
-        var quantity = jQuery('#qty_simulator').val();
+        var quantity = simulatorHelper.getQuantity();
         var product_id = simulatorHelper.getProductIds();
 
         if (!variation_id) {
