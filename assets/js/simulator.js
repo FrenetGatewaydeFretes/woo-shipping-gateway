@@ -12,6 +12,13 @@ var simulatorHelper = {
 
     variationId: '',
 
+    showMessage: function (text) {
+        var message = document.createElement('p');
+
+        message.innerText = text;
+        jQuery('#shipping-simulator #simulator-data').empty().append(message);
+    },
+
     isSimulatedProductForm: function ($form) {
         var productId = jQuery('#shipping-simulator').data('product-id');
 
@@ -92,6 +99,14 @@ jQuery(document).ready(function ($) {
 
         e.preventDefault();
 
+        var zipcodeInput = jQuery('#shipping-simulator #zipcode');
+        var zipcode = zipcodeInput.val().trim();
+
+        if (!zipcode) {
+            zipcodeInput[0].reportValidity();
+            return;
+        }
+
         jQuery('#loading_simulator').show();
         simulatorHelper.simulatorClean();
 
@@ -99,7 +114,6 @@ jQuery(document).ready(function ($) {
         var content = jQuery('#shipping-simulator #simulator-data');
 
         var type = simulator.data('product-type');
-        var zipcode = jQuery('#shipping-simulator #zipcode').val().trim(' ');
         var additional_time = jQuery('#additional_time').val();
         var instance_id = jQuery('#instance_id').val();
         var variation_id = simulatorHelper.variationId;
@@ -126,6 +140,7 @@ jQuery(document).ready(function ($) {
         jQuery.ajax({
             type: 'POST',
             url: shipping_simulator.ajax_url,
+            dataType: 'json',
             data: {
                 action: 'ajax_simulator',
                 type: type,
@@ -136,9 +151,12 @@ jQuery(document).ready(function ($) {
                 additional_time: additional_time,
                 quantity: quantity
             },
+            error: function () {
+                jQuery('#loading_simulator').hide();
+                simulatorHelper.showMessage(shipping_simulator.error_message);
+            },
             success: function (response) {
 
-                response = jQuery.parseJSON(response);
                 jQuery('#loading_simulator').hide();
 
                 const shippingDiv = document.createElement('div');

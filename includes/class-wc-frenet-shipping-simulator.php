@@ -161,13 +161,11 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         $post = $_POST;
         $shippingValues = [];
         if (!self::validateData($post)) {
-            echo wp_json_encode($shippingValues);
-            return;
+            wp_send_json($shippingValues);
         }
 
         if(!($variation = self::getProduct($post))) {
-            echo wp_json_encode($shippingValues);
-            return;
+            wp_send_json($shippingValues);
         }
 
         $frenet = new WC_Frenet(sanitize_text_field($post['instance_id']));
@@ -185,8 +183,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             $shippingValues['display_date'] = $frenet->get_option('display_date') === 'yes';
         }
 
-        echo wp_json_encode($shippingValues);
-        die;
+        wp_send_json($shippingValues);
     }
 }
 
