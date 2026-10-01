@@ -184,3 +184,35 @@ msgstr ""
 #: woo-shipping-gateway.php:180
 msgid "Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order."
 msgstr ""
+
+#: includes/class-wc-frenet.php:209
+msgid "Simulator Quote Limit"
+msgstr ""
+
+#: includes/class-wc-frenet.php:211
+msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) every 10 minutes. Protects your Frenet API quota from abuse. Use 0 for no limit."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:114
+msgid "Too many shipping simulations in a short time. Please wait a few minutes and try again."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:113
+msgid "Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:116
+msgid "Cost"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:43
+msgid "Calculate shipping"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:51
+msgid "OK"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:55
+msgid "Please wait..."
+msgstr ""

@@ -158,3 +158,27 @@ msgstr "Frenet: o Tempo Limite da Requisição deve estar entre %2$d e %3$d segu
 
 msgid "Frenet: Request Attempts must be between %2$d and %3$d. %1$d was adjusted to %4$d."
 msgstr "Frenet: as Tentativas de Requisição devem estar entre %2$d e %3$d. %1$d foi ajustado para %4$d."
+
+msgid "Simulator Quote Limit"
+msgstr "Limite de Cotações do Simulador"
+
+msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) every 10 minutes. Protects your Frenet API quota from abuse. Use 0 for no limit."
+msgstr "Número máximo de cotações que o simulador de frete da página do produto permite por visitante (endereço IP) a cada 10 minutos. Protege a cota da sua API Frenet contra abusos. Use 0 para não limitar."
+
+msgid "Too many shipping simulations in a short time. Please wait a few minutes and try again."
+msgstr "Muitas simulações de frete em pouco tempo. Aguarde alguns minutos e tente novamente."
+
+msgid "Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost."
+msgstr "Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor."
+
+msgid "Cost"
+msgstr "Custo"
+
+msgid "Calculate shipping"
+msgstr "Calcular Frete"
+
+msgid "OK"
+msgstr "Ok"
+
+msgid "Please wait..."
+msgstr "Aguarde..."
