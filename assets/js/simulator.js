@@ -18,13 +18,20 @@ var simulatorHelper = {
         return !productId || String($form.data('product_id')) === String(productId);
     },
 
+    isShippable: function (variation) {
+        return variation.variation_is_visible !== false
+            && variation.is_purchasable !== false
+            && variation.is_in_stock !== false
+            && variation.is_virtual !== true;
+    },
+
     setVariation: function (variation) {
         var variationId = variation && variation.variation_id ? String(variation.variation_id) : '';
 
         if (variationId !== this.variationId) {
             this.simulatorClean();
         }
-        this.variationId = variationId;
+        this.variationId = variationId && this.isShippable(variation) ? variationId : '';
 
         if (this.variationId) {
             jQuery('#shipping-simulator').slideDown(200);
