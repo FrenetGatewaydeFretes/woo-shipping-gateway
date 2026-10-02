@@ -158,3 +158,888 @@ msgstr "Frenet: o Tempo Limite da Requisição deve estar entre %2$d e %3$d segu
 
 msgid "Frenet: Request Attempts must be between %2$d and %3$d. %1$d was adjusted to %4$d."
 msgstr "Frenet: as Tentativas de Requisição devem estar entre %2$d e %3$d. %1$d foi ajustado para %4$d."
+
+# Frenet labels (includes/labels).
+msgid "This order has no product to ship."
+msgstr "Este pedido não tem produto para enviar."
+
+msgid "No carrier delivers this package to this CEP right now. Check the weight, the size and the address."
+msgstr "Nenhuma transportadora entrega este pacote neste CEP agora. Confira o peso, as medidas e o endereço."
+
+msgid "This order already has a Frenet shipment. Cancel it first."
+msgstr "Este pedido já tem um envio Frenet. Cancele-o primeiro."
+
+msgid "Fill in the store address (address, city and postcode) in WooCommerce > Settings > General: Frenet requires the sender. Nothing was charged."
+msgstr "Preencha o endereço da loja (endereço, cidade e CEP) em WooCommerce > Configurações > Geral: a Frenet exige o remetente. Nada foi cobrado."
+
+msgid "This carrier service is no longer available for this order. Calculate the freight again and choose another one."
+msgstr "Este serviço não está mais disponível para este pedido. Calcule o frete de novo e escolha outro."
+
+msgid "Frenet did not accept the NF-e key of this order. Check that it is the invoice of this order. Nothing was charged."
+msgstr "A Frenet não aceitou a chave da NF-e deste pedido. Confira se é a nota deste pedido. Nada foi cobrado."
+
+msgid "This carrier requires an invoice. Paste the NF-e key of the order and try again, or choose another carrier. Nothing was charged."
+msgstr "Esta transportadora exige nota fiscal. Cole a chave da NF-e do pedido e tente de novo, ou escolha outra transportadora. Nada foi cobrado."
+
+msgid "Frenet did not return a shipment. Nothing was charged."
+msgstr "A Frenet não devolveu o envio. Nada foi cobrado."
+
+msgid "Frenet shipment %1$s (%2$s) sent to the Frenet panel, waiting for payment there."
+msgstr "Envio Frenet %1$s (%2$s) enviado ao painel Frenet, aguardando pagamento lá."
+
+msgid "Frenet shipment %1$s (%2$s) created, not paid yet."
+msgstr "Envio Frenet %1$s (%2$s) criado, ainda não pago."
+
+msgid "Frenet label %1$s paid (%2$s)."
+msgstr "Etiqueta Frenet %1$s paga (%2$s)."
+
+msgid "The payment did not answer (%s). The store checks again every minute; do not pay twice."
+msgstr "O pagamento não respondeu (%s). A loja confere de novo a cada minuto; não pague duas vezes."
+
+msgid "Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels."
+msgstr "Saldo insuficiente na carteira Frenet. Os envios ficam sem pagar: adicione saldo e pague-os em Etiquetas."
+
+msgid "Frenet label ready to print."
+msgstr "Etiqueta Frenet pronta para imprimir."
+
+msgid "Frenet has not released the label after 10 minutes. Check the shipment in the Frenet panel."
+msgstr "A Frenet não liberou a etiqueta em 10 minutos. Confira o envio no painel da Frenet."
+
+msgid "Frenet did not cancel shipment %1$s (%2$s). Cancel it in the Frenet panel."
+msgstr "A Frenet não cancelou o envio %1$s (%2$s). Cancele no painel da Frenet."
+
+msgid "Frenet label %s cancelled. Frenet returns the amount to the wallet (usually overnight)."
+msgstr "Etiqueta Frenet %s cancelada. A Frenet devolve o valor à carteira (normalmente durante a madrugada)."
+
+msgid "Unpaid Frenet shipment %s deleted."
+msgstr "Envio Frenet %s (não pago) excluído."
+
+msgid "Select at least one paid label."
+msgstr "Selecione ao menos uma etiqueta paga."
+
+msgid "Frenet did not generate the PDF. Only paid labels can be printed; try again in a minute."
+msgstr "A Frenet não gerou o PDF. Só etiquetas pagas podem ser impressas; tente de novo em um minuto."
+
+msgid "Status %d"
+msgstr "Status %d"
+
+msgid "Created"
+msgstr "Criada"
+
+msgid "Awaiting payment"
+msgstr "Aguardando pagamento"
+
+msgid "Payment not completed"
+msgstr "Pagamento não concluído"
+
+msgid "Paid"
+msgstr "Paga"
+
+msgid "Posted"
+msgstr "Postada"
+
+msgid "Cancellation scheduled"
+msgstr "Cancelamento agendado"
+
+msgid "Cancelled"
+msgstr "Cancelada"
+
+msgid "Deleted"
+msgstr "Excluída"
+
+msgid "Delivered at the drop-off point"
+msgstr "Entregue no ponto de postagem"
+
+msgid "The NF-e key has 44 digits. Copy it again from the invoice (DANFE)."
+msgstr "A chave da NF-e tem 44 dígitos. Copie de novo do DANFE."
+
+msgid "This NF-e key is not valid: the last digit does not match. Check for a typo."
+msgstr "Esta chave de NF-e não é válida: o último dígito não confere. Verifique se há erro de digitação."
+
+msgid "NF %1$s, series %2$s"
+msgstr "NF %1$s, série %2$s"
+
+msgid "Frenet labels need the store token and the partner token. Check the Frenet settings."
+msgstr "As etiquetas Frenet precisam do token da loja e do token de parceiro. Confira as configurações Frenet."
+
+msgid "Frenet token not configured in the Frenet shipping method."
+msgstr "Token Frenet não configurado no método de entrega Frenet."
+
+msgid "Frenet refused the partner token. Check it in the Frenet settings. Nothing was charged."
+msgstr "A Frenet recusou o token de parceiro. Confira nas configurações Frenet. Nada foi cobrado."
+
+msgid "Frenet refused the store token. Check the token of the Frenet shipping method. Nothing was charged."
+msgstr "A Frenet recusou o token da loja. Confira o token do método de entrega Frenet. Nada foi cobrado."
+
+msgid "Frenet answered HTTP %d."
+msgstr "A Frenet respondeu HTTP %d."
+
+msgid "Frenet settings"
+msgstr "Configuração Frenet"
+
+msgid "Create shipment"
+msgstr "Criar envio"
+
+msgid "Labels"
+msgstr "Etiquetas"
+
+msgid "Manage your labels"
+msgstr "Gerencie suas etiquetas"
+
+msgid "Printing"
+msgstr "Impressão"
+
+msgid "Label printing"
+msgstr "Impressão de etiqueta"
+
+msgid "Tracking"
+msgstr "Rastreios"
+
+msgid "Returns"
+msgstr "Reversa"
+
+msgid "Proof of delivery"
+msgstr "Comprovante"
+
+msgid "Control tower"
+msgstr "Torre de controle"
+
+msgid "soon"
+msgstr "em breve"
+
+msgid "You are not allowed to do this."
+msgstr "Você não tem permissão para fazer isto."
+
+msgid "Simulator mode"
+msgstr "Modo simulador"
+
+msgid "Labels, balance and lists come from the local test simulator. Nothing is sent to Frenet or charged."
+msgstr "Etiquetas, saldo e listas vêm do simulador local de testes. Nada é enviado à Frenet nem cobrado."
+
+msgid "Calculating freight…"
+msgstr "Calculando frete…"
+
+msgid "Select at least one order."
+msgstr "Selecione ao menos um pedido."
+
+msgid "Best price"
+msgstr "Melhor preço"
+
+msgid "Fastest"
+msgstr "Melhor prazo"
+
+msgid "Customer choice"
+msgstr "Escolha do cliente"
+
+msgid "%d business days"
+msgstr "%d dias úteis"
+
+msgid "No carrier"
+msgstr "Nenhuma transportadora"
+
+msgid "Buy %1$d labels · %2$s"
+msgstr "Comprar %1$d etiquetas · %2$s"
+
+msgid "Buy 1 label · %s"
+msgstr "Comprar 1 etiqueta · %s"
+
+msgid "Send %d orders to the Frenet panel"
+msgstr "Enviar %d pedidos ao painel Frenet"
+
+msgid "Send 1 order to the Frenet panel"
+msgstr "Enviar 1 pedido ao painel Frenet"
+
+msgid "Create %d shipments (pay later in Labels)"
+msgstr "Criar %d envios (pagar depois em Etiquetas)"
+
+msgid "Working… do not close this page."
+msgstr "Processando… não feche esta página."
+
+msgid "Done"
+msgstr "Concluído"
+
+msgid "Not created"
+msgstr "Não criado"
+
+msgid "Balance after"
+msgstr "Saldo depois"
+
+msgid "Your balance does not cover this total. Add balance in the Frenet panel or select fewer orders."
+msgstr "Seu saldo não cobre este total. Adicione saldo no painel Frenet ou selecione menos pedidos."
+
+msgid "Cancel this Frenet label? If it was paid, Frenet returns the amount to the wallet (usually overnight)."
+msgstr "Cancelar esta etiqueta Frenet? Se foi paga, a Frenet devolve o valor à carteira (normalmente durante a madrugada)."
+
+msgid "Pay %1$d labels with the Frenet wallet (%2$s)?"
+msgstr "Pagar %1$d etiquetas com a carteira Frenet (%2$s)?"
+
+msgid "Saved"
+msgstr "Salvo"
+
+msgid "Something went wrong. Reload the page and try again."
+msgstr "Algo deu errado. Recarregue a página e tente de novo."
+
+msgid "Your session expired. Reload the page."
+msgstr "Sua sessão expirou. Recarregue a página."
+
+msgid "Frenet labels are not configured. Open Frenet > Settings."
+msgstr "As etiquetas Frenet não estão configuradas. Abra Frenet > Configuração."
+
+msgid "Order not found."
+msgstr "Pedido não encontrado."
+
+msgid "Select at least one unpaid label."
+msgstr "Selecione ao menos uma etiqueta não paga."
+
+msgid "Label cancelled. Frenet returns the amount to the wallet, usually overnight."
+msgstr "Etiqueta cancelada. A Frenet devolve o valor à carteira, normalmente durante a madrugada."
+
+msgid "Unpaid shipment deleted."
+msgstr "Envio não pago excluído."
+
+msgid "No movement yet. Events appear once the carrier scans the package."
+msgstr "Sem movimentação ainda. Os eventos aparecem quando a transportadora escaneia o pacote."
+
+msgid "Select at least one paid label to print."
+msgstr "Selecione ao menos uma etiqueta paga para imprimir."
+
+msgid "Create Frenet shipment"
+msgstr "Criar envio Frenet"
+
+msgid "Frenet shipment"
+msgstr "Envio Frenet"
+
+msgid "Every shipment of your Frenet account, also the ones created in the Frenet panel. Select unpaid labels to pay them together, or paid ones to print them."
+msgstr "Todos os envios da sua conta Frenet, inclusive os criados no painel Frenet. Selecione etiquetas não pagas para pagá-las juntas, ou pagas para imprimi-las."
+
+msgid "Frenet did not answer: %s. Reload the page in a moment."
+msgstr "A Frenet não respondeu: %s. Recarregue a página em instantes."
+
+msgid "Filter by status"
+msgstr "Filtrar por status"
+
+msgid "All"
+msgstr "Todas"
+
+msgid "Page %1$d of %2$d · %3$s shipments in the account. The filter applies to this page."
+msgstr "Página %1$d de %2$d · %3$s envios na conta. O filtro vale para esta página."
+
+msgid "No label with this status on this page."
+msgstr "Nenhuma etiqueta com este status nesta página."
+
+msgid "No Frenet labels yet. Create one in \"Create shipment\"."
+msgstr "Ainda não há etiquetas Frenet. Crie uma em \"Criar envio\"."
+
+msgid "Pay selected"
+msgstr "Pagar selecionadas"
+
+msgid "Print selected"
+msgstr "Imprimir selecionadas"
+
+msgid "Select"
+msgstr "Selecionar"
+
+msgid "Shipment"
+msgstr "Envio"
+
+msgid "Order"
+msgstr "Pedido"
+
+msgid "Service"
+msgstr "Serviço"
+
+msgid "Price"
+msgstr "Valor"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Updated"
+msgstr "Atualizado"
+
+msgid "Actions"
+msgstr "Ações"
+
+msgid "Select shipment %s"
+msgstr "Selecionar envio %s"
+
+msgid "Order of another store or created in the Frenet panel"
+msgstr "Pedido de outra loja ou criado no painel Frenet"
+
+msgid "Print"
+msgstr "Imprimir"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Pages"
+msgstr "Páginas"
+
+msgid "Newer"
+msgstr "Mais recentes"
+
+msgid "Page %1$d of %2$d"
+msgstr "Página %1$d de %2$d"
+
+msgid "Older"
+msgstr "Mais antigas"
+
+msgid "Print the paid labels in one file. Choose the paper format of your printer."
+msgstr "Imprima as etiquetas pagas em um só arquivo. Escolha o formato de papel da sua impressora."
+
+msgid "No paid label to print among the latest 100 shipments."
+msgstr "Nenhuma etiqueta paga para imprimir entre os últimos 100 envios."
+
+msgid "See unpaid labels"
+msgstr "Ver etiquetas não pagas"
+
+msgid "Paper format"
+msgstr "Formato do papel"
+
+msgid "Common printer, several labels per page."
+msgstr "Impressora comum, várias etiquetas por página."
+
+msgid "Thermal label printer."
+msgstr "Impressora térmica de etiquetas."
+
+msgid "Select all"
+msgstr "Selecionar todos"
+
+msgid "Print selected labels"
+msgstr "Imprimir etiquetas selecionadas"
+
+msgid "Opens the PDF in a new tab."
+msgstr "Abre o PDF em uma nova aba."
+
+msgid "Settings saved."
+msgstr "Configurações salvas."
+
+msgid "General"
+msgstr "Geral"
+
+msgid "Enable Frenet labels"
+msgstr "Ativar etiquetas Frenet"
+
+msgid "Client token"
+msgstr "Token do cliente"
+
+msgid "Leave empty to use the token of the Frenet shipping method."
+msgstr "Deixe vazio para usar o token do método de entrega Frenet."
+
+msgid "Empty: the token of the Frenet shipping method is used (found)."
+msgstr "Vazio: é usado o token do método de entrega Frenet (encontrado)."
+
+msgid "Partner token"
+msgstr "Token do parceiro"
+
+msgid "Saved. Type a new one to replace it."
+msgstr "Salvo. Digite um novo para substituir."
+
+msgid "Given by Frenet to integration partners (x-partner-token). Required to create, list, pay and cancel labels. Keep it secret like a password."
+msgstr "Fornecido pela Frenet aos parceiros de integração (x-partner-token). Necessário para criar, listar, pagar e cancelar etiquetas. Guarde em segredo como uma senha."
+
+msgid "Remove the saved partner token"
+msgstr "Remover o token de parceiro salvo"
+
+msgid "API URL"
+msgstr "URL da API"
+
+msgid "Default: https://whitelabel.frenet.com.br/v1. Change it only for tests."
+msgstr "Padrão: https://whitelabel.frenet.com.br/v1. Altere só para testes."
+
+msgid "Default service"
+msgstr "Serviço padrão"
+
+msgid "Select the best option automatically"
+msgstr "Selecionar automaticamente a melhor opção"
+
+msgid "Off: each order starts with the carrier the customer chose at checkout. On: it starts with the best one by the default service. You can always change it before creating."
+msgstr "Desligado: cada pedido começa com a transportadora que o cliente escolheu no checkout. Ligado: começa com a melhor pelo serviço padrão. Você sempre pode trocar antes de criar."
+
+msgid "Batch label printing"
+msgstr "Impressão de etiquetas em lote"
+
+msgid "Label format"
+msgstr "Formato da etiqueta"
+
+msgid "Sender CPF/CNPJ"
+msgstr "CPF/CNPJ do remetente"
+
+msgid "The sender address comes from WooCommerce > Settings > General."
+msgstr "O endereço do remetente vem de WooCommerce > Configurações > Geral."
+
+msgid "Payment"
+msgstr "Pagamento"
+
+msgid "How labels are generated"
+msgstr "Como as etiquetas são geradas"
+
+msgid "Buy here"
+msgstr "Comprar aqui"
+
+msgid "The store creates, pays and prints the labels."
+msgstr "A loja cria, paga e imprime as etiquetas."
+
+msgid "Send to the Frenet panel"
+msgstr "Enviar ao painel Frenet"
+
+msgid "The orders go to the Frenet panel, where you pay and print them."
+msgstr "Os pedidos vão para o painel Frenet, onde você paga e imprime."
+
+msgid "Pay with the wallet when creating"
+msgstr "Pagamento com carteira ao criar"
+
+msgid "Off: labels bought here are created unpaid and wait in Labels until you pay them."
+msgstr "Desligado: as etiquetas compradas aqui são criadas sem pagar e esperam em Etiquetas até você pagá-las."
+
+msgid "Save changes"
+msgstr "Salvar alterações"
+
+msgid "Coming soon"
+msgstr "Em breve"
+
+msgid "This part of the Frenet journey is not available in the plugin yet. Labels, printing and tracking already work."
+msgstr "Esta parte da jornada Frenet ainda não está disponível no plugin. Etiquetas, impressão e rastreio já funcionam."
+
+msgid "Go to labels"
+msgstr "Ir para etiquetas"
+
+msgid "Wallet balance"
+msgstr "Saldo em carteira"
+
+msgid "Unavailable"
+msgstr "Indisponível"
+
+msgid "%s label available"
+msgid_plural "%s labels available"
+msgstr[0] "%s etiqueta disponível"
+msgstr[1] "%s etiquetas disponíveis"
+
+msgid "Add balance"
+msgstr "Adicionar saldo"
+
+msgid "Shipment %s"
+msgstr "Envio %s"
+
+msgid "Sent to the Frenet panel: pay and print it there."
+msgstr "Enviado ao painel Frenet: pague e imprima lá."
+
+msgid "Print label"
+msgstr "Imprimir etiqueta"
+
+msgid "Open the Frenet panel"
+msgstr "Abrir o painel Frenet"
+
+msgid "Pay in Labels"
+msgstr "Pagar em Etiquetas"
+
+msgid "No Frenet shipment yet."
+msgstr "Ainda não há envio Frenet."
+
+msgid "NF-e"
+msgstr "NF-e"
+
+msgid "none"
+msgstr "nenhuma"
+
+msgid "Labels with a tracking code among the latest 100 shipments. Check the latest movement of each package."
+msgstr "Etiquetas com código de rastreio entre os últimos 100 envios. Consulte a última movimentação de cada pacote."
+
+msgid "No label with a tracking code yet. The code appears when a label is paid."
+msgstr "Ainda não há etiqueta com código de rastreio. O código aparece quando a etiqueta é paga."
+
+msgid "Tracking code"
+msgstr "Código de rastreio"
+
+msgid "Latest movement"
+msgstr "Última movimentação"
+
+msgid "Check"
+msgstr "Consultar"
+
+msgid "Choose the orders, calculate the freight to compare carriers and create the shipments. Nothing is charged before you confirm."
+msgstr "Escolha os pedidos, calcule o frete para comparar transportadoras e crie os envios. Nada é cobrado antes de você confirmar."
+
+msgid "Fill in the store address in WooCommerce > Settings > General before creating shipments: Frenet requires the sender."
+msgstr "Preencha o endereço da loja em WooCommerce > Configurações > Geral antes de criar envios: a Frenet exige o remetente."
+
+msgid "How to generate the labels"
+msgstr "Como gerar as etiquetas"
+
+msgid "Paid with the wallet now."
+msgstr "Pagas com a carteira agora."
+
+msgid "Created unpaid; pay them in Labels."
+msgstr "Criadas sem pagar; pague em Etiquetas."
+
+msgid "Pay and print in the Frenet panel."
+msgstr "Pague e imprima no painel Frenet."
+
+msgid "Carriers for the selected orders"
+msgstr "Transportadoras para os pedidos selecionados"
+
+msgid "Carrier"
+msgstr "Transportadora"
+
+msgid "Available"
+msgstr "Disponível"
+
+msgid "Best option (total)"
+msgstr "Melhor opção (total)"
+
+msgid "No order waiting for a shipment"
+msgstr "Nenhum pedido aguardando envio"
+
+msgid "Orders in processing or on hold without a Frenet shipment appear here. You can also select orders in WooCommerce > Orders and use the bulk action \"Create Frenet shipment\"."
+msgstr "Pedidos em processamento ou aguardando sem envio Frenet aparecem aqui. Você também pode selecionar pedidos em WooCommerce > Pedidos e usar a ação em lote \"Criar envio Frenet\"."
+
+msgid "Go to orders"
+msgstr "Ir para pedidos"
+
+msgid "Destination"
+msgstr "Destino"
+
+msgid "Package"
+msgstr "Pacote"
+
+msgid "Select order %s"
+msgstr "Selecionar pedido %s"
+
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d item"
+msgstr[1] "%d itens"
+
+msgid "optional"
+msgstr "opcional"
+
+msgid "Change"
+msgstr "Alterar"
+
+msgid "Add NF-e key"
+msgstr "Adicionar chave da NF-e"
+
+msgid "44 digits from the DANFE"
+msgstr "44 dígitos do DANFE"
+
+msgid "NF-e access key"
+msgstr "Chave de acesso da NF-e"
+
+msgid "Save"
+msgstr "Salvar"
+
+msgid "Calculate the freight"
+msgstr "Calcule o frete"
+
+msgid "Calculate freight"
+msgstr "Calcular frete"
+
+msgid "Clear quotes"
+msgstr "Limpar cotações"
+
+msgid "Review before creating"
+msgstr "Revise antes de criar"
+
+msgid "Subtotal"
+msgstr "Subtotal"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Balance now"
+msgstr "Saldo agora"
+
+msgid "Back"
+msgstr "Voltar"
+
+msgid "Connect your Frenet account to create labels"
+msgstr "Conecte sua conta Frenet para criar etiquetas"
+
+msgid "Turn on Frenet labels and paste the partner token (x-partner-token) that Frenet gave you. The store token comes from the Frenet shipping method."
+msgstr "Ative as etiquetas Frenet e cole o token de parceiro (x-partner-token) que a Frenet enviou. O token da loja vem do método de entrega Frenet."
+
+msgid "Open settings"
+msgstr "Abrir configuração"
+
+msgid "%d business day"
+msgstr "%d dia útil"
+
+msgid "Order in transit (Frenet)"
+msgstr "Pedido em transporte (Frenet)"
+
+msgid "Your order #{order_number} is on its way"
+msgstr "Seu pedido #{order_number} está a caminho"
+
+msgid "Order awaiting pickup (Frenet)"
+msgstr "Pedido aguardando retirada (Frenet)"
+
+msgid "Your order #{order_number} is waiting for pickup"
+msgstr "Seu pedido #{order_number} está aguardando retirada"
+
+msgid "Order delivered (Frenet)"
+msgstr "Pedido entregue (Frenet)"
+
+msgid "Your order #{order_number} was delivered"
+msgstr "Seu pedido #{order_number} foi entregue"
+
+msgid "Tracking code added: %s"
+msgstr "Código de rastreio adicionado: %s"
+
+msgid "Tracking code added."
+msgstr "Código de rastreio adicionado."
+
+msgid "This order has no tracking code."
+msgstr "Este pedido não tem código de rastreio."
+
+msgid "This order was not shipped with a Frenet service, so Frenet cannot track it."
+msgstr "Este pedido não foi enviado com um serviço Frenet, então a Frenet não consegue rastreá-lo."
+
+msgid "Tracking: %s"
+msgstr "Rastreio: %s"
+
+msgid "Looking up the CEP…"
+msgstr "Buscando o CEP…"
+
+msgid "We could not find this CEP. Check the number or fill in the address by hand."
+msgstr "Não encontramos este CEP. Confira o número ou preencha o endereço manualmente."
+
+msgid "A CEP has 8 digits."
+msgstr "O CEP tem 8 dígitos."
+
+msgid "CEP not found."
+msgstr "CEP não encontrado."
+
+msgid "Too many lookups. Wait a minute and try again."
+msgstr "Muitas consultas. Aguarde um minuto e tente de novo."
+
+msgid "Checking with Frenet…"
+msgstr "Consultando a Frenet…"
+
+msgid "Code saved"
+msgstr "Código salvo"
+
+msgid "Code removed"
+msgstr "Código removido"
+
+msgid "Paste at least one line \"order;code\"."
+msgstr "Cole pelo menos uma linha \"pedido;código\"."
+
+msgid "Apply to %d orders"
+msgstr "Aplicar em %d pedidos"
+
+msgid "Apply to 1 order"
+msgstr "Aplicar em 1 pedido"
+
+msgid "Nothing to apply: check the lines marked below."
+msgstr "Nada para aplicar: confira as linhas marcadas abaixo."
+
+msgid "%1$d codes applied, %2$d lines skipped."
+msgstr "%1$d códigos aplicados, %2$d linhas ignoradas."
+
+msgid "Lines not understood (expected \"order;code\"): %s"
+msgstr "Linhas não reconhecidas (esperado \"pedido;código\"): %s"
+
+msgid "New code"
+msgstr "Código novo"
+
+msgid "Replaces the current code"
+msgstr "Substitui o código atual"
+
+msgid "Already has this code"
+msgstr "Já tem este código"
+
+msgid "Order not found"
+msgstr "Pedido não encontrado"
+
+msgid "Repeated order: only the first line counts"
+msgstr "Pedido repetido: só vale a primeira linha"
+
+msgid "%1$d orders checked, %2$d status changes, %3$d errors."
+msgstr "%1$d pedidos consultados, %2$d mudanças de status, %3$d erros."
+
+msgid "This does not look like a tracking code: use letters and numbers, 8 to 40 characters."
+msgstr "Isto não parece um código de rastreio: use letras e números, de 8 a 40 caracteres."
+
+msgid "Tracking code (Frenet)"
+msgstr "Código de rastreio (Frenet)"
+
+msgid "Sent to the customer when a tracking code is added to the order."
+msgstr "Enviado ao cliente quando um código de rastreio é adicionado ao pedido."
+
+msgid "Your order #{order_number} has been shipped"
+msgstr "Seu pedido #{order_number} foi enviado"
+
+msgid "Your order is on its way"
+msgstr "Seu pedido está a caminho"
+
+msgid "Sent to the customer when the Frenet tracking moves the order to this status."
+msgstr "Enviado ao cliente quando o rastreio da Frenet muda o pedido para este status."
+
+msgid "Hi %s,"
+msgstr "Olá, %s,"
+
+msgid "Order #%1$s: %2$s."
+msgstr "Pedido #%1$s: %2$s."
+
+msgid "Tracking code:"
+msgstr "Código de rastreio:"
+
+msgid "Track my order"
+msgstr "Rastrear meu pedido"
+
+msgid "Your order #%s has been shipped."
+msgstr "Seu pedido #%s foi enviado."
+
+msgid "Follow every order shipped with a tracking code, from labels bought here or codes added by hand."
+msgstr "Acompanhe cada pedido enviado com código de rastreio, de etiquetas compradas aqui ou códigos adicionados manualmente."
+
+msgid "Tracking sections"
+msgstr "Seções de rastreio"
+
+msgid "Orders"
+msgstr "Pedidos"
+
+msgid "Import codes"
+msgstr "Importar códigos"
+
+msgid "Tracking uses the token of the Frenet shipping method. Set it in WooCommerce > Settings > Shipping > Frenet."
+msgstr "O rastreio usa o token do método de entrega Frenet. Configure em WooCommerce > Configurações > Entrega > Frenet."
+
+msgid "Add tracking codes in bulk"
+msgstr "Adicionar códigos de rastreio em lote"
+
+msgid "One order per line: order number and tracking code, separated by \";\", \",\" or a tab. You can paste two columns straight from a spreadsheet."
+msgstr "Um pedido por linha: número do pedido e código de rastreio, separados por \";\", \",\" ou tabulação. Pode colar duas colunas direto de uma planilha."
+
+msgid "Orders and codes"
+msgstr "Pedidos e códigos"
+
+msgid "E-mail the tracking code to each customer"
+msgstr "Enviar o código de rastreio por e-mail a cada cliente"
+
+msgid "Review before applying"
+msgstr "Revisar antes de aplicar"
+
+msgid "Line"
+msgstr "Linha"
+
+msgid "Current code"
+msgstr "Código atual"
+
+msgid "What happens"
+msgstr "O que acontece"
+
+msgid "Edit lines"
+msgstr "Editar linhas"
+
+msgid "Automatic tracking on"
+msgstr "Rastreio automático ativo"
+
+msgid "Automatic tracking off"
+msgstr "Rastreio automático desligado"
+
+msgid "Checked every hour; the order status follows the latest event."
+msgstr "Consultado a cada hora; o status do pedido segue o último evento."
+
+msgid "Checked every hour; the order status is not changed."
+msgstr "Consultado a cada hora; o status do pedido não é alterado."
+
+msgid "Turn it on in Settings"
+msgstr "Ative em Configurações"
+
+msgid "Update all now"
+msgstr "Atualizar todos agora"
+
+msgid "No order has a tracking code yet. Codes arrive when a label is paid, or add them on the order screen or in Import codes."
+msgstr "Nenhum pedido tem código de rastreio ainda. Os códigos chegam quando uma etiqueta é paga, ou adicione na tela do pedido ou em Importar códigos."
+
+msgid "Order status"
+msgstr "Status do pedido"
+
+msgid "Checked"
+msgstr "Consultado"
+
+msgid "No movement yet"
+msgstr "Sem movimentação ainda"
+
+msgid "Never"
+msgstr "Nunca"
+
+msgid "Update"
+msgstr "Atualizar"
+
+msgid "E-mail the customer"
+msgstr "Avisar o cliente por e-mail"
+
+msgid "Save code"
+msgstr "Salvar código"
+
+msgid "Update now"
+msgstr "Atualizar agora"
+
+msgid "Checkout"
+msgstr "Checkout"
+
+msgid "Fill the address from the CEP"
+msgstr "Preencher o endereço pelo CEP"
+
+msgid "Street, neighborhood, city and state appear when the customer types the CEP, in the classic checkout, the checkout block and My Account. Number and complement are never changed. Leave it off if another plugin already does this."
+msgstr "Rua, bairro, cidade e estado aparecem quando o cliente digita o CEP, no checkout clássico, no checkout em blocos e em Minha conta. Número e complemento nunca são alterados. Deixe desligado se outro plugin já faz isso."
+
+msgid "Check the tracking automatically every hour"
+msgstr "Consultar o rastreio automaticamente a cada hora"
+
+msgid "Orders with a tracking code (bought here or added by hand) are checked with Frenet until they are delivered."
+msgstr "Pedidos com código de rastreio (comprados aqui ou adicionados manualmente) são consultados na Frenet até serem entregues."
+
+msgid "Change the order status with the tracking"
+msgstr "Mudar o status do pedido conforme o rastreio"
+
+msgid "Adds the statuses In transit, Awaiting pickup, Delivered and Returning, and moves the order according to the latest event. Cancelled, refunded and completed orders are never changed."
+msgstr "Adiciona os status Em transporte, Aguardando retirada, Entregue e Em devolução, e muda o pedido conforme o último evento. Pedidos cancelados, reembolsados e concluídos nunca são alterados."
+
+msgid "The tracking code and each status change. Edit the texts or turn single e-mails off in"
+msgstr "O código de rastreio e cada mudança de status. Edite os textos ou desligue e-mails específicos em"
+
+msgid "WooCommerce > Settings > Emails"
+msgstr "WooCommerce > Configurações > E-mails"
+
+msgctxt "Order status"
+msgid "In transit"
+msgstr "Em transporte"
+
+msgctxt "Order status"
+msgid "Awaiting pickup"
+msgstr "Aguardando retirada"
+
+msgctxt "Order status"
+msgid "Delivered"
+msgstr "Entregue"
+
+msgctxt "Order status"
+msgid "Returning"
+msgstr "Em devolução"
+
+msgid "Saving…"
+msgstr "Salvando…"
+
+msgid "Type an amount of at least R$ 1,00."
+msgstr "Digite um valor de pelo menos R$ 1,00."
+
+msgid "Frenet did not start the payment. Nothing was charged; try again or add balance in the Frenet panel."
+msgstr "A Frenet não iniciou o pagamento. Nada foi cobrado; tente de novo ou adicione saldo no painel Frenet."
+
+msgid "Payment sent. The balance shows up as soon as Mercado Pago confirms it (Pix in a few minutes)."
+msgstr "Pagamento enviado. O saldo aparece assim que o Mercado Pago confirmar (Pix em poucos minutos)."
+
+msgid "Payment pending at Mercado Pago. The balance shows up when it is confirmed."
+msgstr "Pagamento pendente no Mercado Pago. O saldo aparece quando for confirmado."
+
+msgid "The payment was not completed. Nothing was added to the wallet."
+msgstr "O pagamento não foi concluído. Nada foi adicionado à carteira."
+
+msgid "Amount to add (R$)"
+msgstr "Valor a adicionar (R$)"
+
+msgid "or in the Frenet panel"
+msgstr "ou no painel Frenet"
