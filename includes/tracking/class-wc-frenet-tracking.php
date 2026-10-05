@@ -27,7 +27,8 @@ class WC_Frenet_Tracking {
 		add_action( self::CRON, array( __CLASS__, 'cron_sync' ) );
 		add_action( 'init', array( __CLASS__, 'schedule' ) );
 		add_filter( 'woocommerce_email_classes', array( __CLASS__, 'emails' ) );
-		foreach ( array_keys( WC_Frenet_Order_Statuses::labels() ) as $slug ) {
+		// Slugs only: this runs on plugins_loaded, and translating here would load the text domain too early (WP 6.7+).
+		foreach ( WC_Frenet_Order_Statuses::slugs() as $slug ) {
 			$status = substr( $slug, 3 );
 			// WooCommerce loads the mailer on demand: load it when one of our statuses is set.
 			add_action(

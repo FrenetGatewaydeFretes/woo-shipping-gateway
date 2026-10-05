@@ -41,6 +41,15 @@ class WC_Frenet_Order_Statuses {
 	}
 
 	/**
+	 * Status slugs (with "wc-"), without translating anything: safe before "init".
+	 *
+	 * @return array<int, string>
+	 */
+	public static function slugs() {
+		return array( self::TRANSIT, self::PICKUP, self::DELIVERED, self::RETURNING );
+	}
+
+	/**
 	 * Slug (with "wc-") → label.
 	 *
 	 * @return array<string, string>
@@ -107,7 +116,7 @@ class WC_Frenet_Order_Statuses {
 	 * @return array<int, string>
 	 */
 	public static function paid( $statuses ) {
-		foreach ( array_keys( self::labels() ) as $slug ) {
+		foreach ( self::slugs() as $slug ) {
 			if ( self::RETURNING !== $slug ) {
 				$statuses[] = substr( $slug, 3 );
 			}
@@ -126,7 +135,7 @@ class WC_Frenet_Order_Statuses {
 			function ( $s ) {
 				return substr( $s, 3 );
 			},
-			array_keys( self::labels() )
+			self::slugs()
 		);
 		return array_values( array_diff( $statuses, $ours ) );
 	}
