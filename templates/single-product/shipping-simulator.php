@@ -48,7 +48,7 @@ if (!$has_shipping_class) return;
         <input type="hidden" name="instance_id" value="<?php echo esc_attr($instance_id); ?>">
         <input type="hidden" name="additional_time" value="<?php echo esc_attr($additional_time); ?>">
         <input type="hidden" name="qty_simulator" value="1">
-        <button name="idx-calc_shipping" id="idx-calc_shipping" value="1" class="button"><?php esc_html_e('OK', 'woo-shipping-gateway'); ?></button>
+        <button name="idx-calc_shipping" id="idx-calc_shipping" value="1" class="button"><?php esc_html_e('Calculate', 'woo-shipping-gateway'); ?></button>
         <br class="clear"/>
         <br>
         <div id='loading_simulator' style='display:none'>

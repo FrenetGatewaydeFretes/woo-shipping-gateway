@@ -184,7 +184,7 @@ msgid "Calculate shipping"
 msgstr ""
 
 #: templates/single-product/shipping-simulator.php:51
-msgid "OK"
+msgid "Calculate"
 msgstr ""
 
 #: templates/single-product/shipping-simulator.php:55

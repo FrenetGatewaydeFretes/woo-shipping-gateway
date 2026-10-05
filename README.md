@@ -346,6 +346,7 @@ SimpleXML extension (already included in PHP 5).
 * O link "Limpar" das variações passa a esconder o simulador e apagar a cotação anterior; ao trocar de variação, a cotação antiga também é apagada.
 * Oculta o simulador para produtos e variações que não precisam de envio, que estão indisponíveis ou fora de estoque.
 * Redesenha o resultado da cotação do simulador em colunas (Entrega e Custo), com o prazo de entrega abaixo de cada serviço.
+* O botão do simulador passa a se chamar "Calcular" (antes, "Ok").
 * Corrige o prazo estimado de entrega no simulador, que não aparecia mesmo com a opção "Estimativa de entrega" ativada.
 * Exibe o valor do frete no simulador com a formatação de moeda da loja.
 * Passa a cotar a quantidade informada no formulário do próprio produto, sem interferência de outros campos de quantidade da página.

@@ -150,8 +150,8 @@ msgstr "Custo"
 msgid "Calculate shipping"
 msgstr "Calcular Frete"
 
-msgid "OK"
-msgstr "Ok"
+msgid "Calculate"
+msgstr "Calcular"
 
 msgid "Please wait..."
 msgstr "Aguarde..."
