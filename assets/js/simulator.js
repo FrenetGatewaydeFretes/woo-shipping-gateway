@@ -258,7 +258,7 @@ jQuery(document).ready(function ($) {
                             }
 
                             const priceSpan = document.createElement('span');
-                            priceSpan.classList.add('frenet-quote-price');
+                            priceSpan.classList.add('frenet-quote-price', 'woocommerce-Price-amount', 'amount');
                             priceSpan.innerText = value.ShippingPriceFormatted;
 
                             shippingLi.appendChild(serviceCol);

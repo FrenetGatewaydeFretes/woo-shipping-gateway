@@ -101,7 +101,6 @@
     font-family: var(--font-heading, inherit);
     font-weight: 700;
     font-size: 13px;
-    color: var(--color-text-primary, #333);
 }
 
 #shipping-simulator .frenet-quote-col-price {
@@ -127,7 +126,6 @@
     font-family: var(--font-heading, inherit);
     font-weight: 700;
     font-size: 15px;
-    color: var(--color-text-primary, #1a1a1a);
 }
 
 #shipping-simulator #shipping-rates .frenet-quote-delivery {
@@ -138,7 +136,6 @@
 #shipping-simulator #shipping-rates .frenet-quote-price {
     font-weight: 700;
     font-size: 15px;
-    color: var(--color-blue, #3F83F8);
     text-align: right;
     white-space: nowrap;
 }

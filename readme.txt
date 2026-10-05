@@ -345,7 +345,7 @@ SimpleXML extension (already included in PHP 5).
 * Adiciona suporte ao simulador de frete no bloco "Add to Cart + Options" dos temas de bloco do WooCommerce.
 * O link "Limpar" das variações passa a esconder o simulador e apagar a cotação anterior; ao trocar de variação, a cotação antiga também é apagada.
 * Oculta o simulador para produtos e variações que não precisam de envio, que estão indisponíveis ou fora de estoque.
-* Redesenha o resultado da cotação do simulador em colunas (Entrega e Custo), com o prazo de entrega abaixo de cada serviço.
+* Redesenha o resultado da cotação do simulador em colunas (Entrega e Custo), com o prazo de entrega abaixo de cada serviço; os textos e o valor do frete seguem as cores do tema da loja.
 * O botão do simulador passa a se chamar "Calcular" (antes, "Ok").
 * Corrige o prazo estimado de entrega no simulador, que não aparecia mesmo com a opção "Estimativa de entrega" ativada.
 * Exibe o valor do frete no simulador com a formatação de moeda da loja.
