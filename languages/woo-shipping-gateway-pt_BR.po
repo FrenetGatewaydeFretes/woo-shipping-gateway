@@ -150,6 +150,9 @@ msgstr "Custo"
 msgid "Calculate shipping"
 msgstr "Calcular Frete"
 
+msgid "Enter your postcode"
+msgstr "Digite seu CEP"
+
 msgid "Calculate"
 msgstr "Calcular"
 

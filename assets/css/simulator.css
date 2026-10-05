@@ -33,30 +33,48 @@
 #shipping-simulator [name="zipcode"] {
     float: left;
     box-sizing: border-box;
-    margin: 8px 5px 0 0;
-    height: 32px;
-    padding: 0 10px;
-    width: 100px;
-    border: 1px solid var(--color-border-subtle, #ccc);
-    border-radius: var(--radius-sm, 4px);
+    margin: 8px 8px 0 0;
+    height: 44px;
+    padding: 0 12px;
+    width: 190px;
+    max-width: 100%;
     font-family: inherit;
-    font-size: 14px;
-    transition: border-color 0.2s;
+    font-size: 16px;
 }
 
-#shipping-simulator [name="zipcode"]:focus {
-    border-color: var(--color-purple, #7B3FF3);
-    outline: none;
+#shipping-simulator .frenet-simulator-zipcode-field {
+    position: relative;
+    float: left;
+    margin: 8px 8px 0 0;
+    font-weight: 400;
+}
+
+#shipping-simulator .frenet-simulator-zipcode-field [name="zipcode"] {
+    display: block;
+    float: none;
+    margin: 0;
+    padding-left: 48px;
+}
+
+#shipping-simulator .frenet-simulator-zipcode-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    width: 26px;
+    height: 26px;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 #shipping-simulator #idx-calc_shipping {
     float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
     margin: 8px 0 0;
-    height: 32px;
-    padding: 0 16px;
-    line-height: 30px;
-    border-radius: var(--radius-sm, 4px);
+    height: 44px;
+    padding: 0 24px;
 }
 
 #shipping-simulator #loading_simulator p {

@@ -183,10 +183,14 @@ msgstr ""
 msgid "Calculate shipping"
 msgstr ""
 
-#: templates/single-product/shipping-simulator.php:51
-msgid "Calculate"
+#: templates/single-product/shipping-simulator.php:47
+msgid "Enter your postcode"
 msgstr ""
 
 #: templates/single-product/shipping-simulator.php:55
+msgid "Calculate"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:59
 msgid "Please wait..."
 msgstr ""

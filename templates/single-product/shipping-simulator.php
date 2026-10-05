@@ -41,8 +41,12 @@ if (!$has_shipping_class) return;
     <form method="post" class="frenet-shipping-simulator-form">
 
         <label for="frenet-simulator-zipcode"><?php esc_html_e('Calculate shipping', 'woo-shipping-gateway'); ?> <br>
-            <input required type="text" name="zipcode" id="frenet-simulator-zipcode" maxlength="9" placeholder="00000-000"
-                    value="<?php echo esc_attr($zipcode); ?>">
+            <span class="frenet-simulator-zipcode-field">
+                <svg class="frenet-simulator-zipcode-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                <input required type="text" name="zipcode" id="frenet-simulator-zipcode" class="input-text" maxlength="9" inputmode="numeric" autocomplete="postal-code"
+                        placeholder="<?php esc_attr_e('Enter your postcode', 'woo-shipping-gateway'); ?>"
+                        value="<?php echo esc_attr($zipcode); ?>">
+            </span>
         </label>
 
         <input type="hidden" name="instance_id" value="<?php echo esc_attr($instance_id); ?>">
