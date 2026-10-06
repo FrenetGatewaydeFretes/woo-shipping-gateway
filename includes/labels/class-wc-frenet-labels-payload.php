@@ -42,7 +42,9 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
-	 * Recipient: shipping address, or billing when there is none. Brazilian Market fields when present.
+	 * Recipient: shipping address, or billing when there is none. Brazilian fields (CPF/CNPJ, number, neighborhood)
+	 * come from Brazilian Market ("_billing_cpf"...) or from block-checkout additional fields of any plugin
+	 * ("_wc_other/br-checkout-fields/billing_cpf", "_wc_shipping/<namespace>/billing_number"...).
 	 *
 	 * @param WC_Order $order Order.
 	 * @return array<string, string>
@@ -57,19 +59,64 @@ class WC_Frenet_Labels_Payload {
 			$a = (string) $a;
 			return '' !== trim( $a ) ? $a : (string) $b;
 		};
-		$neighborhood = trim( $first( $order->get_meta( '_shipping_neighborhood' ), $order->get_meta( '_billing_neighborhood' ) ) );
+		$meta         = self::meta_map( $order );
+		$group        = $has_shipping ? array( 'shipping', 'billing' ) : array( 'billing' );
+		$neighborhood = trim( self::br_field( $meta, 'neighborhood', $group ) );
+		$document     = self::br_field( $meta, 'cpf', array( 'billing', 'other', 'shipping' ) );
 		return array(
 			'name'         => $first( trim( $get( 'first_name' ) . ' ' . $get( 'last_name' ) ), $order->get_formatted_billing_full_name() ),
 			'address_1'    => $get( 'address_1' ),
-			'number'       => $first( $order->get_meta( '_shipping_number' ), $order->get_meta( '_billing_number' ) ),
+			'number'       => self::br_field( $meta, 'number', $group ),
 			'address_2'    => $neighborhood ? $get( 'address_2' ) : '',
 			'neighborhood' => $neighborhood ? $neighborhood : $get( 'address_2' ),
 			'city'         => $get( 'city' ),
 			'state'        => $get( 'state' ),
 			'postcode'     => $get( 'postcode' ),
 			'phone'        => (string) $order->get_billing_phone(),
-			'document'     => (string) preg_replace( '/\D/', '', $first( $order->get_meta( '_billing_cpf' ), $order->get_meta( '_billing_cnpj' ) ) ),
+			'document'     => (string) preg_replace( '/\D/', '', $first( $document, self::br_field( $meta, 'cnpj', array( 'billing', 'other', 'shipping' ) ) ) ),
 		);
+	}
+
+	/**
+	 * Order meta as key => string value.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array<string, string>
+	 */
+	private static function meta_map( WC_Order $order ) {
+		$out = array();
+		foreach ( $order->get_meta_data() as $m ) {
+			$d = $m->get_data();
+			if ( is_scalar( $d['value'] ) ) {
+				$out[ (string) $d['key'] ] = (string) $d['value'];
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * First non-empty Brazilian field, trying each group in order: Brazilian Market keys ("_shipping_number") and then
+	 * block-checkout additional fields ("_wc_shipping/<namespace>/shipping_number" or ".../billing_number",
+	 * "_wc_other/<namespace>/billing_cpf"). Pure: unit tested.
+	 *
+	 * @param array<string, string> $meta   Order meta (key => value).
+	 * @param string                $name   cpf, cnpj, number or neighborhood.
+	 * @param array<int, string>    $groups billing, shipping and/or other, in order of preference.
+	 * @return string
+	 */
+	public static function br_field( array $meta, $name, array $groups ) {
+		foreach ( $groups as $g ) {
+			$key = "_{$g}_{$name}";
+			if ( isset( $meta[ $key ] ) && '' !== trim( $meta[ $key ] ) ) {
+				return trim( $meta[ $key ] );
+			}
+			foreach ( $meta as $key => $value ) {
+				if ( '' !== trim( $value ) && preg_match( '#^_wc_' . preg_quote( $g, '#' ) . '/[^/]+/(?:(?:billing|shipping)_)?' . preg_quote( $name, '#' ) . '$#', $key ) ) {
+					return trim( $value );
+				}
+			}
+		}
+		return '';
 	}
 
 	/**
