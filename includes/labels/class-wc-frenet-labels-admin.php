@@ -41,7 +41,7 @@ class WC_Frenet_Labels_Admin {
 	 */
 	public static function pages() {
 		return array(
-			self::SLUG               => array( __( 'Settings', 'woo-shipping-gateway' ), __( 'Frenet settings', 'woo-shipping-gateway' ), 'settings' ),
+			self::SLUG               => array( _x( 'Settings', 'Frenet admin menu', 'woo-shipping-gateway' ), __( 'Frenet settings', 'woo-shipping-gateway' ), 'settings' ),
 			self::SLUG . '-create'   => array( __( 'Create shipment', 'woo-shipping-gateway' ), __( 'Create shipment', 'woo-shipping-gateway' ), 'create' ),
 			self::SLUG . '-labels'   => array( __( 'Labels', 'woo-shipping-gateway' ), __( 'Manage your labels', 'woo-shipping-gateway' ), 'labels' ),
 			self::SLUG . '-print'    => array( __( 'Printing', 'woo-shipping-gateway' ), __( 'Label printing', 'woo-shipping-gateway' ), 'printing' ),

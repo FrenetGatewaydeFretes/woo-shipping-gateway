@@ -1043,3 +1043,7 @@ msgstr "Valor a adicionar (R$)"
 
 msgid "or in the Frenet panel"
 msgstr "ou no painel Frenet"
+
+msgctxt "Frenet admin menu"
+msgid "Settings"
+msgstr "Configurações"
