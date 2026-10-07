@@ -18,10 +18,25 @@ class WC_Frenet extends WC_Shipping_Method {
     const MAX_ATTEMPTS = 3;
 
     /**
+     * Default simulator quote limit per IP.
+     */
+    const DEFAULT_SIMULATOR_RATE_LIMIT = 60;
+
+    /**
      * WC session key: whether the last live quote attempt failed. Read by
      * WC_Frenet_Main::block_checkout_if_frenet_quote_failed().
      */
     const SESSION_KEY_QUOTE_FAILED = 'frenet_last_quote_failed';
+
+    /**
+     * Rate ID of the fee charged as the only shipping option of a cart with only virtual products.
+     */
+    const VIRTUAL_FEE_RATE_ID = 'FRENET_VIRTUAL_FEE';
+
+    /**
+     * Package key flagging the package that carries the virtual products fee (one per order).
+     */
+    const PACKAGE_VIRTUAL_FEE_KEY = 'frenet_virtual_fee';
 
     protected $zip_origin;
     protected $minimum_height;
@@ -199,6 +214,17 @@ class WC_Frenet extends WC_Shipping_Method {
                 'desc_tip' => true,
                 'default' => 'yes'
             ),
+            'simulator_rate_limit' => array(
+                'title'             => __( 'Simulator Quote Limit', 'woo-shipping-gateway' ),
+                'type'              => 'number',
+                'description'       => __( 'Maximum number of quotes the product page shipping simulator allows per visitor (IP address) per minute. Protects your Frenet API quota from abuse. Use 0 for no limit.', 'woo-shipping-gateway' ),
+                'desc_tip'          => true,
+                'default'           => (string) self::DEFAULT_SIMULATOR_RATE_LIMIT,
+                'custom_attributes' => array(
+                    'min'  => 0,
+                    'step' => 1,
+                ),
+            ),
             'display_date' => array(
                 'title'            => __( 'Estimated delivery', 'woo-shipping-gateway' ),
                 'type'             => 'checkbox',
@@ -244,6 +270,33 @@ class WC_Frenet extends WC_Shipping_Method {
                     'max'  => self::MAX_ATTEMPTS,
                     'step' => 1,
                 ),
+            ),
+            'virtual_products' => array(
+                'title'            => __( 'Virtual Products', 'woo-shipping-gateway' ),
+                'type'             => 'title',
+                'description'      => __( 'Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote.', 'woo-shipping-gateway' ),
+            ),
+            'virtual_fee_enabled' => array(
+                'title'            => __( 'Virtual Products Fee', 'woo-shipping-gateway' ),
+                'type'             => 'checkbox',
+                'label'            => __( 'Enable', 'woo-shipping-gateway' ),
+                'description'      => __( 'Charge a fixed fee as shipping when the cart has virtual products.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => 'no'
+            ),
+            'virtual_fee_amount' => array(
+                'title'            => __( 'Virtual Products Fee Amount', 'woo-shipping-gateway' ),
+                'type'             => 'price',
+                'description'      => __( 'Fixed amount charged once per order. The fee is only charged when the amount is greater than zero.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => '0'
+            ),
+            'virtual_fee_label' => array(
+                'title'            => __( 'Virtual Products Fee Name', 'woo-shipping-gateway' ),
+                'type'             => 'text',
+                'description'      => __( 'Name of the fee shown to the customer in the cart, checkout and order.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => __( 'Order processing fee', 'woo-shipping-gateway' )
             ),
 			'package_standard' => array(
 				'title'            => __( 'Package Standard', 'woo-shipping-gateway' ),
@@ -449,6 +502,18 @@ class WC_Frenet extends WC_Shipping_Method {
 		$rates  = [];
         $errors = [];
 
+        $virtual_fee = empty( $package[ self::PACKAGE_VIRTUAL_FEE_KEY ] ) ? 0.0 : $this->get_virtual_fee_amount();
+
+        if ( $virtual_fee > 0 && ! self::package_has_shippable_items( $package ) ) {
+            $this->mark_quote_result( false );
+            $this->add_rate( array(
+                'id'    => self::VIRTUAL_FEE_RATE_ID,
+                'label' => $this->get_virtual_fee_label(),
+                'cost'  => $virtual_fee,
+            ) );
+            return;
+        }
+
         $shipping_values = $this->frenet_calculate($package);
 
         if (!$this->has_shipping_class($package)) {
@@ -477,18 +542,84 @@ class WC_Frenet extends WC_Shipping_Method {
                     : $label;
                 $cost  = (float) str_replace(",", ".", (string) $shipping->ShippingPrice);
 
-                $rates[] = array(
+                $rate = array(
                     'id' => 'FRENET_' . $shipping->ServiceCode,
                     'label' => $label,
                     'cost' => $cost,
                     'meta_data' => array('FRENET_ID' => 'FRENET_' . $shipping->ServiceCode)
                 );
+
+                $rates[] = ( $virtual_fee > 0 ) ? $this->add_virtual_fee_to_rate( $rate, $virtual_fee ) : $rate;
             }
 
             foreach ( $rates as $rate ) {
                 $this->add_rate( $rate );
             }
         }
+	}
+
+	/**
+	 * Fixed fee charged as shipping on orders with virtual products; 0 when the fee is disabled.
+	 *
+	 * @return float
+	 */
+	public function get_virtual_fee_amount() {
+		if ( 'yes' !== $this->get_option( 'virtual_fee_enabled', 'no' ) ) {
+			return 0.0;
+		}
+
+		return max( 0.0, (float) wc_format_decimal( $this->get_option( 'virtual_fee_amount', '0' ) ) );
+	}
+
+	/**
+	 * Name of the virtual products fee shown to the customer.
+	 *
+	 * @return string
+	 */
+	public function get_virtual_fee_label() {
+		$label = trim( (string) $this->get_option( 'virtual_fee_label' ) );
+
+		return ( '' !== $label ) ? $label : __( 'Order processing fee', 'woo-shipping-gateway' );
+	}
+
+	/**
+	 * Adds the virtual products fee to a Frenet quote, naming it in the label and in the order item meta.
+	 *
+	 * @param array $rate
+	 * @param float $virtual_fee
+	 * @return array
+	 */
+	protected function add_virtual_fee_to_rate( array $rate, $virtual_fee ) {
+		$fee_label = $this->get_virtual_fee_label();
+		$fee_price = html_entity_decode( wp_strip_all_tags( wc_price( $virtual_fee ) ), ENT_QUOTES, 'UTF-8' );
+
+		$rate['label'] = sprintf(
+			/* translators: 1: shipping service, 2: virtual products fee name, 3: virtual products fee amount */
+			__( '%1$s + %2$s (%3$s)', 'woo-shipping-gateway' ),
+			$rate['label'],
+			$fee_label,
+			$fee_price
+		);
+		$rate['cost'] += $virtual_fee;
+		$rate['meta_data'][ $fee_label ] = $fee_price;
+
+		return $rate;
+	}
+
+	/**
+	 * Checks if the package has any product that is physically shipped.
+	 *
+	 * @param array $package
+	 * @return bool
+	 */
+	public static function package_has_shippable_items( $package ) {
+		foreach ( (array) ( $package['contents'] ?? array() ) as $item ) {
+			if ( isset( $item['data'] ) && $item['data'] instanceof WC_Product && $item['quantity'] > 0 && $item['data']->needs_shipping() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
     /**
@@ -662,7 +793,7 @@ class WC_Frenet extends WC_Shipping_Method {
             // No shippable items (e.g. cart has only virtual/downloadable products) — skip
             // the request instead of sending an empty payload.
             if ( empty( $shippingItemArray ) ) {
-                $this->log_error( "Frenet quote skipped: the shipping payload has no items (ShippingItemArray is empty). Check that the cart has shippable products with weight/dimensions set. [{$context}]" );
+                $this->log( "Frenet quote skipped: the shipping payload has no items (ShippingItemArray is empty). Check that the cart has shippable products with weight/dimensions set. [{$context}]" );
                 return $values;
             }
 

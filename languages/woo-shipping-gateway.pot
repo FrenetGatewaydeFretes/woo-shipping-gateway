@@ -67,22 +67,6 @@ msgstr ""
 msgid "Additional days to the estimated delivery."
 msgstr ""
 
-#: includes/class-wc-frenet.php:116
-msgid "User"
-msgstr ""
-
-#: includes/class-wc-frenet.php:118
-msgid "Your Frenet access key."
-msgstr ""
-
-#: includes/class-wc-frenet.php:122
-msgid "Password"
-msgstr ""
-
-#: includes/class-wc-frenet.php:124
-msgid "Your Frenet access key password."
-msgstr ""
-
 #: includes/class-wc-frenet.php:128
 msgid "Package Standard"
 msgstr ""
@@ -136,20 +120,13 @@ msgstr ""
 msgid "Frenet is a brazilian delivery method."
 msgstr ""
 
-#: includes/class-wc-frenet.php:317 includes/class-wc-frenet.php:320
+#. translators: %d: number of working days until delivery
+#: includes/class-wc-frenet.php:643 includes/class-wc-frenet-shipping-simulator.php:34
 #, php-format
 msgid "Delivery in %d working day"
-msgstr ""
-
-#: woo-shipping-gateway.php:21
-#, php-format
-msgid "WooCommerce Frenet depends on %s to work!"
-msgstr ""
-
-#: woo-shipping-gateway.php:28
-#, php-format
-msgid "WooCommerce Frenet depends to %s to work!"
-msgstr ""
+msgid_plural "Delivery in %d working days"
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/class-wc-frenet.php:245
 msgid "Request Timeout (seconds)"
@@ -183,4 +160,82 @@ msgstr ""
 
 #: woo-shipping-gateway.php:180
 msgid "Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order."
+msgstr ""
+
+#: includes/class-wc-frenet.php:209
+msgid "Simulator Quote Limit"
+msgstr ""
+
+#: includes/class-wc-frenet.php:211
+msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) per minute. Protects your Frenet API quota from abuse. Use 0 for no limit."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:114
+msgid "Too many shipping simulations in a short time. Please wait a minute and try again."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:113
+msgid "Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:116
+msgid "Cost"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:43
+msgid "Calculate shipping"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:47
+msgid "Enter your postcode"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:55
+msgid "Calculate"
+msgstr ""
+
+#: templates/single-product/shipping-simulator.php:59
+msgid "Please wait..."
+msgstr ""
+
+#: includes/class-wc-frenet.php:275
+msgid "Virtual Products"
+msgstr ""
+
+#: includes/class-wc-frenet.php:277
+msgid "Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote."
+msgstr ""
+
+#: includes/class-wc-frenet.php:280
+msgid "Virtual Products Fee"
+msgstr ""
+
+#: includes/class-wc-frenet.php:283
+msgid "Charge a fixed fee as shipping when the cart has virtual products."
+msgstr ""
+
+#: includes/class-wc-frenet.php:288
+msgid "Virtual Products Fee Amount"
+msgstr ""
+
+#: includes/class-wc-frenet.php:290
+msgid "Fixed amount charged once per order. The fee is only charged when the amount is greater than zero."
+msgstr ""
+
+#: includes/class-wc-frenet.php:295
+msgid "Virtual Products Fee Name"
+msgstr ""
+
+#: includes/class-wc-frenet.php:297
+msgid "Name of the fee shown to the customer in the cart, checkout and order."
+msgstr ""
+
+#: includes/class-wc-frenet.php:299 includes/class-wc-frenet.php:582
+msgid "Order processing fee"
+msgstr ""
+
+#. translators: 1: shipping service, 2: virtual products fee name, 3: virtual products fee amount
+#: includes/class-wc-frenet.php:598
+#, php-format
+msgid "%1$s + %2$s (%3$s)"
 msgstr ""

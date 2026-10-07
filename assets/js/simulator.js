@@ -10,15 +10,83 @@ var simulatorHelper = {
         jQuery('#shipping-simulator #simulator-data').empty();
     },
 
-    variableValidate: function(variations) {
-        let valid = true;
-        variations.forEach((variation) => {
-            if (!variation.value) {
-                valid = false;
-            }
-        })
+    variationId: '',
 
-        return valid
+    field: function (name) {
+        return jQuery('#shipping-simulator [name="' + name + '"]');
+    },
+
+    xhr: null,
+
+    showMessage: function (text) {
+        var message = document.createElement('p');
+
+        message.innerText = text;
+        jQuery('#shipping-simulator #simulator-data').empty().append(message);
+    },
+
+    deliveryTimeText: function (days) {
+        var message = 1 === days ? shipping_simulator.delivery_time_singular : shipping_simulator.delivery_time_plural;
+
+        return message.replace('%d', days);
+    },
+
+    isSimulatedProductForm: function ($form) {
+        var productId = jQuery('#shipping-simulator').data('product-id');
+
+        return !productId || String($form.data('product_id')) === String(productId);
+    },
+
+    isShippable: function (variation) {
+        return variation.variation_is_visible !== false
+            && variation.is_purchasable !== false
+            && variation.is_in_stock !== false
+            && variation.is_virtual !== true;
+    },
+
+    setVariation: function (variation) {
+        var variationId = variation && variation.variation_id ? String(variation.variation_id) : '';
+
+        if (variationId !== this.variationId) {
+            this.simulatorClean();
+        }
+        this.variationId = variationId && this.isShippable(variation) ? variationId : '';
+
+        if (this.variationId) {
+            jQuery('#shipping-simulator').slideDown(200);
+        } else {
+            jQuery('#shipping-simulator').hide();
+        }
+    },
+
+    productForm: function () {
+        var productId = jQuery('#shipping-simulator').data('product-id');
+
+        return productId ? jQuery('form').has('[name="add-to-cart"][value="' + productId + '"]').first() : jQuery();
+    },
+
+    getQuantity: function () {
+        var quantity = parseFloat(this.productForm().find('input[name="quantity"]').first().val());
+
+        return quantity > 0 ? quantity : (this.field('qty_simulator').val() || 1);
+    },
+
+    watchBlockProductForm: function () {
+        var $form = this.productForm();
+        var variationField = $form.find('input[name="variation_id"]')[0];
+
+        if (!variationField || $form.hasClass('variations_form')) {
+            return;
+        }
+
+        var syncVariation = function () {
+            var variationId = $form.hasClass('is-invalid') ? '' : variationField.value;
+
+            simulatorHelper.setVariation(variationId ? { variation_id: variationId } : null);
+        };
+
+        new MutationObserver(syncVariation).observe($form[0], { attributes: true, childList: true, subtree: true });
+        syncVariation();
     },
 
     /**
@@ -31,7 +99,7 @@ var simulatorHelper = {
 
         product_id = simulator.data('product-ids');
         if ('variable' === type) {
-            product_id = jQuery('input[name="product_id"]').val();
+            product_id = simulator.data('product-id') || jQuery('input[name="product_id"]').val();
         }
 
         // avoid error caused for product ids not found
@@ -44,40 +112,56 @@ var simulatorHelper = {
 /* global shipping_simulator */
 jQuery(document).ready(function ($) {
 
-    jQuery(document).on('change', '.quantity .qty', function () {
-        jQuery('.qty_simulator').attr('value', jQuery(this).val());
+    jQuery(document).on('found_variation', '.variations_form', function (event, variation) {
+        if (simulatorHelper.isSimulatedProductForm(jQuery(this))) {
+            simulatorHelper.setVariation(variation);
+        }
     });
 
-    const variations = document.querySelectorAll('.variations select');
-    variations.forEach((variation) => {
-        variation.addEventListener('change', () => {
-            if (simulatorHelper.variableValidate(variations)) {
-                jQuery('#shipping-simulator').slideDown(200);
-            } else {
-                jQuery('#shipping-simulator').hide();
-            }
+    jQuery(document).on('reset_data', '.variations_form', function () {
+        if (simulatorHelper.isSimulatedProductForm(jQuery(this))) {
+            simulatorHelper.setVariation(null);
+        }
+    });
 
-            simulatorHelper.simulatorClean();
-        })
-    })
+    jQuery('.variations_form').each(function () {
+        var $form = jQuery(this);
+        var variationId = $form.find('input[name="variation_id"]').val();
 
+        if (variationId && '0' !== variationId && simulatorHelper.isSimulatedProductForm($form)) {
+            simulatorHelper.setVariation({ variation_id: variationId });
+        }
+    });
 
-    jQuery('#shipping-simulator').on('click', '.button', function (e) {
+    simulatorHelper.watchBlockProductForm();
+
+    jQuery('#shipping-simulator').on('submit', 'form', function (e) {
 
         e.preventDefault();
 
-        jQuery('#loading_simulator').show();
+        var zipcodeInput = simulatorHelper.field('zipcode');
+        var zipcode = zipcodeInput.val().trim();
+
+        if (!zipcode) {
+            zipcodeInput[0].reportValidity();
+            return;
+        }
+
+        if (simulatorHelper.xhr) {
+            simulatorHelper.xhr.abort();
+        }
+
+        jQuery('#shipping-simulator #loading_simulator').show();
         simulatorHelper.simulatorClean();
 
         var simulator = jQuery('#shipping-simulator');
         var content = jQuery('#shipping-simulator #simulator-data');
 
         var type = simulator.data('product-type');
-        var zipcode = jQuery('#shipping-simulator #zipcode').val().trim(' ');
-        var additional_time = jQuery('#additional_time').val();
-        var instance_id = jQuery('#instance_id').val();
-        var variation_id = jQuery('.cart input[name="variation_id"]').val();
-        var quantity = jQuery('#qty_simulator').val();
+        var additional_time = simulatorHelper.field('additional_time').val();
+        var instance_id = simulatorHelper.field('instance_id').val();
+        var variation_id = simulatorHelper.variationId;
+        var quantity = simulatorHelper.getQuantity();
         var product_id = simulatorHelper.getProductIds();
 
         if (!variation_id) {
@@ -90,16 +174,10 @@ jQuery(document).ready(function ($) {
             additional_time = parseInt(additional_time, 10);
         }
 
-        /*
-        console.log('ID do produto: ' + product_id);
-        console.log('ID da variacão (se for variavel): ' + variation_id);
-        console.log('CEP: ' + zipcode);
-        console.log('Additional Time: ' + additional_time);
-        */
-
-        jQuery.ajax({
+        simulatorHelper.xhr = jQuery.ajax({
             type: 'POST',
             url: shipping_simulator.ajax_url,
+            dataType: 'json',
             data: {
                 action: 'ajax_simulator',
                 type: type,
@@ -110,19 +188,49 @@ jQuery(document).ready(function ($) {
                 additional_time: additional_time,
                 quantity: quantity
             },
+            error: function (xhr, status) {
+                if ('abort' === status) {
+                    return;
+                }
+
+                jQuery('#shipping-simulator #loading_simulator').hide();
+                simulatorHelper.showMessage(429 === xhr.status ? shipping_simulator.rate_limit_message : shipping_simulator.error_message);
+            },
+            complete: function (xhr) {
+                if (simulatorHelper.xhr === xhr) {
+                    simulatorHelper.xhr = null;
+                }
+            },
             success: function (response) {
 
-                response = jQuery.parseJSON(response);
-                jQuery('#loading_simulator').hide();
+                jQuery('#shipping-simulator #loading_simulator').hide();
+
+                if ('variable' === type && variation_id !== simulatorHelper.variationId) {
+                    return;
+                }
 
                 const shippingDiv = document.createElement('div');
 
                 if (jQuery.isEmptyObject(response)) {
                     const shippingErrorMessage = document.createElement('p');
 
-                    shippingErrorMessage.innerText = "Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor."
+                    shippingErrorMessage.innerText = shipping_simulator.error_message;
                     shippingDiv.appendChild(shippingErrorMessage)
                 } else {
+
+                    const shippingHeader = document.createElement('div');
+                    shippingHeader.classList.add('frenet-quote-header');
+
+                    const headerService = document.createElement('span');
+                    headerService.classList.add('frenet-quote-col-service');
+                    headerService.innerText = shipping_simulator.shipping_label;
+
+                    const headerPrice = document.createElement('span');
+                    headerPrice.classList.add('frenet-quote-col-price');
+                    headerPrice.innerText = shipping_simulator.cost_label;
+
+                    shippingHeader.appendChild(headerService);
+                    shippingHeader.appendChild(headerPrice);
 
                     const shippingUl = document.createElement('ul');
                     shippingUl.setAttribute('id', 'shipping-rates');
@@ -134,21 +242,33 @@ jQuery(document).ready(function ($) {
                             const shippingLi = document.createElement('li');
                             shippingLi.classList.add('li-frenet');
 
+                            const serviceCol = document.createElement('div');
+                            serviceCol.classList.add('frenet-quote-service');
+
                             const shippingSpan = document.createElement('span');
                             shippingSpan.classList.add('span-frenet');
-                            shippingSpan.innerText = value.ServiceDescription + ': ';
-
-                            shippingLi.appendChild(shippingSpan);
-                            shippingLi.innerText += 'R$' + value.ShippingPrice;
+                            shippingSpan.innerText = value.ServiceDescription;
+                            serviceCol.appendChild(shippingSpan);
 
                             if (response.display_date === true) {
-                                shippingLi.innerText += ' (Entrega em ' + EstimatingDelivery + ' dias úteis)';
+                                const deliverySpan = document.createElement('span');
+                                deliverySpan.classList.add('frenet-quote-delivery');
+                                deliverySpan.innerText = simulatorHelper.deliveryTimeText(EstimatingDelivery);
+                                serviceCol.appendChild(deliverySpan);
                             }
+
+                            const priceSpan = document.createElement('span');
+                            priceSpan.classList.add('frenet-quote-price', 'woocommerce-Price-amount', 'amount');
+                            priceSpan.innerText = value.ShippingPriceFormatted;
+
+                            shippingLi.appendChild(serviceCol);
+                            shippingLi.appendChild(priceSpan);
 
                             shippingUl.appendChild(shippingLi);
                         }
                     });
 
+                    shippingDiv.appendChild(shippingHeader);
                     shippingDiv.appendChild(shippingUl);
                 }
 
