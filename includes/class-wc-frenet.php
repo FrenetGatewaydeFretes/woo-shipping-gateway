@@ -28,6 +28,16 @@ class WC_Frenet extends WC_Shipping_Method {
      */
     const SESSION_KEY_QUOTE_FAILED = 'frenet_last_quote_failed';
 
+    /**
+     * Rate ID of the fee charged as the only shipping option of a cart with only virtual products.
+     */
+    const VIRTUAL_FEE_RATE_ID = 'FRENET_VIRTUAL_FEE';
+
+    /**
+     * Package key flagging the package that carries the virtual products fee (one per order).
+     */
+    const PACKAGE_VIRTUAL_FEE_KEY = 'frenet_virtual_fee';
+
     protected $zip_origin;
     protected $minimum_height;
     protected $minimum_width;
@@ -492,6 +502,18 @@ class WC_Frenet extends WC_Shipping_Method {
 		$rates  = [];
         $errors = [];
 
+        $virtual_fee = empty( $package[ self::PACKAGE_VIRTUAL_FEE_KEY ] ) ? 0.0 : $this->get_virtual_fee_amount();
+
+        if ( $virtual_fee > 0 && ! self::package_has_shippable_items( $package ) ) {
+            $this->mark_quote_result( false );
+            $this->add_rate( array(
+                'id'    => self::VIRTUAL_FEE_RATE_ID,
+                'label' => $this->get_virtual_fee_label(),
+                'cost'  => $virtual_fee,
+            ) );
+            return;
+        }
+
         $shipping_values = $this->frenet_calculate($package);
 
         if (!$this->has_shipping_class($package)) {
@@ -520,18 +542,84 @@ class WC_Frenet extends WC_Shipping_Method {
                     : $label;
                 $cost  = (float) str_replace(",", ".", (string) $shipping->ShippingPrice);
 
-                $rates[] = array(
+                $rate = array(
                     'id' => 'FRENET_' . $shipping->ServiceCode,
                     'label' => $label,
                     'cost' => $cost,
                     'meta_data' => array('FRENET_ID' => 'FRENET_' . $shipping->ServiceCode)
                 );
+
+                $rates[] = ( $virtual_fee > 0 ) ? $this->add_virtual_fee_to_rate( $rate, $virtual_fee ) : $rate;
             }
 
             foreach ( $rates as $rate ) {
                 $this->add_rate( $rate );
             }
         }
+	}
+
+	/**
+	 * Fixed fee charged as shipping on orders with virtual products; 0 when the fee is disabled.
+	 *
+	 * @return float
+	 */
+	public function get_virtual_fee_amount() {
+		if ( 'yes' !== $this->get_option( 'virtual_fee_enabled', 'no' ) ) {
+			return 0.0;
+		}
+
+		return max( 0.0, (float) wc_format_decimal( $this->get_option( 'virtual_fee_amount', '0' ) ) );
+	}
+
+	/**
+	 * Name of the virtual products fee shown to the customer.
+	 *
+	 * @return string
+	 */
+	public function get_virtual_fee_label() {
+		$label = trim( (string) $this->get_option( 'virtual_fee_label' ) );
+
+		return ( '' !== $label ) ? $label : __( 'Order processing fee', 'woo-shipping-gateway' );
+	}
+
+	/**
+	 * Adds the virtual products fee to a Frenet quote, naming it in the label and in the order item meta.
+	 *
+	 * @param array $rate
+	 * @param float $virtual_fee
+	 * @return array
+	 */
+	protected function add_virtual_fee_to_rate( array $rate, $virtual_fee ) {
+		$fee_label = $this->get_virtual_fee_label();
+		$fee_price = html_entity_decode( wp_strip_all_tags( wc_price( $virtual_fee ) ), ENT_QUOTES, 'UTF-8' );
+
+		$rate['label'] = sprintf(
+			/* translators: 1: shipping service, 2: virtual products fee name, 3: virtual products fee amount */
+			__( '%1$s + %2$s (%3$s)', 'woo-shipping-gateway' ),
+			$rate['label'],
+			$fee_label,
+			$fee_price
+		);
+		$rate['cost'] += $virtual_fee;
+		$rate['meta_data'][ $fee_label ] = $fee_price;
+
+		return $rate;
+	}
+
+	/**
+	 * Checks if the package has any product that is physically shipped.
+	 *
+	 * @param array $package
+	 * @return bool
+	 */
+	public static function package_has_shippable_items( $package ) {
+		foreach ( (array) ( $package['contents'] ?? array() ) as $item ) {
+			if ( isset( $item['data'] ) && $item['data'] instanceof WC_Product && $item['quantity'] > 0 && $item['data']->needs_shipping() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
     /**

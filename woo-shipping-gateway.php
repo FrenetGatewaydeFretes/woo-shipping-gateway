@@ -68,8 +68,15 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet.php';
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-helper.php';
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-shipping-simulator.php';
+                include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-virtual-fee.php';
 
                 add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
+
+                add_filter( 'woocommerce_cart_needs_shipping', array( 'WC_Frenet_Virtual_Fee', 'cart_needs_shipping' ) );
+                add_filter( 'woocommerce_cart_shipping_packages', array( 'WC_Frenet_Virtual_Fee', 'flag_virtual_fee_package' ), 100 );
+                add_filter( 'woocommerce_package_rates', array( 'WC_Frenet_Virtual_Fee', 'keep_only_virtual_fee_rate' ), 100, 2 );
+                add_action( 'woocommerce_after_calculate_totals', array( 'WC_Frenet_Virtual_Fee', 'restore_chosen_virtual_fee_rate' ), 1001 );
+                add_action( 'woocommerce_removed_coupon', array( 'WC_Frenet_Virtual_Fee', 'restore_chosen_virtual_fee_rate' ), 11 );
 
                 // Blocks checkout while the last live Frenet quote failed (see method docblock).
                 add_action( 'woocommerce_checkout_validate_order_before_payment', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
