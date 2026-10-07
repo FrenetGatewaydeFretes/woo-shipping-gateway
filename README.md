@@ -625,56 +625,55 @@ Notes:
 
 == Upgrade Notice ==
 
-= 2.1.24 - 01/10/2026 =
+= 2.1.24 =
 
-* O simulador de frete passa a aceitar até 60 cotações por minuto por visitante (ajuste em Frenet > "Limite de Cotações do Simulador"; 0 desativa). Temas que personalizam o template do simulador devem atualizar a cópia.
-* Nova opção "Taxa para Produtos Virtuais" (desativada por padrão). Ao ativá-la, pedidos com produtos virtuais passam a pedir endereço de entrega e a cobrar a taxa como frete.
+* Se a loja ainda usa usuário/senha da Frenet, configure um Token em WooCommerce > Configurações > Entrega > Frenet antes de atualizar (removidos na 2.1.23). Nova Taxa para Produtos Virtuais, desativada por padrão. Temas que sobrescrevem o template do simulador devem atualizar a cópia.
 
-= 2.1.23 - 31/08/2026 =
+= 2.1.23 =
 
 * IMPORTANTE: a autenticação por usuário/senha (webservice SOAP) foi removida, pois não é mais aceita pela Frenet. Se sua loja ainda não tem um Token configurado, configure um em WooCommerce > Configurações > Entrega > Frenet antes de atualizar, ou o cálculo de frete vai parar de funcionar.
 * Corrige o problema em que uma falha temporária na cotação da Frenet podia deixar o pedido ser finalizado sem cobrar frete. Agora, quando a cotação falha, o cliente é avisado e a finalização fica bloqueada enquanto a Frenet for a forma de entrega escolhida — com outra transportadora selecionada o pedido segue normalmente.
 
-= 2.1.15 - 19/08/2022 =
+= 2.1.15 =
 
 * Atualiza $variation->variation_id para $variation->get_id()
 
-= 2.1.14 - 18/10/2023 =
+= 2.1.14 =
 
 * Tratamento das informações de produto que estão disponiveis no html padrão do simulador de frete
 
-= 2.1.13 - 04/11/2022 =
+= 2.1.13 =
 
 * Alteração na descrição de testes de versionamento do WooCommerce e Wordpress
 
-= 2.1.12 - 19/08/2022 =
+= 2.1.12 =
 
 * Corrigido problemas se desativar Woocommerce e não desativar o plugin Frenet
 
-= 2.1.11 - 24/02/2022 =
+= 2.1.11 =
 
 * Validações e testes para garantir estabilidade do módulo com as novas versões do Wordpress e Woocommerce
 
-= 2.1.10 - 20/01/2021 =
+= 2.1.10 =
 
 * Corrigido problemas de logs, CRITICAL Uncaught Error: Cannot use object of type WP_Error as array
 
-= 2.1.9 - 09/01/2021 =
+= 2.1.9 =
 
 * Remover função get_product
 
-= 2.1.4 - 05/06/2018 =
+= 2.1.4 =
 
 * Para a nova versão do Woo foi necessário utilizar metadata para armazenar o código do método de entrega escolhido na cotação
 
-= 2.1.3 - 02/04/2018 =
+= 2.1.3 =
 
 * Envio de dados de categoria de produtos para a cotação;
 
-= 2.1.2 - 03/07/2017 =
+= 2.1.2 =
 
 * Bug Fix - Correção post data Json;
 
-= 2.1.1 - 12/01/2017 =
+= 2.1.1 =
 
 * Bug Fix - Cálculo na página do produto - valor e quantidade; Quantidade do mesmo produto;
