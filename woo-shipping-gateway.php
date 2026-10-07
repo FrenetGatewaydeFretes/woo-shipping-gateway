@@ -9,9 +9,9 @@
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
- * Tested up to: 6.9
+ * Tested up to: 7.1
  * Requires at least: 3.5
- * WC tested up to: 10.4.3
+ * WC tested up to: 11.0.1
  * Tags: shipping, woocommerce, frete, gateway
  */
 

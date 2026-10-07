@@ -3,7 +3,7 @@ Contributors: frenet, apiki, aguiart0, pedroasa
 Donate link: http://www.frenet.com.br/  
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
 Requires at least: 3.5  
-Tested up to: 6.9  
+Tested up to: 7.1  
 Version: 2.1.24
 Stable tag: 2.1.24
 License: GPLv2 or later  
@@ -205,7 +205,7 @@ Don’t waste time, install the plugin now and give it a try!
 - Check the integration tutorial under the "Installation" tab or visit [the Help Center article.](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
 After installation, create an account in the Frenet admin panel to obtain an access token. This plugin is free, but accessing all features requires a paid plan according to the pricing policy on our website: Frenet Plans and Pricing.
 
-WOOCOMMERCE: Tested up to 10.4.3
+WOOCOMMERCE: Tested up to 11.0.1
 
 ### QUESTIONS?
 
@@ -492,6 +492,7 @@ Notes:
 * Com produtos físicos e virtuais no carrinho, a taxa é somada a cada cotação da Frenet e identificada no nome do frete; no pedido, o valor da taxa também fica registrado separadamente nos detalhes do item de frete. Outras transportadoras não recebem a taxa.
 * Funciona no checkout em blocos e no checkout clássico do WooCommerce.
 * Traduz para pt-BR os textos da nova seção "Produtos Virtuais".
+* Declara compatibilidade com os blocos de carrinho e checkout do WooCommerce e atualiza as versões testadas para WordPress 7.1 e WooCommerce 11.0.1.
 
 = 2.1.23 - 31/08/2026 =
 
