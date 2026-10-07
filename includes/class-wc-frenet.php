@@ -261,6 +261,33 @@ class WC_Frenet extends WC_Shipping_Method {
                     'step' => 1,
                 ),
             ),
+            'virtual_products' => array(
+                'title'            => __( 'Virtual Products', 'woo-shipping-gateway' ),
+                'type'             => 'title',
+                'description'      => __( 'Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote.', 'woo-shipping-gateway' ),
+            ),
+            'virtual_fee_enabled' => array(
+                'title'            => __( 'Virtual Products Fee', 'woo-shipping-gateway' ),
+                'type'             => 'checkbox',
+                'label'            => __( 'Enable', 'woo-shipping-gateway' ),
+                'description'      => __( 'Charge a fixed fee as shipping when the cart has virtual products.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => 'no'
+            ),
+            'virtual_fee_amount' => array(
+                'title'            => __( 'Virtual Products Fee Amount', 'woo-shipping-gateway' ),
+                'type'             => 'price',
+                'description'      => __( 'Fixed amount charged once per order. The fee is only charged when the amount is greater than zero.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => '0'
+            ),
+            'virtual_fee_label' => array(
+                'title'            => __( 'Virtual Products Fee Name', 'woo-shipping-gateway' ),
+                'type'             => 'text',
+                'description'      => __( 'Name of the fee shown to the customer in the cart, checkout and order.', 'woo-shipping-gateway' ),
+                'desc_tip'         => true,
+                'default'          => __( 'Order processing fee', 'woo-shipping-gateway' )
+            ),
 			'package_standard' => array(
 				'title'            => __( 'Package Standard', 'woo-shipping-gateway' ),
 				'type'             => 'title',
