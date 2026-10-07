@@ -282,6 +282,8 @@ class WC_Frenet_Labels_Service {
 		}
 		if ( '' !== $label['tracking'] ) {
 			$order->update_meta_data( '_frenet_tracking_code', $label['tracking'] );
+			// Remembers which code came from the label, so cancelling it never removes a code typed by hand.
+			$order->update_meta_data( '_frenet_label_tracking', $label['tracking'] );
 		}
 		$ready = '' !== $label['label_url'];
 		if ( $ready && ! $order->get_meta( '_frenet_label_ready' ) ) {
@@ -290,6 +292,29 @@ class WC_Frenet_Labels_Service {
 		}
 		$order->save();
 		return $ready;
+	}
+
+	/**
+	 * After cancelling, removes the tracking code that came from that label, so automatic tracking and the customer
+	 * e-mails stop following a shipment that will never move. A code typed by hand is kept.
+	 *
+	 * @param WC_Order $order Order.
+	 * @param string   $id    Cancelled shipment id.
+	 * @return void
+	 */
+	private static function forget_label_tracking( WC_Order $order, $id ) {
+		$code  = (string) $order->get_meta( '_frenet_tracking_code' );
+		$label = (string) $order->get_meta( '_frenet_label_tracking' );
+		// Orders bought before "_frenet_label_tracking" existed: the code belongs to the cancelled label of this order.
+		$from_label = '' !== $label ? $code === $label : (string) $order->get_meta( '_frenet_shipment_id' ) === (string) $id;
+		if ( '' === $code || ! $from_label ) {
+			return;
+		}
+		foreach ( array( '_frenet_tracking_code', '_frenet_tracking_events', '_frenet_tracking_url', '_frenet_tracking_synced', '_frenet_label_tracking' ) as $key ) {
+			$order->delete_meta_data( $key );
+		}
+		/* translators: %s: tracking code */
+		$order->add_order_note( sprintf( __( 'Tracking code %s removed: its Frenet label was cancelled.', 'woo-shipping-gateway' ), $code ) );
 	}
 
 	/**
@@ -388,6 +413,7 @@ class WC_Frenet_Labels_Service {
 			$order->update_meta_data( '_frenet_shipment_status', (string) $status );
 			$order->delete_meta_data( '_frenet_label_ready' );
 			self::unschedule_poll( $order->get_id() );
+			self::forget_label_tracking( $order, $id );
 			$order->add_order_note(
 				$paid
 					/* translators: %s: shipment id */

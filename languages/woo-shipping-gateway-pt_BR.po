@@ -1078,3 +1078,7 @@ msgstr "Taxa de processamento do pedido"
 #, php-format
 msgid "%1$s + %2$s (%3$s)"
 msgstr "%1$s + %2$s (%3$s)"
+
+#. translators: %s: tracking code
+msgid "Tracking code %s removed: its Frenet label was cancelled."
+msgstr "Código de rastreio %s removido: a etiqueta Frenet foi cancelada."
