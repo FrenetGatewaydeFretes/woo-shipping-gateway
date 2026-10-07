@@ -13,21 +13,155 @@
     *zoom: 1;
     margin-top: 20px;
     display: inline-block;
+    font-family: var(--font-body, inherit);
+    width: 320px;
+    max-width: 100%;
 }
 
 #shipping-simulator p {
     margin-bottom: 5px;
-    color: green;
+    color: var(--color-success, green);
 }
 
-#shipping-simulator #zipcode {
+#shipping-simulator label {
+    display: block;
+    margin-bottom: 0;
+    font-weight: 600;
+    color: var(--color-text-primary, #333);
+}
+
+#shipping-simulator [name="zipcode"] {
     float: left;
-    margin-right: 5px;
-    height: 28px;
-    padding: 0 5px;
-    width: 100px;
+    box-sizing: border-box;
+    margin: 8px 8px 0 0;
+    height: 44px;
+    padding: 0 12px;
+    width: 190px;
+    max-width: 100%;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+#shipping-simulator .frenet-simulator-zipcode-field {
+    position: relative;
+    float: left;
+    margin: 8px 8px 0 0;
+    font-weight: 400;
+}
+
+#shipping-simulator .frenet-simulator-zipcode-field [name="zipcode"] {
+    display: block;
+    float: none;
+    margin: 0;
+    padding-left: 48px;
+}
+
+#shipping-simulator .frenet-simulator-zipcode-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    width: 26px;
+    height: 26px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+#shipping-simulator #idx-calc_shipping {
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 8px 0 0;
+    height: 44px;
+    padding: 0 24px;
+}
+
+#shipping-simulator #loading_simulator p {
+    color: var(--color-text-muted, #666);
+    font-style: italic;
 }
 
 #shipping-simulator #simulator-data {
-    margin-top: 5px;
+    margin-top: 12px;
+}
+
+/* Mensagem quando a cotacao nao pode ser simulada (produto sem estoque, sem
+   frete disponivel para o CEP, etc.) - sobrescreve a cor verde generica de
+   "#shipping-simulator p" acima, que nao se aplica a esse caso. */
+#shipping-simulator #simulator-data p {
+    margin: 0;
+    padding: 10px 14px;
+    background-color: var(--color-bg-tint-purple, #f8f8f8);
+    border-radius: var(--radius-sm, 4px);
+    color: var(--color-text-muted, #666);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Resultado da cotacao (gerado em assets/js/simulator.js): tabela com colunas
+   "Entrega" (transportadora + prazo) e "Custo" (preco). */
+#shipping-simulator .frenet-quote-header,
+#shipping-simulator #shipping-rates .li-frenet {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 16px;
+}
+
+#shipping-simulator .frenet-quote-header {
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--color-border-subtle, #e5e5e5);
+}
+
+#shipping-simulator .frenet-quote-header span {
+    font-family: var(--font-heading, inherit);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+#shipping-simulator .frenet-quote-col-price {
+    text-align: right;
+}
+
+#shipping-simulator #shipping-rates {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#shipping-simulator #shipping-rates .frenet-quote-service {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+#shipping-simulator #shipping-rates .span-frenet {
+    font-family: var(--font-heading, inherit);
+    font-weight: 700;
+    font-size: 15px;
+}
+
+#shipping-simulator #shipping-rates .frenet-quote-delivery {
+    font-size: 13px;
+    color: var(--color-text-muted, #7a7a7a);
+}
+
+#shipping-simulator #shipping-rates .frenet-quote-price {
+    font-weight: 700;
+    font-size: 15px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.theme-storefront.single-product div.product #shipping-simulator .frenet-shipping-simulator-form {
+    padding: 1em 0;
+}
+
+.theme-kadence.woocommerce div.product #shipping-simulator .frenet-shipping-simulator-form {
+    margin-bottom: 2em;
 }

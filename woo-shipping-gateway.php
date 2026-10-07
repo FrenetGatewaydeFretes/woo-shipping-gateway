@@ -5,23 +5,28 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.1.23
+ * Version: 2.1.24
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
- * Tested up to: 6.9
+ * Tested up to: 7.1
  * Requires at least: 3.5
- * WC tested up to: 10.4.3
+ * WC tested up to: 11.0.1
  * Tags: shipping, woocommerce, frete, gateway
  */
 
 /**
- * Informs WooCommerce that the plugin is compatible with the custom order tables feature.
+ * Informs WooCommerce that the plugin is compatible with the custom order tables and the cart and checkout blocks.
  */
  add_action('before_woocommerce_init', function() {
     if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
         \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
             'custom_order_tables',
+            __FILE__,
+            true
+        );
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'cart_checkout_blocks',
             __FILE__,
             true
         );
@@ -45,7 +50,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          *
          * @var string
          */
-        const VERSION = '2.1.23';
+        const VERSION = '2.1.24';
 
         /**
          * Instance of this class.
@@ -68,8 +73,15 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet.php';
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-helper.php';
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-shipping-simulator.php';
+                include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-virtual-fee.php';
 
                 add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
+
+                add_filter( 'woocommerce_cart_needs_shipping', array( 'WC_Frenet_Virtual_Fee', 'cart_needs_shipping' ) );
+                add_filter( 'woocommerce_cart_shipping_packages', array( 'WC_Frenet_Virtual_Fee', 'flag_virtual_fee_package' ), 100 );
+                add_filter( 'woocommerce_package_rates', array( 'WC_Frenet_Virtual_Fee', 'keep_only_virtual_fee_rate' ), 100, 2 );
+                add_action( 'woocommerce_after_calculate_totals', array( 'WC_Frenet_Virtual_Fee', 'restore_chosen_virtual_fee_rate' ), 1001 );
+                add_action( 'woocommerce_removed_coupon', array( 'WC_Frenet_Virtual_Fee', 'restore_chosen_virtual_fee_rate' ), 11 );
 
                 // Blocks checkout while the last live Frenet quote failed (see method docblock).
                 add_action( 'woocommerce_checkout_validate_order_before_payment', array( $this, 'block_checkout_if_frenet_quote_failed' ), 10, 2 );
@@ -108,6 +120,12 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          */
         public function load_plugin_textdomain() {
             load_plugin_textdomain( 'woo-shipping-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+
+            $locale  = apply_filters( 'plugin_locale', determine_locale(), 'woo-shipping-gateway' );
+            $mo_file = 'woo-shipping-gateway-' . $locale . '.mo';
+
+            load_textdomain( 'woo-shipping-gateway', WP_LANG_DIR . '/plugins/' . $mo_file, $locale );
+            load_textdomain( 'woo-shipping-gateway', WOO_FRENET_PATH . 'languages/' . $mo_file, $locale );
         }
 
         /**

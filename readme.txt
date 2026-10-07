@@ -3,9 +3,9 @@ Contributors: frenet, apiki, aguiart0, pedroasa
 Donate link: http://www.frenet.com.br/  
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
 Requires at least: 3.5  
-Tested up to: 6.9
-Version: 2.1.23
-Stable tag: 2.1.23
+Tested up to: 7.1
+Version: 2.1.24
+Stable tag: 2.1.24
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -29,6 +29,7 @@ O plugin da Frenet para WooCommerce conecta sua loja às principais transportado
 - Plataforma fácil de usar, com instalação rápida e suporte completo
 - SOS Proteção de Envios para cobertura contra roubo, perda e danos
 - Cotações Frenet apenas para as classes de entrega que desejar
+- Taxa fixa configurável para pedidos com produtos virtuais
 
 Com a Frenet, você tem liberdade para configurar sua logística do jeito certo para o seu e-commerce no WordPress, em qualquer estágio de crescimento.
 Instale o plugin hoje mesmo e experimente!
@@ -70,6 +71,10 @@ Mais segurança para os envios com proteção que cabe no seu bolso. Cobertura c
 - **Segmentação por classe de entrega**
 
 Configure a Frenet para realizar cotações apenas para produtos vinculados a determinadas classes de entrega, garantindo flexibilidade na sua estratégia logística.
+
+- **Taxa para produtos virtuais**
+
+Cobre um valor fixo como frete em pedidos com produtos virtuais, como uma taxa de processamento do pedido ou de envio do produto digital, com o nome que você escolher. A taxa aparece discriminada no carrinho, no checkout e no pedido.
 
 #### MAIS VANTAGENS:
 
@@ -136,6 +141,7 @@ The Frenet plugin for WooCommerce connects your store to the main carriers in Br
 - Easy-to-use platform with fast setup and full support
 - SOS Shipping Protection for theft, loss, and damage coverage
 - Frenet quotes only for selected shipping classes
+- Configurable fixed fee for orders with virtual products
 
 With Frenet, you’re free to set up your logistics the right way for your WordPress e-commerce, at any growth stage.
 
@@ -179,6 +185,10 @@ More safety for your shipments at a fair price. Coverage for theft, loss, and da
 
 Set Frenet to quote rates only for products linked to specific shipping classes, giving you more flexibility in your logistics strategy.
 
+**Virtual products fee**
+
+Charge a fixed amount as shipping on orders with virtual products, such as an order processing fee or a digital delivery fee, with the name you choose. The fee is itemized in the cart, checkout and order.
+
 ### MORE ADVANTAGES:
 
 - Reduce cart abandonment with more attractive shipping rates
@@ -195,7 +205,7 @@ Don’t waste time, install the plugin now and give it a try!
 - Check the integration tutorial under the "Installation" tab or visit [the Help Center article.](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria)
 After installation, create an account in the Frenet admin panel to obtain an access token. This plugin is free, but accessing all features requires a paid plan according to the pricing policy on our website: Frenet Plans and Pricing.
 
-WOOCOMMERCE: Tested up to 10.4.3
+WOOCOMMERCE: Tested up to 11.0.1
 
 ### QUESTIONS?
 
@@ -249,6 +259,10 @@ Não somos uma transportadora. A Frenet é uma plataforma completa de frete que 
 
 Temos um plano gratuito e outras opções com mensalidade. Você pode começar utilizando o plugin sem nenhum custo e, posteriormente, pode fazer um upgrade para ter mais funcionalidades se assim desejar.
 
+= Posso cobrar uma taxa em pedidos de produtos virtuais? =
+
+Sim. Ative a “Taxa para Produtos Virtuais” nas configurações da Frenet, informe o valor e o nome da taxa. Ela é cobrada como frete, uma vez por pedido, e aparece com o nome configurado no carrinho, no checkout e no pedido. Veja o passo a passo em “Taxa para Produtos Virtuais”, na seção de instalação.
+
 ### English FAQ: ###
 
 = What is the license of the plugin? =
@@ -270,6 +284,9 @@ We are not a carrier. Frenet is a full-featured shipping platform that connects 
 
 **Do I have to pay to use Frenet?**
 We offer a free plan and other subscription options. You can start using the plugin at no cost and upgrade later if you need more features.
+
+**Can I charge a fee on orders with virtual products?**
+Yes. Enable the "Virtual Products Fee" in the Frenet settings and set the fee amount and name. It is charged as shipping, once per order, and shows up with the configured name in the cart, checkout and order. See the step by step in "Virtual Products Fee", in the installation section.
 
 
 
@@ -297,12 +314,67 @@ Possuir instalada a extensão SimpleXML (que já é instalada por padrão com o 
 - Com o plugin instalado, navegue até WooCommerce > Configurações > Entrega > Frenet;
 - Nesta tela configure o seu Token, obtido no Painel Administrativo Frenet;
 - Também é possível configurar um “Pacote Padrão” que será utilizado para definir as medidas mínimas do pacote de entrega.
+- Em “Tempo Limite da Requisição” e “Tentativas de Requisição”, defina quanto tempo esperar pela API da Frenet e quantas vezes tentar de novo em caso de falha. Veja os detalhes em “Tempo Limite e Tentativas”, abaixo.
+- Na mesma tela, em “Limite de Cotações do Simulador”, defina quantas cotações o simulador de frete da página do produto aceita por visitante por minuto (padrão: 60; use 0 para não limitar).
+- Em “Produtos Virtuais”, é possível cobrar uma taxa fixa como frete em pedidos com produtos virtuais. Veja como configurar em “Taxa para Produtos Virtuais”, abaixo.
 
 = CONFIGURAÇÕES DOS PRODUTOS: =
 
-- Para que seja possível calcular o frete, os seus produtos precisam ser do tipo simples ou variável, e não estarem marcados com “virtual” ou “baixável”. Qualquer outro tipo de produto será ignorado na cotação;
+- Para que seja possível calcular o frete, os seus produtos precisam ser do tipo simples ou variável, e não estarem marcados com “virtual” ou “baixável”. Qualquer outro tipo de produto será ignorado na cotação. A exceção são os pedidos com produtos virtuais quando a “Taxa para Produtos Virtuais” está ativada (veja abaixo);
 - É necessário configurar o peso e dimensões de todos os seus produtos, caso você queira que a cotação de frete seja exata;
 - Alternativamente, você pode configurar apenas o peso e deixar as dimensões em branco, pois neste caso serão utilizadas as configurações do Pacote Padrão para as dimensões. Porém, neste caso, pode ocorrer uma variação no valor do frete.
+
+= TEMPO LIMITE E TENTATIVAS: =
+
+Controlam quanto tempo a loja espera pela API da Frenet e quantas vezes tenta de novo quando a cotação falha. Ficam em WooCommerce > Configurações > Entrega > (sua zona de entrega) > Frenet.
+
+Campos:
+
+- **Tempo Limite da Requisição (segundos)**: tempo máximo de espera pela resposta da API da Frenet em cada tentativa. Padrão: 5. Aceita de 2 a 10 segundos.
+- **Tentativas de Requisição**: quantas vezes a cotação é tentada antes de desistir (1 = sem nova tentativa). Padrão: 3. Aceita de 1 a 3.
+
+Como funciona:
+
+- Se a API não responder no tempo limite, ou responder com erro, a cotação é tentada de novo, até o número de tentativas configurado.
+- O pior caso de espera é Tentativas × Tempo Limite. Com os padrões, até 15 segundos.
+- Erros que não mudam ao repetir, como um Token inválido, não são tentados de novo.
+- Valores fora da faixa são ajustados automaticamente ao salvar, e o painel mostra um aviso com o valor que foi gravado.
+- Se todas as tentativas falharem, o cliente é avisado e a finalização do pedido fica bloqueada enquanto a Frenet for a forma de entrega escolhida. Com outra transportadora selecionada, o pedido segue normalmente.
+- As falhas de cotação são registradas sempre em WooCommerce > Status > Logs (origem "frenet"), mesmo com o "Relatório de Depuração" desligado.
+
+Recomendação: mantenha os padrões. Diminua o Tempo Limite se preferir que o checkout desista mais rápido em caso de instabilidade, ou aumente se a sua hospedagem tiver conexões mais lentas.
+
+= TAXA PARA PRODUTOS VIRTUAIS: =
+
+Permite cobrar um valor fixo como frete em pedidos com produtos virtuais, por exemplo uma taxa de processamento do pedido ou de envio do produto digital. A taxa vem desativada e é configurada por zona de entrega.
+
+Onde configurar: WooCommerce > Configurações > Entrega > (sua zona de entrega) > Frenet, na seção “Produtos Virtuais”.
+
+Campos:
+
+- **Taxa para Produtos Virtuais**: marque “Ativar” para cobrar a taxa. Desmarcado (padrão), os produtos virtuais seguem sem frete, como antes.
+- **Valor da Taxa para Produtos Virtuais**: valor fixo cobrado uma vez por pedido, independentemente da quantidade de produtos virtuais. Use o mesmo separador decimal da loja (ex.: 10,00). Com valor zero ou vazio, a taxa não é cobrada.
+- **Nome da Taxa para Produtos Virtuais**: nome exibido ao cliente no carrinho, no checkout, no e-mail e no pedido. Padrão: “Taxa de processamento do pedido”. Se ficar vazio, o padrão é usado.
+
+Passo a passo:
+
+1. Acesse WooCommerce > Configurações > Entrega e clique na zona de entrega em que a taxa deve valer (ex.: Brasil);
+2. Clique em “Editar” no método Frenet;
+3. Na seção “Produtos Virtuais”, marque “Ativar” em “Taxa para Produtos Virtuais”;
+4. Informe o valor da taxa (ex.: 10,00) e, se quiser, altere o nome (ex.: “Taxa de processamento do pedido”);
+5. Clique em “Salvar alterações”. Repita nas outras zonas em que a taxa deve ser cobrada.
+
+Como a taxa aparece para o cliente:
+
+- **Carrinho só com produtos virtuais**: a taxa é a única opção de entrega, com o nome e o valor configurados (ex.: “Taxa de processamento do pedido: R$ 10,00”). Os demais métodos de entrega da zona ficam ocultos. No pedido, ela é gravada como o frete, com o nome configurado, e somada ao total.
+- **Carrinho com produtos físicos e virtuais**: o valor da taxa é somado a cada cotação da Frenet, e o nome do frete passa a indicá-la (ex.: “PAC (Entrega em 5 dias úteis) + Taxa de processamento do pedido (R$ 10,00)”). No pedido, o valor da taxa também fica registrado separadamente nos detalhes do item de frete. Outras transportadoras da zona não recebem a taxa.
+- **Carrinho só com produtos físicos**: nada muda.
+
+Observações:
+
+- Com a taxa ativada, pedidos só com produtos virtuais passam a pedir endereço de entrega no checkout, pois a taxa é cobrada como frete.
+- A taxa vale para a zona de entrega do endereço do cliente. Em zonas sem a taxa ativada, os produtos virtuais seguem sem frete.
+- O simulador de frete da página do produto continua oculto para produtos virtuais.
 
 ### English INSTALLATION: ###
 
@@ -327,15 +399,100 @@ SimpleXML extension (already included in PHP 5).
 - With the plugin installed, go to WooCommerce > Settings > Shipping > Frenet; 
 - On this screen, enter your Token, obtained from the Frenet Admin Panel;
 - You can also configure a "Default Package" to define minimum package dimensions.
+- "Request Timeout" and "Request Attempts" set how long to wait for the Frenet API and how many times to retry on failure. See the details in "Request Timeout and Attempts" below.
+- On the same screen, "Simulator Quote Limit" sets how many quotes the product page shipping simulator accepts per visitor per minute (default: 60; use 0 for no limit).
+- Under "Virtual Products", you can charge a fixed fee as shipping on orders with virtual products. See how to set it up in "Virtual Products Fee" below.
 
 = PRODUCT SETTINGS: = 
 
-- To allow shipping calculation, products must be simple or variable and not marked as "virtual" or "downloadable". Any other type of product will be ignored in the quote;
+- To allow shipping calculation, products must be simple or variable and not marked as "virtual" or "downloadable". Any other type of product will be ignored in the quote. The exception is orders with virtual products when the "Virtual Products Fee" is enabled (see below);
 - Weight and dimensions must be configured for accurate quoting;
 - If only weight is set, the system will use Default Package dimensions, which may result in variations in shipping cost.
 
 
+= REQUEST TIMEOUT AND ATTEMPTS: =
+
+These settings control how long the store waits for the Frenet API and how many times it retries when a quote fails. They are in WooCommerce > Settings > Shipping > (your shipping zone) > Frenet.
+
+Fields:
+
+- **Request Timeout (seconds)**: maximum time to wait for the Frenet API on each attempt. Default: 5. Accepts 2 to 10 seconds.
+- **Request Attempts**: how many times the quote is tried before giving up (1 = no retry). Default: 3. Accepts 1 to 3.
+
+How it works:
+
+- If the API does not answer within the timeout, or answers with an error, the quote is tried again, up to the configured number of attempts.
+- The worst-case wait is Attempts × Timeout. With the defaults, up to 15 seconds.
+- Errors that would not change on a retry, such as an invalid Token, are not retried.
+- Out-of-range values are adjusted automatically on save, and the admin shows a notice with the value that was saved.
+- If every attempt fails, the customer is notified and placing the order is blocked while Frenet is the chosen shipping method. With another carrier selected, the order goes through normally.
+- Quote failures are always logged in WooCommerce > Status > Logs (source "frenet"), even with the "Debug Log" disabled.
+
+Recommendation: keep the defaults. Lower the timeout if you prefer checkout to give up faster during instability, or raise it if your hosting has slower connections.
+
+= VIRTUAL PRODUCTS FEE: =
+
+Lets you charge a fixed amount as shipping on orders with virtual products, such as an order processing fee or a digital delivery fee. The fee is disabled by default and is set per shipping zone.
+
+Where to set it: WooCommerce > Settings > Shipping > (your shipping zone) > Frenet, under "Virtual Products".
+
+Fields:
+
+- **Virtual Products Fee**: check "Enable" to charge the fee. When unchecked (default), virtual products stay without shipping, as before.
+- **Virtual Products Fee Amount**: fixed amount charged once per order, regardless of how many virtual products are in the cart. Use the store's decimal separator (e.g. 10.00). A zero or empty amount disables the fee.
+- **Virtual Products Fee Name**: name shown to the customer in the cart, checkout, e-mail and order. Default: "Order processing fee". If left empty, the default is used.
+
+Step by step:
+
+1. Go to WooCommerce > Settings > Shipping and open the shipping zone where the fee applies (e.g. Brazil);
+2. Click "Edit" on the Frenet method;
+3. Under "Virtual Products", check "Enable" in "Virtual Products Fee";
+4. Enter the fee amount (e.g. 10.00) and, optionally, change its name;
+5. Click "Save changes". Repeat for every zone where the fee should be charged.
+
+How the customer sees the fee:
+
+- **Cart with only virtual products**: the fee is the only shipping option, with the configured name and amount. The zone's other shipping methods are hidden. The order stores it as the shipping line, with the configured name, added to the order total.
+- **Cart with physical and virtual products**: the fee amount is added to every Frenet quote, and the shipping name shows it (e.g. "PAC (Delivery in 5 working days) + Order processing fee (R$ 10.00)"). The order also stores the fee amount separately in the shipping line details. Other carriers in the zone do not get the fee.
+- **Cart with only physical products**: nothing changes.
+
+Notes:
+
+- With the fee enabled, orders with only virtual products ask for a shipping address at checkout, because the fee is charged as shipping.
+- The fee applies to the shipping zone of the customer's address. In zones without the fee enabled, virtual products stay without shipping.
+- The product page shipping simulator remains hidden for virtual products.
+
 == Changelog ==
+
+= 2.1.24 - 01/10/2026 =
+
+* Corrige o simulador de frete da página do produto para produtos variáveis: ele passa a aparecer e a cotar a variação escolhida por qualquer controle (lista, radio, botão, swatch de cor ou de imagem), inclusive com plugins como Variation Swatches e Kadence Shop Kit.
+* Adiciona suporte ao simulador de frete no bloco "Add to Cart + Options" dos temas de bloco do WooCommerce.
+* O link "Limpar" das variações passa a esconder o simulador e apagar a cotação anterior; ao trocar de variação, a cotação antiga também é apagada.
+* Oculta o simulador para produtos e variações que não precisam de envio, que estão indisponíveis ou fora de estoque.
+* Redesenha o resultado da cotação do simulador em colunas (Entrega e Custo), com o prazo de entrega abaixo de cada serviço; os textos e o valor do frete seguem as cores do tema da loja.
+* O botão do simulador passa a se chamar "Calcular" (antes, "Ok").
+* O campo de CEP do simulador ganha um ícone, o texto de exemplo "Digite seu CEP" e o estilo de campos do tema, com teclado numérico no celular.
+* Corrige o prazo estimado de entrega no simulador, que não aparecia mesmo com a opção "Estimativa de entrega" ativada.
+* Exibe o valor do frete no simulador com a formatação de moeda da loja.
+* Passa a cotar a quantidade informada no formulário do próprio produto, sem interferência de outros campos de quantidade da página.
+* Corrige o simulador que ficava preso em "Aguarde..." ao clicar em OK com o CEP vazio, e o resultado duplicado ao clicar em OK mais de uma vez.
+* Adiciona um limite de cotações do simulador por visitante (padrão: 60 por minuto), configurável no novo campo "Limite de Cotações do Simulador" (0 desativa o limite), para proteger a cota da sua API Frenet. Quando um visitante atinge o limite, o bloqueio é registrado em WooCommerce > Status > Logs (origem "frenet") com o IP e, se houver, o ID e o nome da conta.
+* Passa a validar no servidor os dados da cotação do simulador (quantidade, produto, variação e forma de entrega).
+* Correção de segurança: o CEP salvo do cliente passa a ser escapado ao ser exibido no simulador.
+* Evita conflitos do simulador com temas e outros plugins (formulário e campos com identificação própria) e corrige o rótulo do campo de CEP.
+* Melhora o desempenho da página de produtos variáveis, que carregava os dados de todas as variações para montar o simulador.
+* Os textos do simulador passam a ser traduzíveis, e as traduções incluídas no plugin passam a complementar o pacote de idioma do WordPress.org.
+* Os arquivos JS e CSS do simulador passam a ser atualizados no navegador sempre que mudam, evitando versões antigas em cache.
+* Registra como depuração, e não como erro, a cotação ignorada quando o carrinho não tem itens com envio.
+* Remove textos não utilizados dos arquivos de tradução.
+* Adiciona a "Taxa para Produtos Virtuais", na nova seção "Produtos Virtuais" das configurações da Frenet: um valor fixo cobrado como frete em pedidos com produtos virtuais, por exemplo uma taxa de processamento do pedido. Vem desativada e é configurada por zona de entrega.
+* Novos campos "Taxa para Produtos Virtuais" (ativar/desativar), "Valor da Taxa para Produtos Virtuais" (cobrado uma vez por pedido; zero desativa a cobrança) e "Nome da Taxa para Produtos Virtuais" (padrão: "Taxa de processamento do pedido").
+* Com apenas produtos virtuais no carrinho, a taxa passa a ser a única opção de entrega, com o nome e o valor configurados, e os demais métodos de entrega da zona ficam ocultos. No pedido, a taxa é gravada como o frete e somada ao total.
+* Com produtos físicos e virtuais no carrinho, a taxa é somada a cada cotação da Frenet e identificada no nome do frete; no pedido, o valor da taxa também fica registrado separadamente nos detalhes do item de frete. Outras transportadoras não recebem a taxa.
+* Funciona no checkout em blocos e no checkout clássico do WooCommerce.
+* Traduz para pt-BR os textos da nova seção "Produtos Virtuais".
+* Declara compatibilidade com os blocos de carrinho e checkout do WooCommerce e atualiza as versões testadas para WordPress 7.1 e WooCommerce 11.0.1.
 
 = 2.1.23 - 31/08/2026 =
 
@@ -467,6 +624,11 @@ SimpleXML extension (already included in PHP 5).
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 2.1.24 - 01/10/2026 =
+
+* O simulador de frete passa a aceitar até 60 cotações por minuto por visitante (ajuste em Frenet > "Limite de Cotações do Simulador"; 0 desativa). Temas que personalizam o template do simulador devem atualizar a cópia.
+* Nova opção "Taxa para Produtos Virtuais" (desativada por padrão). Ao ativá-la, pedidos com produtos virtuais passam a pedir endereço de entrega e a cobrar a taxa como frete.
 
 = 2.1.23 - 31/08/2026 =
 

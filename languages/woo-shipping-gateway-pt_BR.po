@@ -21,9 +21,6 @@ msgid_plural "Delivery in %d working days"
 msgstr[0] "Entrega em %d dia útil"
 msgstr[1] "Entrega em %d dias úteis"
 
-msgid "Invalid zip code."
-msgstr "CEP inválido."
-
 msgid "Shipping"
 msgstr "Entrega"
 
@@ -72,18 +69,6 @@ msgstr "Dias adicionais"
 msgid "Additional days to the estimated delivery."
 msgstr "Dias adicionais para a entrega estimada."
 
-msgid "User"
-msgstr "Chave de acesso"
-
-msgid "Your Frenet access key."
-msgstr "Chave de acesso ao Frenet"
-
-msgid "Password"
-msgstr "Senha de acesso"
-
-msgid "Your Frenet access key password."
-msgstr "Senha da chave de acesso ao Frenet"
-
 msgid "Sets a minimum measure for the package."
 msgstr "Defina uma medida mínima para o pacote."
 
@@ -120,18 +105,6 @@ msgstr ""
 "arquivo %s. Falhas de cotação são sempre registradas no log do WooCommerce, "
 "independente desta opção."
 
-msgid "WooCommerce Frenet"
-msgstr "WooCommerce Frenet"
-
-msgid "Settings"
-msgstr "Configurações"
-
-msgid "WooCommerce Frenet depends on the last version of %s to work!"
-msgstr "WooCommerce Frenet depende da última versão do %s para funcionar!"
-
-msgid "WooCommerce"
-msgstr "WooCommerce"
-
 msgid "https://github.com/FrenetGatewaydeFretes/woo-shipping-gateway"
 msgstr "https://github.com/FrenetGatewaydeFretes/woo-shipping-gateway"
 
@@ -158,3 +131,61 @@ msgstr "Frenet: o Tempo Limite da Requisição deve estar entre %2$d e %3$d segu
 
 msgid "Frenet: Request Attempts must be between %2$d and %3$d. %1$d was adjusted to %4$d."
 msgstr "Frenet: as Tentativas de Requisição devem estar entre %2$d e %3$d. %1$d foi ajustado para %4$d."
+
+msgid "Simulator Quote Limit"
+msgstr "Limite de Cotações do Simulador"
+
+msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) per minute. Protects your Frenet API quota from abuse. Use 0 for no limit."
+msgstr "Número máximo de cotações que o simulador de frete da página do produto permite por visitante (endereço IP) por minuto. Protege a cota da sua API Frenet contra abusos. Use 0 para não limitar."
+
+msgid "Too many shipping simulations in a short time. Please wait a minute and try again."
+msgstr "Muitas simulações de frete em pouco tempo. Aguarde um minuto e tente novamente."
+
+msgid "Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost."
+msgstr "Não foi possível simular o frete, por favor tente adicionar o produto ao carrinho e prossiga para tentar obter o valor."
+
+msgid "Cost"
+msgstr "Custo"
+
+msgid "Calculate shipping"
+msgstr "Calcular Frete"
+
+msgid "Enter your postcode"
+msgstr "Digite seu CEP"
+
+msgid "Calculate"
+msgstr "Calcular"
+
+msgid "Please wait..."
+msgstr "Aguarde..."
+
+msgid "Virtual Products"
+msgstr "Produtos Virtuais"
+
+msgid "Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote."
+msgstr "Cobra uma taxa fixa como frete em pedidos com produtos virtuais, como uma taxa de processamento. Quando o carrinho tem apenas produtos virtuais, a taxa é a única opção de entrega; com produtos físicos, ela é somada a cada cotação da Frenet."
+
+msgid "Virtual Products Fee"
+msgstr "Taxa para Produtos Virtuais"
+
+msgid "Charge a fixed fee as shipping when the cart has virtual products."
+msgstr "Cobra uma taxa fixa como frete quando o carrinho tem produtos virtuais."
+
+msgid "Virtual Products Fee Amount"
+msgstr "Valor da Taxa para Produtos Virtuais"
+
+msgid "Fixed amount charged once per order. The fee is only charged when the amount is greater than zero."
+msgstr "Valor fixo cobrado uma vez por pedido. A taxa só é cobrada quando o valor é maior que zero."
+
+msgid "Virtual Products Fee Name"
+msgstr "Nome da Taxa para Produtos Virtuais"
+
+msgid "Name of the fee shown to the customer in the cart, checkout and order."
+msgstr "Nome da taxa exibido ao cliente no carrinho, no checkout e no pedido."
+
+msgid "Order processing fee"
+msgstr "Taxa de processamento do pedido"
+
+#, php-format
+msgid "%1$s + %2$s (%3$s)"
+msgstr "%1$s + %2$s (%3$s)"
