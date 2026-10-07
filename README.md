@@ -464,7 +464,7 @@ Notes:
 
 == Changelog ==
 
-= 2.1.24 - 01/10/2026 =
+= 2.1.24 - 07/10/2026 =
 
 * Corrige o simulador de frete da página do produto para produtos variáveis: ele passa a aparecer e a cotar a variação escolhida por qualquer controle (lista, radio, botão, swatch de cor ou de imagem), inclusive com plugins como Variation Swatches e Kadence Shop Kit.
 * Adiciona suporte ao simulador de frete no bloco "Add to Cart + Options" dos temas de bloco do WooCommerce.
