@@ -314,6 +314,7 @@ Possuir instalada a extensão SimpleXML (que já é instalada por padrão com o 
 - Com o plugin instalado, navegue até WooCommerce > Configurações > Entrega > Frenet;
 - Nesta tela configure o seu Token, obtido no Painel Administrativo Frenet;
 - Também é possível configurar um “Pacote Padrão” que será utilizado para definir as medidas mínimas do pacote de entrega.
+- Em “Tempo Limite da Requisição” e “Tentativas de Requisição”, defina quanto tempo esperar pela API da Frenet e quantas vezes tentar de novo em caso de falha. Veja os detalhes em “Tempo Limite e Tentativas”, abaixo.
 - Na mesma tela, em “Limite de Cotações do Simulador”, defina quantas cotações o simulador de frete da página do produto aceita por visitante por minuto (padrão: 60; use 0 para não limitar).
 - Em “Produtos Virtuais”, é possível cobrar uma taxa fixa como frete em pedidos com produtos virtuais. Veja como configurar em “Taxa para Produtos Virtuais”, abaixo.
 
@@ -322,6 +323,26 @@ Possuir instalada a extensão SimpleXML (que já é instalada por padrão com o 
 - Para que seja possível calcular o frete, os seus produtos precisam ser do tipo simples ou variável, e não estarem marcados com “virtual” ou “baixável”. Qualquer outro tipo de produto será ignorado na cotação. A exceção são os pedidos com produtos virtuais quando a “Taxa para Produtos Virtuais” está ativada (veja abaixo);
 - É necessário configurar o peso e dimensões de todos os seus produtos, caso você queira que a cotação de frete seja exata;
 - Alternativamente, você pode configurar apenas o peso e deixar as dimensões em branco, pois neste caso serão utilizadas as configurações do Pacote Padrão para as dimensões. Porém, neste caso, pode ocorrer uma variação no valor do frete.
+
+= TEMPO LIMITE E TENTATIVAS: =
+
+Controlam quanto tempo a loja espera pela API da Frenet e quantas vezes tenta de novo quando a cotação falha. Ficam em WooCommerce > Configurações > Entrega > (sua zona de entrega) > Frenet.
+
+Campos:
+
+- **Tempo Limite da Requisição (segundos)**: tempo máximo de espera pela resposta da API da Frenet em cada tentativa. Padrão: 5. Aceita de 2 a 10 segundos.
+- **Tentativas de Requisição**: quantas vezes a cotação é tentada antes de desistir (1 = sem nova tentativa). Padrão: 3. Aceita de 1 a 3.
+
+Como funciona:
+
+- Se a API não responder no tempo limite, ou responder com erro, a cotação é tentada de novo, até o número de tentativas configurado.
+- O pior caso de espera é Tentativas × Tempo Limite. Com os padrões, até 15 segundos.
+- Erros que não mudam ao repetir, como um Token inválido, não são tentados de novo.
+- Valores fora da faixa são ajustados automaticamente ao salvar, e o painel mostra um aviso com o valor que foi gravado.
+- Se todas as tentativas falharem, o cliente é avisado e a finalização do pedido fica bloqueada enquanto a Frenet for a forma de entrega escolhida. Com outra transportadora selecionada, o pedido segue normalmente.
+- As falhas de cotação são registradas sempre em WooCommerce > Status > Logs (origem "frenet"), mesmo com o "Relatório de Depuração" desligado.
+
+Recomendação: mantenha os padrões. Diminua o Tempo Limite se preferir que o checkout desista mais rápido em caso de instabilidade, ou aumente se a sua hospedagem tiver conexões mais lentas.
 
 = TAXA PARA PRODUTOS VIRTUAIS: =
 
@@ -378,6 +399,7 @@ SimpleXML extension (already included in PHP 5).
 - With the plugin installed, go to WooCommerce > Settings > Shipping > Frenet; 
 - On this screen, enter your Token, obtained from the Frenet Admin Panel;
 - You can also configure a "Default Package" to define minimum package dimensions.
+- "Request Timeout" and "Request Attempts" set how long to wait for the Frenet API and how many times to retry on failure. See the details in "Request Timeout and Attempts" below.
 - On the same screen, "Simulator Quote Limit" sets how many quotes the product page shipping simulator accepts per visitor per minute (default: 60; use 0 for no limit).
 - Under "Virtual Products", you can charge a fixed fee as shipping on orders with virtual products. See how to set it up in "Virtual Products Fee" below.
 
@@ -387,6 +409,26 @@ SimpleXML extension (already included in PHP 5).
 - Weight and dimensions must be configured for accurate quoting;
 - If only weight is set, the system will use Default Package dimensions, which may result in variations in shipping cost.
 
+
+= REQUEST TIMEOUT AND ATTEMPTS: =
+
+These settings control how long the store waits for the Frenet API and how many times it retries when a quote fails. They are in WooCommerce > Settings > Shipping > (your shipping zone) > Frenet.
+
+Fields:
+
+- **Request Timeout (seconds)**: maximum time to wait for the Frenet API on each attempt. Default: 5. Accepts 2 to 10 seconds.
+- **Request Attempts**: how many times the quote is tried before giving up (1 = no retry). Default: 3. Accepts 1 to 3.
+
+How it works:
+
+- If the API does not answer within the timeout, or answers with an error, the quote is tried again, up to the configured number of attempts.
+- The worst-case wait is Attempts × Timeout. With the defaults, up to 15 seconds.
+- Errors that would not change on a retry, such as an invalid Token, are not retried.
+- Out-of-range values are adjusted automatically on save, and the admin shows a notice with the value that was saved.
+- If every attempt fails, the customer is notified and placing the order is blocked while Frenet is the chosen shipping method. With another carrier selected, the order goes through normally.
+- Quote failures are always logged in WooCommerce > Status > Logs (source "frenet"), even with the "Debug Log" disabled.
+
+Recommendation: keep the defaults. Lower the timeout if you prefer checkout to give up faster during instability, or raise it if your hosting has slower connections.
 
 = VIRTUAL PRODUCTS FEE: =
 
