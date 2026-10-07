@@ -158,3 +158,34 @@ msgstr "Calcular"
 
 msgid "Please wait..."
 msgstr "Aguarde..."
+
+msgid "Virtual Products"
+msgstr "Produtos Virtuais"
+
+msgid "Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote."
+msgstr "Cobra uma taxa fixa como frete em pedidos com produtos virtuais, como uma taxa de processamento. Quando o carrinho tem apenas produtos virtuais, a taxa é a única opção de entrega; com produtos físicos, ela é somada a cada cotação da Frenet."
+
+msgid "Virtual Products Fee"
+msgstr "Taxa para Produtos Virtuais"
+
+msgid "Charge a fixed fee as shipping when the cart has virtual products."
+msgstr "Cobra uma taxa fixa como frete quando o carrinho tem produtos virtuais."
+
+msgid "Virtual Products Fee Amount"
+msgstr "Valor da Taxa para Produtos Virtuais"
+
+msgid "Fixed amount charged once per order. The fee is only charged when the amount is greater than zero."
+msgstr "Valor fixo cobrado uma vez por pedido. A taxa só é cobrada quando o valor é maior que zero."
+
+msgid "Virtual Products Fee Name"
+msgstr "Nome da Taxa para Produtos Virtuais"
+
+msgid "Name of the fee shown to the customer in the cart, checkout and order."
+msgstr "Nome da taxa exibido ao cliente no carrinho, no checkout e no pedido."
+
+msgid "Order processing fee"
+msgstr "Taxa de processamento do pedido"
+
+#, php-format
+msgid "%1$s + %2$s (%3$s)"
+msgstr "%1$s + %2$s (%3$s)"

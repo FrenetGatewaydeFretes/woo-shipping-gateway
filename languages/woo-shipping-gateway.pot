@@ -194,3 +194,45 @@ msgstr ""
 #: templates/single-product/shipping-simulator.php:59
 msgid "Please wait..."
 msgstr ""
+
+#: includes/class-wc-frenet.php:275
+msgid "Virtual Products"
+msgstr ""
+
+#: includes/class-wc-frenet.php:277
+msgid "Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote."
+msgstr ""
+
+#: includes/class-wc-frenet.php:280
+msgid "Virtual Products Fee"
+msgstr ""
+
+#: includes/class-wc-frenet.php:283
+msgid "Charge a fixed fee as shipping when the cart has virtual products."
+msgstr ""
+
+#: includes/class-wc-frenet.php:288
+msgid "Virtual Products Fee Amount"
+msgstr ""
+
+#: includes/class-wc-frenet.php:290
+msgid "Fixed amount charged once per order. The fee is only charged when the amount is greater than zero."
+msgstr ""
+
+#: includes/class-wc-frenet.php:295
+msgid "Virtual Products Fee Name"
+msgstr ""
+
+#: includes/class-wc-frenet.php:297
+msgid "Name of the fee shown to the customer in the cart, checkout and order."
+msgstr ""
+
+#: includes/class-wc-frenet.php:299 includes/class-wc-frenet.php:582
+msgid "Order processing fee"
+msgstr ""
+
+#. translators: 1: shipping service, 2: virtual products fee name, 3: virtual products fee amount
+#: includes/class-wc-frenet.php:598
+#, php-format
+msgid "%1$s + %2$s (%3$s)"
+msgstr ""
