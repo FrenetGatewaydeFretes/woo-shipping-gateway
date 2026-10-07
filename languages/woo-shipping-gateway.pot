@@ -120,10 +120,13 @@ msgstr ""
 msgid "Frenet is a brazilian delivery method."
 msgstr ""
 
-#: includes/class-wc-frenet.php:317 includes/class-wc-frenet.php:320
+#. translators: %d: number of working days until delivery
+#: includes/class-wc-frenet.php:643 includes/class-wc-frenet-shipping-simulator.php:34
 #, php-format
 msgid "Delivery in %d working day"
-msgstr ""
+msgid_plural "Delivery in %d working days"
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/class-wc-frenet.php:245
 msgid "Request Timeout (seconds)"

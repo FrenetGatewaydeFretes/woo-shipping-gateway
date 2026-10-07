@@ -30,6 +30,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
      */
     protected static function delivery_time_message()
     {
+        /* translators: %d: number of working days until delivery */
         return _n_noop('Delivery in %d working day', 'Delivery in %d working days', 'woo-shipping-gateway');
     }
 
