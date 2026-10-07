@@ -298,6 +298,7 @@ Possuir instalada a extensão SimpleXML (que já é instalada por padrão com o 
 - Nesta tela configure o seu Token, obtido no Painel Administrativo Frenet;
 - Também é possível configurar um “Pacote Padrão” que será utilizado para definir as medidas mínimas do pacote de entrega.
 - Na mesma tela, em “Limite de Cotações do Simulador”, defina quantas cotações o simulador de frete da página do produto aceita por visitante por minuto (padrão: 60; use 0 para não limitar).
+- Em “Produtos Virtuais”, ative a “Taxa para Produtos Virtuais” para cobrar um valor fixo como frete em pedidos com produtos virtuais (por exemplo, uma taxa de processamento). Informe o valor, cobrado uma vez por pedido, e o nome exibido ao cliente (padrão: “Taxa de processamento do pedido”). Se o carrinho tiver só produtos virtuais, a taxa é a única opção de entrega; com produtos físicos, ela é somada a cada cotação da Frenet. A configuração vale para a zona de entrega do método.
 
 = CONFIGURAÇÕES DOS PRODUTOS: =
 
@@ -329,6 +330,7 @@ SimpleXML extension (already included in PHP 5).
 - On this screen, enter your Token, obtained from the Frenet Admin Panel;
 - You can also configure a "Default Package" to define minimum package dimensions.
 - On the same screen, "Simulator Quote Limit" sets how many quotes the product page shipping simulator accepts per visitor per minute (default: 60; use 0 for no limit).
+- Under "Virtual Products", enable the "Virtual Products Fee" to charge a fixed amount as shipping on orders with virtual products (e.g. a processing fee). Set the amount, charged once per order, and the name shown to the customer (default: "Order processing fee"). When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote. The setting applies to the shipping zone of the method.
 
 = PRODUCT SETTINGS: = 
 
@@ -361,6 +363,7 @@ SimpleXML extension (already included in PHP 5).
 * Os arquivos JS e CSS do simulador passam a ser atualizados no navegador sempre que mudam, evitando versões antigas em cache.
 * Registra como depuração, e não como erro, a cotação ignorada quando o carrinho não tem itens com envio.
 * Remove textos não utilizados dos arquivos de tradução.
+* Adiciona a "Taxa para Produtos Virtuais" (nova seção "Produtos Virtuais"): um valor fixo cobrado como frete, uma vez por pedido, em pedidos com produtos virtuais, com nome configurável (padrão: "Taxa de processamento do pedido"). Com apenas produtos virtuais no carrinho, a taxa é a única opção de entrega e aparece no pedido com o nome configurado; com produtos físicos, é somada a cada cotação da Frenet e identificada no nome do frete.
 
 = 2.1.23 - 31/08/2026 =
 
@@ -496,6 +499,7 @@ SimpleXML extension (already included in PHP 5).
 = 2.1.24 - 01/10/2026 =
 
 * O simulador de frete passa a aceitar até 60 cotações por minuto por visitante (ajuste em Frenet > "Limite de Cotações do Simulador"; 0 desativa). Temas que personalizam o template do simulador devem atualizar a cópia.
+* Nova opção "Taxa para Produtos Virtuais" (desativada por padrão). Ao ativá-la, pedidos com produtos virtuais passam a pedir endereço de entrega e a cobrar a taxa como frete.
 
 = 2.1.23 - 31/08/2026 =
 
