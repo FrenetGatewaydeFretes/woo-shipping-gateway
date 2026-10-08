@@ -48,9 +48,11 @@
 		input.setAttribute( 'aria-busy', kind === 'loading' ? 'true' : 'false' );
 	}
 
-	function run( input, fill ) {
+	// The CEP comes as a value, not from the input: on block pages the billing form (and its input) is not rendered
+	// while "use the same address for billing" is checked.
+	function run( input, cep, fill ) {
 		status( input, frenetAutofill.loading, 'loading' );
-		lookup( input.value ).then( function ( a ) {
+		lookup( cep ).then( function ( a ) {
 			if ( ! a ) {
 				status( input, '' );
 				return;
@@ -104,7 +106,7 @@
 			return;
 		}
 		lastClassic[ m[ 1 ] ] = cep;
-		run( e.target, function ( a ) { fillClassic( m[ 1 ], a ); } );
+		run( e.target, cep, function ( a ) { fillClassic( m[ 1 ], a ); } );
 	}
 	document.addEventListener( 'input', onClassic );
 	document.addEventListener( 'change', onClassic );
@@ -128,8 +130,15 @@
 			}
 			last[ type ] = cep;
 			var input = document.getElementById( type + '-postcode' );
-			run( input, function ( a ) {
-				var patch = { address_1: street( a, false ), city: a.city, state: a.state, country: addr.country || 'BR' };
+			// Neighborhood added as a block-checkout field by Brazilian plugins (e.g. "br-checkout-fields/billing_neighborhood").
+			var districtKey = Object.keys( addr ).filter( function ( k ) {
+				return /(^|\/)((billing|shipping)_)?neighborhood$/.test( k );
+			} )[ 0 ];
+			run( input, cep, function ( a ) {
+				var patch = { address_1: street( a, !! districtKey ), city: a.city, state: a.state, country: addr.country || 'BR' };
+				if ( districtKey && a.district ) {
+					patch[ districtKey ] = a.district;
+				}
 				var dispatch = wp.data.dispatch( 'wc/store/cart' );
 				if ( type === 'shipping' && dispatch.setShippingAddress ) {
 					dispatch.setShippingAddress( patch );
