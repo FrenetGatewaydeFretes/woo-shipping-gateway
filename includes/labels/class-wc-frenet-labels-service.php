@@ -280,6 +280,7 @@ class WC_Frenet_Labels_Service {
 		if ( null !== $label['status'] ) {
 			$order->update_meta_data( '_frenet_shipment_status', (string) $label['status'] );
 		}
+		$new_code = '' !== $label['tracking'] && (string) $order->get_meta( '_frenet_tracking_code' ) !== $label['tracking'];
 		if ( '' !== $label['tracking'] ) {
 			$order->update_meta_data( '_frenet_tracking_code', $label['tracking'] );
 			// Remembers which code came from the label, so cancelling it never removes a code typed by hand.
@@ -290,7 +291,17 @@ class WC_Frenet_Labels_Service {
 			$order->update_meta_data( '_frenet_label_ready', '1' );
 			$order->add_order_note( __( 'Frenet label ready to print.', 'woo-shipping-gateway' ) );
 		}
+		if ( $new_code ) {
+			/* translators: %s: tracking code */
+			$order->add_order_note( sprintf( __( 'Tracking code added: %s', 'woo-shipping-gateway' ), $label['tracking'] ) );
+		}
 		$order->save();
+		// Tells the customer the code, like a code typed in the order. The status is left to the tracking events: a
+		// label just bought is not posted yet ("Etiqueta emitida"), and it may still be cancelled.
+		if ( $new_code && WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
+			WC()->mailer();
+			do_action( 'woocommerce_frenet_tracking_email', $order->get_id() );
+		}
 		return $ready;
 	}
 
