@@ -234,6 +234,8 @@
 
 /* Facts and messages */
 .frenet-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 0; }
+/* The script hides these with the hidden attribute; their display rules would otherwise keep them visible. */
+.frenet-facts[hidden], .frenet-summary[hidden], .frenet-warning[hidden] { display: none; }
 .frenet-facts div { padding: 12px 14px; border-radius: 10px; background: var(--fl-violet-soft); }
 .frenet-facts dt { color: var(--fl-muted); font-size: 12px; }
 .frenet-facts dd { margin: 0; color: var(--fl-navy); font-family: var(--fl-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
