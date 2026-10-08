@@ -122,6 +122,11 @@ class WC_Frenet_Labels_Service {
 			return new WP_Error( 'frenet_labels_service_gone', __( 'This carrier service is no longer available for this order. Calculate the freight again and choose another one.', 'woo-shipping-gateway' ) );
 		}
 		$journey = 'panel' === $journey ? 'panel' : 'here';
+		// A previous shipment of this order was cancelled or deleted: Frenet keeps its order id, so use a new one.
+		if ( '' !== (string) $order->get_meta( '_frenet_shipment_id' ) ) {
+			$order->update_meta_data( '_frenet_order_attempt', (string) ( max( 1, (int) $order->get_meta( '_frenet_order_attempt' ) ) + 1 ) );
+			$order->save();
+		}
 		// 1) Create WITHOUT charging; store the id at once so a later failure never loses a shipment.
 		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', 'panel' === $journey ? '/orders' : '/shipments', array( WC_Frenet_Labels_Payload::build( $order, $service ) ) );
 		if ( is_wp_error( $res ) ) {

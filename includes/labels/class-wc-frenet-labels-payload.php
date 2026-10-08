@@ -171,6 +171,19 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
+	 * Order id sent to Frenet. Frenet refuses a second shipment for an order id it already used ("Este pedido já
+	 * está integrado na etiqueta ..."), even when that label was cancelled, so later attempts go as "175-2", "175-3".
+	 * Pure: unit tested.
+	 *
+	 * @param int|string $order_id Order id.
+	 * @param int        $attempt  1 (or 0) for the first shipment of the order.
+	 * @return string
+	 */
+	public static function frenet_order_id( $order_id, $attempt ) {
+		return (int) $attempt > 1 ? $order_id . '-' . (int) $attempt : (string) $order_id;
+	}
+
+	/**
 	 * Shippable items in kg/cm (virtual products skipped).
 	 *
 	 * @param WC_Order $order Order.
@@ -277,7 +290,7 @@ class WC_Frenet_Labels_Payload {
 		$value    = round( (float) $order->get_subtotal(), 2 );
 		$shipment = array(
 			'Order'     => array(
-				'Id'                    => (string) $order->get_id(),
+				'Id'                    => self::frenet_order_id( $order->get_id(), (int) $order->get_meta( '_frenet_order_attempt' ) ),
 				'Value'                 => $value,
 				'Created'               => gmdate( 'Y-m-d\TH:i:s.000\Z', $created ? $created->getTimestamp() : time() ),
 				'UseFrenetRegistration' => true,
