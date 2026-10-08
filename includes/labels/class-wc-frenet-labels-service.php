@@ -285,6 +285,10 @@ class WC_Frenet_Labels_Service {
 			$order->update_meta_data( '_frenet_tracking_code', $label['tracking'] );
 			// Remembers which code came from the label, so cancelling it never removes a code typed by hand.
 			$order->update_meta_data( '_frenet_label_tracking', $label['tracking'] );
+			// Public tracking page from Frenet: the tracking e-mail and the order show it as "Track my order".
+			if ( '' !== $label['tracking_url'] ) {
+				$order->update_meta_data( '_frenet_tracking_url', esc_url_raw( $label['tracking_url'] ) );
+			}
 		}
 		$ready = '' !== $label['label_url'];
 		if ( $ready && ! $order->get_meta( '_frenet_label_ready' ) ) {
