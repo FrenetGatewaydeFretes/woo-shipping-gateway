@@ -1,0 +1,7 @@
+/* Frenet CEP lookup: one quiet status line under the CEP field; colours follow the store theme. */
+.frenet-cep-status { display: block; min-height: 0; margin-top: 0.3em; font-size: 0.875em; opacity: 0.8; }
+.frenet-cep-status:empty { display: none; }
+.frenet-cep-status.is-loading::before { content: ""; display: inline-block; width: 0.8em; height: 0.8em; margin-right: 0.4em; vertical-align: -0.1em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: frenet-cep-spin 0.7s linear infinite; }
+.frenet-cep-status.is-error { opacity: 1; color: #b42318; }
+@keyframes frenet-cep-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .frenet-cep-status.is-loading::before { animation: none; } }
