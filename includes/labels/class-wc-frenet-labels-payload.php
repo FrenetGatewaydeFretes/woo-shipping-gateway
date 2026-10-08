@@ -137,6 +137,40 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
+	 * A positive number, or the default. Pure: unit tested.
+	 *
+	 * @param mixed $value    Value.
+	 * @param float $fallback Used when the value is empty or zero.
+	 * @return float
+	 */
+	public static function or_default( $value, $fallback ) {
+		$value = (float) $value;
+		return $value > 0 ? $value : (float) $fallback;
+	}
+
+	/**
+	 * Minimum sizes (cm) of the Frenet shipping method the order used, as the checkout quote applies them.
+	 * Falls back to the Frenet defaults (height 2, width 11, length 16).
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array{height: float, width: float, length: float}
+	 */
+	private static function minimums( WC_Order $order ) {
+		$settings = array();
+		foreach ( $order->get_shipping_methods() as $line ) {
+			if ( 0 === strpos( (string) $line->get_method_id(), 'frenet' ) && $line->get_instance_id() ) {
+				$settings = (array) get_option( 'woocommerce_frenet_' . $line->get_instance_id() . '_settings', array() );
+				break;
+			}
+		}
+		return array(
+			'height' => self::or_default( $settings['minimum_height'] ?? 0, 2 ),
+			'width'  => self::or_default( $settings['minimum_width'] ?? 0, 11 ),
+			'length' => self::or_default( $settings['minimum_length'] ?? 0, 16 ),
+		);
+	}
+
+	/**
 	 * Shippable items in kg/cm (virtual products skipped).
 	 *
 	 * @param WC_Order $order Order.
@@ -144,6 +178,7 @@ class WC_Frenet_Labels_Payload {
 	 */
 	public static function items( WC_Order $order ) {
 		$out = array();
+		$min = self::minimums( $order );
 		foreach ( $order->get_items() as $item ) {
 			if ( ! $item instanceof WC_Order_Item_Product ) {
 				continue;
@@ -154,10 +189,12 @@ class WC_Frenet_Labels_Payload {
 			}
 			$out[] = array(
 				'item'   => $item,
-				'weight' => (float) wc_get_weight( (float) $p->get_weight(), 'kg' ),
-				'length' => (float) wc_get_dimension( (float) $p->get_length(), 'cm' ),
-				'height' => (float) wc_get_dimension( (float) $p->get_height(), 'cm' ),
-				'width'  => (float) wc_get_dimension( (float) $p->get_width(), 'cm' ),
+				// Same fallbacks as the checkout quote (WC_Frenet): 1 kg and the method's minimum sizes when empty,
+				// so a product without weight that quoted at checkout can also get its label.
+				'weight' => self::or_default( wc_get_weight( (float) $p->get_weight(), 'kg' ), 1 ),
+				'length' => self::or_default( wc_get_dimension( (float) $p->get_length(), 'cm' ), $min['length'] ),
+				'height' => self::or_default( wc_get_dimension( (float) $p->get_height(), 'cm' ), $min['height'] ),
+				'width'  => self::or_default( wc_get_dimension( (float) $p->get_width(), 'cm' ), $min['width'] ),
 				'qty'    => (int) $item->get_quantity(),
 				'sku'    => (string) $p->get_sku(),
 				'id'     => (string) $p->get_id(),
