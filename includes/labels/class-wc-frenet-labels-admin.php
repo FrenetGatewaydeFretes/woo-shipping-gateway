@@ -212,6 +212,15 @@ class WC_Frenet_Labels_Admin {
 			'sendPanelOne'  => __( 'Send 1 order to the Frenet panel', 'woo-shipping-gateway' ),
 			/* translators: %d: number of shipments */
 			'createOnly'    => __( 'Create %d shipments (pay later in Labels)', 'woo-shipping-gateway' ),
+			// Review: orders without an NF-e key get a DC-e from Frenet.
+			'optional'      => __( 'optional', 'woo-shipping-gateway' ),
+			'dceOne'        => __( 'This order has no NF-e key: Frenet will generate a DC-e for it.', 'woo-shipping-gateway' ),
+			/* translators: %d: number of orders */
+			'dceAll'        => __( 'None of the %d orders has an NF-e key: Frenet will generate a DC-e for each one.', 'woo-shipping-gateway' ),
+			/* translators: 1: orders without NF-e key (always 1), 2: selected orders */
+			'dceSomeOne'    => __( '%1$d of the %2$d orders has no NF-e key: Frenet will generate a DC-e for it.', 'woo-shipping-gateway' ),
+			/* translators: 1: orders without NF-e key, 2: selected orders */
+			'dceSome'       => __( '%1$d of the %2$d orders have no NF-e key: Frenet will generate a DC-e for them.', 'woo-shipping-gateway' ),
 			'working'       => __( 'Working… do not close this page.', 'woo-shipping-gateway' ),
 			'done'          => __( 'Done', 'woo-shipping-gateway' ),
 			'failed'        => __( 'Not created', 'woo-shipping-gateway' ),

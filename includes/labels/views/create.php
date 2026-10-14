@@ -101,7 +101,7 @@ endif;
 					<td><a href="<?php echo esc_url( $frenet_order->get_edit_order_url() ); ?>">#<?php echo esc_html( $frenet_order->get_order_number() ); ?></a><br><span class="frenet-muted"><?php echo esc_html( $frenet_to['name'] ); ?></span></td>
 					<td><?php echo esc_html( trim( $frenet_to['city'] . ' / ' . $frenet_to['state'], ' /' ) ); ?><br><span class="frenet-muted">CEP <?php echo esc_html( $frenet_to['postcode'] ); ?></span></td>
 					<td><?php echo esc_html( wc_format_localized_decimal( (string) round( $frenet_weight, 3 ) ) ); ?> kg<br><span class="frenet-muted"><?php /* translators: %d: items */ echo esc_html( sprintf( _n( '%d item', '%d items', $frenet_count, 'woo-shipping-gateway' ), $frenet_count ) ); ?></span></td>
-					<td class="frenet-nfe-cell">
+					<td class="frenet-nfe-cell" data-nfe="<?php echo $frenet_nfe['ok'] ? '1' : '0'; ?>">
 						<span data-frenet-nfe-summary><?php echo esc_html( $frenet_nfe['ok'] ? WC_Frenet_Labels_Nfe::summary( $frenet_nfe ) : __( 'optional', 'woo-shipping-gateway' ) ); ?></span>
 						<details>
 							<summary><?php echo esc_html( $frenet_nfe['ok'] ? __( 'Change', 'woo-shipping-gateway' ) : __( 'Add NF-e key', 'woo-shipping-gateway' ) ); ?></summary>
@@ -143,6 +143,10 @@ endif;
 			<div><dt><?php esc_html_e( 'Balance after', 'woo-shipping-gateway' ); ?></dt><dd data-frenet-balance-after></dd></div>
 		</dl>
 		<p class="frenet-warning" data-frenet-review-warning hidden></p>
+		<div class="frenet-note" role="note" data-frenet-review-dce hidden>
+			<strong data-frenet-review-dce-title></strong>
+			<p><?php esc_html_e( 'Frenet generates the content declaration (DC-e) for every order without an NF-e key. If your store is required to issue an NF-e (it depends on its state registration), it cannot use the DC-e: go back and add the NF-e key of those orders.', 'woo-shipping-gateway' ); ?></p>
+		</div>
 		<p class="frenet-muted" data-frenet-review-note></p>
 		<div class="frenet-actions">
 			<button value="cancel" class="button"><?php esc_html_e( 'Back', 'woo-shipping-gateway' ); ?></button>

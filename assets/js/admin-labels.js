@@ -413,6 +413,15 @@
 			} else {
 				confirm.textContent = fmt( t.createOnly, sel.length );
 			}
+			// No NF-e key: Frenet issues a DC-e. Only an informative note (v1); stores required to issue NF-e go back.
+			var noNfe = sel.filter( function ( x ) {
+				return '1' !== x.row.querySelector( '.frenet-nfe-cell' ).getAttribute( 'data-nfe' );
+			} ).length;
+			var dce = dialog.querySelector( '[data-frenet-review-dce]' );
+			dce.hidden = ! noNfe;
+			dialog.querySelector( '[data-frenet-review-dce-title]' ).textContent = noNfe === sel.length
+				? ( 1 === noNfe ? t.dceOne : fmt( t.dceAll, noNfe ) )
+				: fmt( 1 === noNfe ? t.dceSomeOne : t.dceSome, noNfe, sel.length );
 			dialog.querySelector( '[data-frenet-review-note]' ).textContent = '';
 			dialog.returnValue = '';
 			dialog.showModal();
@@ -470,7 +479,8 @@
 			msg.textContent = '';
 			post( 'nfe', { order_id: row.getAttribute( 'data-order' ), key: input.value } ).then( function ( res ) {
 				if ( res.success ) {
-					row.querySelector( '[data-frenet-nfe-summary]' ).textContent = res.data.summary || '';
+					row.querySelector( '[data-frenet-nfe-summary]' ).textContent = res.data.summary || t.optional;
+					row.querySelector( '.frenet-nfe-cell' ).setAttribute( 'data-nfe', res.data.summary ? '1' : '0' );
 					msg.textContent = t.saved;
 					input.removeAttribute( 'aria-invalid' );
 				} else {

@@ -246,7 +246,7 @@
 /* Facts and messages */
 .frenet-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 0; }
 /* The script hides these with the hidden attribute; their display rules would otherwise keep them visible. */
-.frenet-facts[hidden], .frenet-summary[hidden], .frenet-warning[hidden] { display: none; }
+.frenet-facts[hidden], .frenet-summary[hidden], .frenet-warning[hidden], .frenet-note[hidden] { display: none; }
 .frenet-facts div { padding: 12px 14px; border-radius: 10px; background: var(--fl-violet-soft); }
 .frenet-facts dt { color: var(--fl-muted); font-size: 12px; }
 .frenet-facts dd { margin: 0; color: var(--fl-navy); font-family: var(--fl-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -255,6 +255,7 @@
 .frenet-note { margin: 12px 0 0; padding: 10px 14px; border-left: 3px solid; border-radius: 0 var(--fl-radius) var(--fl-radius) 0; }
 .frenet-warning { border-color: #d98e04; background: var(--fl-wait-bg); color: var(--fl-wait); }
 .frenet-note { border-color: var(--fl-violet); background: var(--fl-violet-soft); color: var(--fl-navy); }
+.frenet-note p { margin: 4px 0 0; }
 
 /* Empty states */
 .frenet-empty { max-width: 640px; margin: 24px 0; padding: 36px 32px; border: 1px dashed var(--fl-lavender); border-radius: 12px; background: #fff; text-align: center; }
