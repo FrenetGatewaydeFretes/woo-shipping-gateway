@@ -490,6 +490,192 @@
 		} );
 	} );
 
+	/* ---------------------------------------------------------------- Ponto de postagem */
+
+	var dropoff = document.querySelector( '[data-frenet-dropoff]' );
+	if ( dropoff ) {
+		var dEditor = dropoff.querySelector( '[data-frenet-dropoff-editor]' );
+		var dCep = dropoff.querySelector( '[data-frenet-dropoff-cep]' );
+		var dFilter = dropoff.querySelector( '[data-frenet-dropoff-filter]' );
+		var dCount = dropoff.querySelector( '[data-frenet-dropoff-count]' );
+		var dBranch = dropoff.querySelector( '[data-frenet-dropoff-branch]' );
+		var dAddress = dropoff.querySelector( '[data-frenet-dropoff-address]' );
+		var dSave = dropoff.querySelector( '[data-frenet-dropoff-save]' );
+		var dStatus = dEditor.querySelector( '[data-frenet-status]' );
+		var dRow = null;
+		var points = [];
+		var defaults = {};
+
+		var label = function ( b ) {
+			return b.name + ( b.initials ? ' (' + b.initials + ')' : '' );
+		};
+		var describe = function ( b ) {
+			return b ? b.name + ( b.address ? ' — ' + b.address : '' ) : t.noDefault;
+		};
+		// Overview cell: point name in bold, address below; or "no default point".
+		var paintRow = function ( row, b ) {
+			var cell = row.querySelector( '[data-frenet-dropoff-default]' );
+			cell.textContent = '';
+			if ( b ) {
+				cell.appendChild( el( 'strong', 'frenet-block', label( b ) ) );
+				cell.appendChild( el( 'span', 'frenet-muted', b.address ) );
+			} else {
+				cell.appendChild( el( 'span', 'frenet-muted', t.noDefault ) );
+			}
+			var edit = row.querySelector( '[data-frenet-dropoff-edit]' );
+			edit.disabled = false;
+			edit.textContent = b ? t.change : t.choose;
+		};
+
+		dropoff.querySelectorAll( '[data-frenet-dropoff-row]' ).forEach( function ( row ) {
+			var code = row.getAttribute( 'data-frenet-dropoff-row' );
+			post( 'dropoff_default', { carrier: code } ).then( function ( res ) {
+				if ( res.success ) {
+					defaults[ code ] = res.data[ 'default' ];
+					paintRow( row, defaults[ code ] );
+				} else {
+					var cell = row.querySelector( '[data-frenet-dropoff-default]' );
+					cell.textContent = '';
+					cell.appendChild( el( 'span', 'frenet-error', ( res.data && res.data.message ) || t.error ) );
+					row.querySelector( '[data-frenet-dropoff-edit]' ).disabled = false;
+				}
+			} );
+		} );
+
+		var current = function () {
+			return dRow ? defaults[ dRow.getAttribute( 'data-frenet-dropoff-row' ) ] || null : null;
+		};
+		var syncSave = function () {
+			var p = points.filter( function ( x ) {
+				return x.id === dBranch.value;
+			} )[ 0 ];
+			dAddress.textContent = p ? p.address : '';
+			dSave.disabled = ! p || !! ( current() && current().id === p.id );
+		};
+		// The list can have hundreds of points: the filter keeps only the matching ones (accents ignored).
+		var plain = function ( v ) {
+			return String( v || '' ).normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' ).toLowerCase();
+		};
+		var renderPoints = function () {
+			var q = plain( dFilter.value ).trim();
+			var keep = dBranch.value;
+			var shown = points.filter( function ( b ) {
+				return ! q || plain( b.name + ' ' + b.initials + ' ' + b.address ).indexOf( q ) !== -1;
+			} );
+			dBranch.textContent = '';
+			shown.forEach( function ( b ) {
+				var o = el( 'option', '', label( b ) + ( b.address ? ' — ' + b.address : '' ) );
+				o.value = b.id;
+				o.selected = b.id === keep;
+				dBranch.appendChild( o );
+			} );
+			dCount.textContent = q ? fmt( t.pointsShown, shown.length, points.length ) : fmt( 1 === points.length ? t.pointFound : t.pointsFound, points.length );
+			syncSave();
+		};
+		var search = function () {
+			points = [];
+			dBranch.textContent = '';
+			dBranch.disabled = true;
+			dFilter.disabled = true;
+			dSave.disabled = true;
+			dAddress.textContent = '';
+			dStatus.textContent = '';
+			dCount.textContent = t.loadingPoints;
+			post( 'branches', { carrier: dRow.getAttribute( 'data-frenet-dropoff-row' ), cep: dCep.value } ).then( function ( res ) {
+				if ( ! res.success ) {
+					dCount.textContent = ( res.data && res.data.message ) || t.error;
+					return;
+				}
+				points = res.data.branches || [];
+				var now = current();
+				// The saved point may be far from this CEP: keep it first so the list never hides it.
+				if ( now && ! points.some( function ( b ) {
+					return b.id === now.id;
+				} ) ) {
+					points.unshift( now );
+				}
+				if ( ! points.length ) {
+					dCount.textContent = t.noPoints;
+					return;
+				}
+				dBranch.disabled = false;
+				dFilter.disabled = false;
+				renderPoints();
+				if ( now ) {
+					dBranch.value = now.id;
+					syncSave();
+				}
+				dFilter.focus();
+			} );
+		};
+		var open = function ( row ) {
+			dRow = row;
+			dFilter.value = '';
+			dEditor.querySelector( '[data-frenet-dropoff-title]' ).textContent = fmt( t.chooseFor, row.getAttribute( 'data-name' ) );
+			dEditor.querySelector( '[data-frenet-dropoff-current]' ).textContent = t.currentPoint + ' ' + describe( current() );
+			dropoff.querySelectorAll( '[data-frenet-dropoff-row]' ).forEach( function ( r ) {
+				r.classList.toggle( 'is-applied', r === row );
+			} );
+			dEditor.hidden = false;
+			dEditor.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+			search();
+		};
+		var close = function () {
+			dEditor.hidden = true;
+			if ( dRow ) {
+				dRow.classList.remove( 'is-applied' );
+				dRow.querySelector( '[data-frenet-dropoff-edit]' ).focus();
+			}
+			dRow = null;
+		};
+
+		dropoff.addEventListener( 'click', function ( e ) {
+			var edit = e.target.closest( '[data-frenet-dropoff-edit]' );
+			if ( edit ) {
+				open( edit.closest( '[data-frenet-dropoff-row]' ) );
+			}
+		} );
+		dropoff.querySelector( '[data-frenet-dropoff-search]' ).addEventListener( 'click', search );
+		dCep.addEventListener( 'keydown', function ( e ) {
+			if ( 'Enter' === e.key ) {
+				e.preventDefault();
+				search();
+			}
+		} );
+		dFilter.addEventListener( 'input', renderPoints );
+		dBranch.addEventListener( 'change', syncSave );
+		dropoff.querySelector( '[data-frenet-dropoff-close]' ).addEventListener( 'click', close );
+		dEditor.addEventListener( 'keydown', function ( e ) {
+			if ( 'Escape' === e.key ) {
+				close();
+			}
+		} );
+		dSave.addEventListener( 'click', function () {
+			var code = dRow.getAttribute( 'data-frenet-dropoff-row' );
+			dSave.disabled = true;
+			dStatus.textContent = t.working;
+			post( 'default_branch', { carrier: code, id: dBranch.value } ).then( function ( res ) {
+				if ( res.success ) {
+					defaults[ code ] = res.data[ 'default' ];
+					paintRow( dRow, defaults[ code ] );
+					dEditor.querySelector( '[data-frenet-dropoff-current]' ).textContent = t.currentPoint + ' ' + describe( defaults[ code ] );
+					dStatus.textContent = res.data.message;
+				} else {
+					dStatus.textContent = '';
+					dStatus.appendChild( el( 'span', 'frenet-error', ( res.data && res.data.message ) || t.error ) );
+					if ( res.data && res.data.panel ) {
+						var link = el( 'a', 'frenet-block', t.openPanel );
+						link.href = res.data.panel;
+						link.target = '_blank';
+						link.rel = 'noopener';
+						dStatus.appendChild( link );
+					}
+				}
+				syncSave();
+			} );
+		} );
+	}
+
 	/* ---------------------------------------------------------------- Impressão: select all */
 
 	var all = document.querySelector( '[data-frenet-print-form] [data-frenet-all]' );

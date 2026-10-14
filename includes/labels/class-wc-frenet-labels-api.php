@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
 class WC_Frenet_Labels_Api {
 
 	const PUBLIC_BASE = 'https://api.frenet.com.br';
+	// Carriers, drop-off points and the store profile live on their own host (same two tokens).
+	const CONFIGURATION_BASE = 'https://whitelabel-configuration.frenet.com.br/v1';
 
 	/**
 	 * Label format for this request only ('' = the one in the settings). Set by the print screen.
@@ -46,6 +48,35 @@ class WC_Frenet_Labels_Api {
 			),
 			$body,
 			'GET' === $method ? 20 : 45
+		);
+	}
+
+	/**
+	 * WhiteLabel configuration call (carriers, drop-off points, default point). Validated live 2026-10-14:
+	 * GET /carriers/services, GET /carriers/{code}/zipcode/{cep}/branches (404 "not found" when the carrier has
+	 * no drop-off points, e.g. Correios), GET and PUT /profile/{code}/defaultbranch (404 "Unidade não encontrada"
+	 * when there is none yet).
+	 *
+	 * @param string     $method HTTP method.
+	 * @param string     $path   Path after /v1.
+	 * @param mixed|null $body   JSON body.
+	 * @return array<int|string, mixed>|WP_Error
+	 */
+	public static function configuration( $method, $path, $body = null ) {
+		$token   = WC_Frenet_Labels_Settings::store_token();
+		$partner = WC_Frenet_Labels_Settings::get( 'partner_token' );
+		if ( '' === $token || '' === $partner ) {
+			return new WP_Error( 'frenet_labels_tokens', __( 'Frenet labels need the store token and the partner token. Check the Frenet settings.', 'woo-shipping-gateway' ) );
+		}
+		return self::send(
+			self::CONFIGURATION_BASE . $path,
+			$method,
+			array(
+				'token'           => $token,
+				'x-partner-token' => $partner,
+			),
+			$body,
+			20
 		);
 	}
 

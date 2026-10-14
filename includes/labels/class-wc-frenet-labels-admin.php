@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin of the Frenet labels: top-level "Frenet" menu (Configuração, Criar envio, Etiquetas, Impressão,
- * Rastreios and the "em breve" items), AJAX actions, the order list bulk action and the order box.
+ * Rastreios, Ponto de postagem and the "em breve" items), AJAX actions, the order list bulk action and the order box.
  * Every action needs manage_woocommerce and the "frenet_labels" nonce.
  */
 class WC_Frenet_Labels_Admin {
@@ -24,7 +24,7 @@ class WC_Frenet_Labels_Admin {
 		add_action( 'admin_post_frenet_labels_save', array( __CLASS__, 'save_settings' ) );
 		add_action( 'admin_post_frenet_labels_print', array( __CLASS__, 'print_pdf' ) );
 		add_action( 'admin_post_frenet_labels_deposit', array( __CLASS__, 'deposit' ) );
-		foreach ( array( 'quote', 'create', 'pay', 'cancel', 'nfe', 'tracking', 'wallet' ) as $action ) {
+		foreach ( array( 'quote', 'create', 'pay', 'cancel', 'nfe', 'tracking', 'wallet', 'branches', 'default_branch', 'dropoff_default' ) as $action ) {
 			add_action( 'wp_ajax_frenet_labels_' . $action, array( __CLASS__, 'ajax_' . $action ) );
 		}
 		foreach ( array( 'edit-shop_order', 'woocommerce_page_wc-orders' ) as $screen ) {
@@ -46,6 +46,7 @@ class WC_Frenet_Labels_Admin {
 			self::SLUG . '-labels'   => array( __( 'Labels', 'woo-shipping-gateway' ), __( 'Manage your labels', 'woo-shipping-gateway' ), 'labels' ),
 			self::SLUG . '-print'    => array( __( 'Printing', 'woo-shipping-gateway' ), __( 'Label printing', 'woo-shipping-gateway' ), 'printing' ),
 			self::SLUG . '-tracking' => array( __( 'Tracking', 'woo-shipping-gateway' ), __( 'Tracking', 'woo-shipping-gateway' ), 'tracking' ),
+			self::SLUG . '-dropoff'  => array( __( 'Drop-off point', 'woo-shipping-gateway' ), __( 'Drop-off point', 'woo-shipping-gateway' ), 'dropoff' ),
 			self::SLUG . '-whatsapp' => array( 'WhatsApp', 'WhatsApp', 'soon' ),
 			self::SLUG . '-reverse'  => array( __( 'Returns', 'woo-shipping-gateway' ), __( 'Returns', 'woo-shipping-gateway' ), 'soon' ),
 			self::SLUG . '-receipt'  => array( __( 'Proof of delivery', 'woo-shipping-gateway' ), __( 'Proof of delivery', 'woo-shipping-gateway' ), 'soon' ),
@@ -203,6 +204,22 @@ class WC_Frenet_Labels_Admin {
 			/* translators: 1: number of labels, 2: total amount */
 			'confirmPay'    => __( 'Pay %1$d labels with the Frenet wallet (%2$s)?', 'woo-shipping-gateway' ),
 			'saved'         => __( 'Saved', 'woo-shipping-gateway' ),
+			// Ponto de postagem.
+			'noDefault'     => __( 'No default point', 'woo-shipping-gateway' ),
+			'change'        => __( 'Change', 'woo-shipping-gateway' ),
+			'choose'        => __( 'Choose', 'woo-shipping-gateway' ),
+			/* translators: %s: carrier name */
+			'chooseFor'     => __( 'Drop-off point for %s', 'woo-shipping-gateway' ),
+			'currentPoint'  => __( 'Current:', 'woo-shipping-gateway' ),
+			'loadingPoints' => __( 'Searching drop-off points…', 'woo-shipping-gateway' ),
+			'noPoints'      => __( 'This carrier has no drop-off points to choose near this CEP.', 'woo-shipping-gateway' ),
+			/* translators: %d: number of drop-off points */
+			'pointsFound'   => __( '%d points found. Type to filter.', 'woo-shipping-gateway' ),
+			/* translators: %d: number of drop-off points (always 1) */
+			'pointFound'    => __( '%d point found.', 'woo-shipping-gateway' ),
+			/* translators: 1: points shown, 2: points found */
+			'pointsShown'   => __( '%1$d of %2$d points', 'woo-shipping-gateway' ),
+			'openPanel'     => __( 'Open the Frenet panel', 'woo-shipping-gateway' ),
 			'error'         => __( 'Something went wrong. Reload the page and try again.', 'woo-shipping-gateway' ),
 		);
 	}
@@ -390,6 +407,72 @@ class WC_Frenet_Labels_Admin {
 				'description' => (string) ( $last['EventDescription'] ?? __( 'No movement yet. Events appear once the carrier scans the package.', 'woo-shipping-gateway' ) ),
 				'date'        => (string) ( $last['EventDateTime'] ?? '' ),
 				'location'    => (string) ( $last['EventLocation'] ?? '' ),
+			)
+		);
+	}
+
+	/**
+	 * Drop-off points of a carrier near a CEP, with the current default point.
+	 *
+	 * @return void
+	 */
+	public static function ajax_branches() {
+		self::guard();
+		$carrier = sanitize_text_field( wp_unslash( $_POST['carrier'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$cep     = sanitize_text_field( wp_unslash( $_POST['cep'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$list    = WC_Frenet_Labels_Dropoff::branches( $carrier, $cep );
+		if ( is_wp_error( $list ) ) {
+			wp_send_json_error( array( 'message' => $list->get_error_message() ) );
+		}
+		$default = WC_Frenet_Labels_Dropoff::default_branch( $carrier );
+		wp_send_json_success(
+			array(
+				'branches' => $list,
+				'default'  => is_wp_error( $default ) ? null : $default,
+			)
+		);
+	}
+
+	/**
+	 * Current default drop-off point of a carrier (the overview table loads one per carrier).
+	 *
+	 * @return void
+	 */
+	public static function ajax_dropoff_default() {
+		self::guard();
+		$carrier = sanitize_text_field( wp_unslash( $_POST['carrier'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$default = WC_Frenet_Labels_Dropoff::default_branch( $carrier );
+		if ( is_wp_error( $default ) ) {
+			wp_send_json_error( array( 'message' => $default->get_error_message() ) );
+		}
+		wp_send_json_success( array( 'default' => $default ) );
+	}
+
+	/**
+	 * Saves the default drop-off point of a carrier on the Frenet profile.
+	 *
+	 * @return void
+	 */
+	public static function ajax_default_branch() {
+		self::guard();
+		$carrier = sanitize_text_field( wp_unslash( $_POST['carrier'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$id      = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$res     = WC_Frenet_Labels_Dropoff::set_default( $carrier, $id );
+		if ( is_wp_error( $res ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $res->get_error_message(),
+					// Frenet refuses the point by API for some carriers: offer the panel page of that carrier.
+					'panel'   => 'frenet_labels_branch_refused' === $res->get_error_code() ? self::PANEL . '/Carrier/' . rawurlencode( strtoupper( $carrier ) ) . '/Services' : '',
+				)
+			);
+		}
+		// Read it back: the profile is what Frenet uses for the next labels.
+		$default = WC_Frenet_Labels_Dropoff::default_branch( $carrier );
+		wp_send_json_success(
+			array(
+				'default' => is_wp_error( $default ) ? null : $default,
+				'message' => __( 'Default drop-off point saved. Frenet uses it for the next labels of this carrier.', 'woo-shipping-gateway' ),
 			)
 		);
 	}

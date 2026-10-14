@@ -11,6 +11,7 @@ require_once __DIR__ . '/class-wc-frenet-labels-settings.php';
 require_once __DIR__ . '/class-wc-frenet-labels-api.php';
 require_once __DIR__ . '/class-wc-frenet-labels-payload.php';
 require_once __DIR__ . '/class-wc-frenet-labels-service.php';
+require_once __DIR__ . '/class-wc-frenet-labels-dropoff.php';
 require_once __DIR__ . '/class-wc-frenet-labels-admin.php';
 
 require_once dirname( __DIR__ ) . '/tracking/class-wc-frenet-tracking-module.php';
