@@ -181,6 +181,23 @@ class WC_Frenet_Labels_Admin {
 			'bestPrice'     => __( 'Best price', 'woo-shipping-gateway' ),
 			'bestTime'      => __( 'Fastest', 'woo-shipping-gateway' ),
 			'customer'      => __( 'Customer choice', 'woo-shipping-gateway' ),
+			// Summary of carriers: one choice for every selected order.
+			'select'        => __( 'Select', 'woo-shipping-gateway' ),
+			'selected'      => __( 'Selected', 'woo-shipping-gateway' ),
+			/* translators: %s: carrier name, "Best price" or "Fastest" */
+			'selectFor'     => __( 'Use %s in every selected order', 'woo-shipping-gateway' ),
+			'bestPriceAll'  => __( 'Best price (any carrier)', 'woo-shipping-gateway' ),
+			'bestTimeAll'   => __( 'Fastest (any carrier)', 'woo-shipping-gateway' ),
+			/* translators: 1: carrier name or option, 2: number of orders */
+			'applied'       => __( '%1$s selected in %2$d orders.', 'woo-shipping-gateway' ),
+			/* translators: 1: carrier name or option, 2: number of orders (always 1) */
+			'appliedOne'    => __( '%1$s selected in %2$d order.', 'woo-shipping-gateway' ),
+			/* translators: 1: carrier name, 2: orders where it was selected, 3: orders where it is not available */
+			'appliedPartly' => __( '%1$s selected in %2$d orders; not available in %3$d, which kept their carrier.', 'woo-shipping-gateway' ),
+			/* translators: %d: business days */
+			'upToDays'      => __( 'up to %d business days', 'woo-shipping-gateway' ),
+			/* translators: %d: business days (always 1) */
+			'upToDay'       => __( 'up to %d business day', 'woo-shipping-gateway' ),
 			/* translators: %d: business days */
 			'days'          => __( '%d business days', 'woo-shipping-gateway' ),
 			/* translators: %d: business days (always 1) */

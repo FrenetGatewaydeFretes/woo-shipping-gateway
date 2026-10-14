@@ -210,6 +210,17 @@
 .frenet-table .check-column { width: 32px; }
 .frenet-row-actions { white-space: nowrap; }
 .frenet-row-actions .button { margin-left: 4px; }
+/* Summary of carriers: the option applied to every order, and the two "any carrier" rows below the carriers. */
+.frenet-table .is-action { width: 1%; text-align: right; white-space: nowrap; }
+.frenet-table tbody tr.is-applied td,
+.frenet-table tbody tr.is-applied th { background: var(--fl-violet-tint); }
+.frenet-summary__best tr:first-child td,
+.frenet-summary__best tr:first-child th { border-top: 1px solid var(--fl-line); }
+.frenet-summary__best th,
+.frenet-summary__best td { background: var(--fl-violet-soft); color: var(--fl-navy); font-weight: 600; }
+.frenet-summary__hint { margin: 8px 0 0; font-size: 13px; }
+.frenet-small { font-size: 12px; }
+.frenet-service-cell .frenet-select { max-width: 280px; }
 
 /* Status pills: text + colour, never colour alone */
 .frenet-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }

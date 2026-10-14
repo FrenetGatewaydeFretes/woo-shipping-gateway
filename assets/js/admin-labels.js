@@ -138,43 +138,131 @@
 				o.selected = s.code === data['default'];
 				select.appendChild( o );
 			} );
-			select.addEventListener( 'change', renderSummary );
+			select.addEventListener( 'change', function () {
+				applied = null;
+				status.textContent = '';
+				renderSummary();
+			} );
 			cell.appendChild( select );
 		};
 
-		var renderSummary = function () {
-			var list = picked().map( function ( r ) {
+		// What the summary applied to every order: { carrier: name } | { best: 'best_price' | 'best_time' } | null.
+		var applied = null;
+
+		var carrierOf = function ( s ) {
+			return s.carrier || s.carrier_code;
+		};
+		var cheapest = function ( list ) {
+			return list.slice().sort( function ( a, b ) {
+				return a.price - b.price || a.days - b.days;
+			} )[ 0 ];
+		};
+		var fastest = function ( list ) {
+			return list.slice().sort( function ( a, b ) {
+				return ( a.days || 999 ) - ( b.days || 999 ) || a.price - b.price;
+			} )[ 0 ];
+		};
+		var quoted = function () {
+			return picked().filter( function ( r ) {
 				var q = quotes[ r.getAttribute( 'data-order' ) ];
-				return q && q.ok ? q.services : null;
-			} ).filter( Boolean );
+				return q && q.ok && r.querySelector( '[data-frenet-choice]' );
+			} );
+		};
+
+		// Sets each picked order's service from the summary choice; returns how many orders lack it.
+		var applyChoice = function () {
+			var missing = 0;
+			if ( ! applied ) {
+				return 0;
+			}
+			quoted().forEach( function ( r ) {
+				var q = quotes[ r.getAttribute( 'data-order' ) ];
+				var s = null;
+				if ( applied.carrier ) {
+					var mine = q.services.filter( function ( x ) {
+						return carrierOf( x ) === applied.carrier;
+					} );
+					s = mine.length ? cheapest( mine ) : null;
+				} else {
+					s = 'best_time' === applied.best ? fastest( q.services ) : cheapest( q.services );
+				}
+				if ( s ) {
+					r.querySelector( '[data-frenet-choice]' ).value = s.code;
+				} else {
+					missing++;
+				}
+			} );
+			return missing;
+		};
+
+		var choose = function ( pick, label ) {
+			applied = pick;
+			var missing = applyChoice();
+			renderSummary();
+			var n = quoted().length;
+			status.textContent = missing
+				? fmt( t.appliedPartly, label, n - missing, missing )
+				: fmt( 1 === n ? t.appliedOne : t.applied, label, n );
+		};
+
+		var pickButton = function ( pick, label, active ) {
+			var b = el( 'button', 'button button-small' + ( active ? ' button-primary' : '' ), active ? t.selected : t.select );
+			b.type = 'button';
+			b.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+			b.setAttribute( 'aria-label', fmt( t.selectFor, label ) );
+			b.addEventListener( 'click', function () {
+				choose( pick, label );
+			} );
+			return b;
+		};
+
+		// Price cell of the summary with the slowest delivery of those orders below ("up to N business days").
+		var priceCell = function ( price, days ) {
+			var td = el( 'td', 'is-num' );
+			if ( null === price ) {
+				return td;
+			}
+			td.appendChild( el( 'span', 'frenet-block', money( price ) ) );
+			if ( days > 0 ) {
+				td.appendChild( el( 'span', 'frenet-muted frenet-small', fmt( 1 === days ? t.upToDay : t.upToDays, days ) ) );
+			}
+			return td;
+		};
+
+		var renderSummary = function () {
+			var list = quoted().map( function ( r ) {
+				return quotes[ r.getAttribute( 'data-order' ) ].services;
+			} );
 			if ( ! list.length ) {
 				summary.hidden = true;
 				btnReview.disabled = true;
+				if ( applied ) {
+					status.textContent = '';
+				}
 				return;
 			}
+			applyChoice();
 			var carriers = {};
-			var best = 0;
+			var bestPrice = 0;
+			var bestTime = 0;
+			var bestPriceDays = 0;
+			var bestTimeDays = 0;
 			list.forEach( function ( services ) {
-				best += Math.min.apply( null, services.map( function ( s ) {
-					return s.price;
-				} ) );
+				bestPrice += cheapest( services ).price;
+				bestTime += fastest( services ).price;
+				bestPriceDays = Math.max( bestPriceDays, cheapest( services ).days || 0 );
+				bestTimeDays = Math.max( bestTimeDays, fastest( services ).days || 0 );
 				var by = {};
 				services.forEach( function ( s ) {
-					var name = s.carrier || s.carrier_code;
-					( by[ name ] = by[ name ] || [] ).push( s );
+					( by[ carrierOf( s ) ] = by[ carrierOf( s ) ] || [] ).push( s );
 				} );
 				Object.keys( by ).forEach( function ( name ) {
-					var l = by[ name ];
-					var cheap = l.slice().sort( function ( a, b ) {
-						return a.price - b.price || a.days - b.days;
-					} )[ 0 ];
-					var fast = l.slice().sort( function ( a, b ) {
-						return ( a.days || 999 ) - ( b.days || 999 ) || a.price - b.price;
-					} )[ 0 ];
-					var c = carriers[ name ] = carriers[ name ] || { name: name, available: 0, price: 0, time: 0 };
+					var c = carriers[ name ] = carriers[ name ] || { name: name, available: 0, price: 0, time: 0, priceDays: 0, timeDays: 0 };
 					c.available++;
-					c.price += cheap.price;
-					c.time += fast.price;
+					c.price += cheapest( by[ name ] ).price;
+					c.time += fastest( by[ name ] ).price;
+					c.priceDays = Math.max( c.priceDays, cheapest( by[ name ] ).days || 0 );
+					c.timeDays = Math.max( c.timeDays, fastest( by[ name ] ).days || 0 );
 				} );
 			} );
 			var body = summary.querySelector( '[data-frenet-summary-rows]' );
@@ -184,14 +272,32 @@
 			} ).sort( function ( a, b ) {
 				return b.available - a.available || a.price - b.price;
 			} ).forEach( function ( c ) {
-				var tr = el( 'tr' );
+				var active = !! ( applied && applied.carrier === c.name );
+				var tr = el( 'tr', active ? 'is-applied' : '' );
 				tr.appendChild( el( 'td', '', c.name ) );
 				tr.appendChild( el( 'td', '', c.available + ' / ' + list.length ) );
-				tr.appendChild( el( 'td', 'is-num', money( c.price ) ) );
-				tr.appendChild( el( 'td', 'is-num', money( c.time ) ) );
+				tr.appendChild( priceCell( c.price, c.priceDays ) );
+				tr.appendChild( priceCell( c.time, c.timeDays ) );
+				var td = el( 'td', 'is-action' );
+				td.appendChild( pickButton( { carrier: c.name }, c.name, active ) );
+				tr.appendChild( td );
 				body.appendChild( tr );
 			} );
-			summary.querySelector( '[data-frenet-best-total]' ).textContent = money( best );
+			var best = summary.querySelector( '[data-frenet-summary-best]' );
+			best.textContent = '';
+			[ [ 'best_price', t.bestPriceAll, bestPrice, bestPriceDays ], [ 'best_time', t.bestTimeAll, bestTime, bestTimeDays ] ].forEach( function ( b ) {
+				var active = !! ( applied && applied.best === b[ 0 ] );
+				var tr = el( 'tr', active ? 'is-applied' : '' );
+				tr.appendChild( el( 'th', '', b[ 1 ] ) );
+				tr.firstChild.scope = 'row';
+				tr.appendChild( el( 'td', '', list.length + ' / ' + list.length ) );
+				tr.appendChild( priceCell( 'best_price' === b[ 0 ] ? b[ 2 ] : null, b[ 3 ] ) );
+				tr.appendChild( priceCell( 'best_time' === b[ 0 ] ? b[ 2 ] : null, b[ 3 ] ) );
+				var td = el( 'td', 'is-action' );
+				td.appendChild( pickButton( { best: b[ 0 ] }, b[ 1 ], active ) );
+				tr.appendChild( td );
+				best.appendChild( tr );
+			} );
 			summary.hidden = false;
 			btnReview.disabled = false;
 		};
@@ -229,6 +335,7 @@
 
 		btnClear.addEventListener( 'click', function () {
 			quotes = {};
+			applied = null;
 			rows.forEach( function ( r ) {
 				if ( ! r.hasAttribute( 'data-done' ) ) {
 					r.querySelector( '.frenet-service-cell' ).textContent = '';

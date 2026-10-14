@@ -53,10 +53,12 @@ $frenet_journey = WC_Frenet_Labels_Settings::get( 'journey' );
 			<th scope="col"><?php esc_html_e( 'Available', 'woo-shipping-gateway' ); ?></th>
 			<th scope="col" class="is-num"><?php esc_html_e( 'Best price', 'woo-shipping-gateway' ); ?></th>
 			<th scope="col" class="is-num"><?php esc_html_e( 'Fastest', 'woo-shipping-gateway' ); ?></th>
+			<th scope="col" class="is-action"><span class="screen-reader-text"><?php esc_html_e( 'Use for every order', 'woo-shipping-gateway' ); ?></span></th>
 		</tr></thead>
 		<tbody data-frenet-summary-rows></tbody>
-		<tfoot><tr><th scope="row" colspan="3"><?php esc_html_e( 'Best option (total)', 'woo-shipping-gateway' ); ?></th><td class="is-num" data-frenet-best-total></td></tr></tfoot>
+		<tbody class="frenet-summary__best" data-frenet-summary-best></tbody>
 	</table>
+	<p class="frenet-muted frenet-summary__hint"><?php esc_html_e( 'Select a carrier to use it in every order where it is available, or the best price or the fastest option of each order, whatever the carrier.', 'woo-shipping-gateway' ); ?></p>
 </section>
 
 <?php if ( ! $frenet_rows ) : ?>
