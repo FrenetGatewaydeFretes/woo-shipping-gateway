@@ -97,7 +97,8 @@ $frenet_pages = max( 1, (int) ceil( $frenet_list['total'] / $frenet_per ) );
 				$frenet_status = (int) ( $frenet_s['shipmentStatus'] ?? 0 );
 				$frenet_q      = (array) ( $frenet_s['quotation'] ?? array() );
 				$frenet_price  = WC_Frenet_Labels_Compare::to_float( $frenet_q['shippingPrice'] ?? ( $frenet_q['platformShippingPrice'] ?? 0 ) );
-				$frenet_order  = ctype_digit( (string) ( $frenet_s['orderId'] ?? '' ) ) ? wc_get_order( (int) $frenet_s['orderId'] ) : false;
+				// "175" or "175-2" (second label of order 175, see WC_Frenet_Labels_Payload::frenet_order_id()).
+				$frenet_order  = preg_match( '/^(\d+)(?:-\d+)?$/', (string) ( $frenet_s['orderId'] ?? '' ), $frenet_m ) ? wc_get_order( (int) $frenet_m[1] ) : false;
 				$frenet_mine   = $frenet_order instanceof WC_Order && (string) $frenet_order->get_meta( '_frenet_shipment_id' ) === $frenet_id;
 				$frenet_vol    = (array) ( ( (array) ( $frenet_s['volumes'] ?? array() ) )[0] ?? array() );
 				$frenet_track  = (string) ( $frenet_s['trackingUrl'] ?? '' );
