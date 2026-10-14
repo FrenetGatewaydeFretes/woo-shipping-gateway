@@ -627,8 +627,6 @@ msgstr "Código de rastreio"
 msgid "Latest movement"
 msgstr "Última movimentação"
 
-msgid "Check"
-msgstr "Consultar"
 
 msgid "Choose the orders, calculate the freight to compare carriers and create the shipments. Nothing is charged before you confirm."
 msgstr "Escolha os pedidos, calcule o frete para comparar transportadoras e crie os envios. Nada é cobrado antes de você confirmar."
@@ -657,8 +655,6 @@ msgstr "Transportadora"
 msgid "Available"
 msgstr "Disponível"
 
-msgid "Best option (total)"
-msgstr "Melhor opção (total)"
 
 msgid "No order waiting for a shipment"
 msgstr "Nenhum pedido aguardando envio"
@@ -1082,3 +1078,147 @@ msgstr "%1$s + %2$s (%3$s)"
 #. translators: %s: tracking code
 msgid "Tracking code %s removed: its Frenet label was cancelled."
 msgstr "Código de rastreio %s removido: a etiqueta Frenet foi cancelada."
+
+msgid "The label was not paid."
+msgstr "A etiqueta não foi paga."
+
+msgid "Type a CEP with 8 digits."
+msgstr "Digite um CEP com 8 dígitos."
+
+msgid "Choose a drop-off point."
+msgstr "Escolha um ponto de postagem."
+
+msgid "Drop-off point"
+msgstr "Ponto de postagem"
+
+msgid "Selected"
+msgstr "Selecionado"
+
+msgid "Use %s in every selected order"
+msgstr "Usar %s em todos os pedidos selecionados"
+
+msgid "Best price (any carrier)"
+msgstr "Melhor preço (qualquer transportadora)"
+
+msgid "Fastest (any carrier)"
+msgstr "Melhor prazo (qualquer transportadora)"
+
+msgid "%1$s selected in %2$d orders."
+msgstr "%1$s selecionado em %2$d pedidos."
+
+msgid "%1$s selected in %2$d order."
+msgstr "%1$s selecionado em %2$d pedido."
+
+msgid "%1$s selected in %2$d orders; not available in %3$d, which kept their carrier."
+msgstr "%1$s selecionado em %2$d pedidos; indisponível em %3$d, que mantiveram a transportadora."
+
+msgid "This order has no NF-e key: Frenet will generate a DC-e for it."
+msgstr "Este pedido não tem chave da NF-e: a Frenet vai gerar uma DC-e para ele."
+
+msgid "None of the %d orders has an NF-e key: Frenet will generate a DC-e for each one."
+msgstr "Nenhum dos %d pedidos tem chave da NF-e: a Frenet vai gerar uma DC-e para cada um."
+
+msgid "%1$d of the %2$d orders has no NF-e key: Frenet will generate a DC-e for it."
+msgstr "%1$d dos %2$d pedidos não tem chave da NF-e: a Frenet vai gerar uma DC-e para ele."
+
+msgid "%1$d of the %2$d orders have no NF-e key: Frenet will generate a DC-e for them."
+msgstr "%1$d dos %2$d pedidos não têm chave da NF-e: a Frenet vai gerar uma DC-e para eles."
+
+msgid "Frenet generates the content declaration (DC-e) for every order without an NF-e key. If your store is required to issue an NF-e (it depends on its state registration), it cannot use the DC-e: go back and add the NF-e key of those orders."
+msgstr "A Frenet gera a declaração de conteúdo (DC-e) para todo pedido sem chave da NF-e. Se a sua loja é obrigada a emitir NF-e (depende da inscrição estadual), ela não pode usar a DC-e: volte e adicione a chave da NF-e desses pedidos."
+
+
+msgid "Searching drop-off points…"
+msgstr "Buscando pontos de postagem…"
+
+msgid "This carrier has no drop-off points to choose near this CEP."
+msgstr "Esta transportadora não tem pontos de postagem para escolher perto deste CEP."
+
+
+
+msgid "Default drop-off point saved. Frenet uses it for the next labels of this carrier."
+msgstr "Ponto de postagem padrão salvo. A Frenet o usa nas próximas etiquetas desta transportadora."
+
+msgid "Notes"
+msgstr "Observações"
+
+
+msgid "Default drop-off point"
+msgstr "Ponto de postagem padrão"
+
+
+
+
+
+msgid "Save default point"
+msgstr "Salvar ponto padrão"
+
+msgid "Use for every order"
+msgstr "Usar em todos os pedidos"
+
+msgid "Select a carrier to use it in every order where it is available, or the best price or the fastest option of each order, whatever the carrier."
+msgstr "Selecione uma transportadora para usá-la em todos os pedidos em que estiver disponível, ou o melhor preço ou o melhor prazo de cada pedido, seja qual for a transportadora."
+
+
+msgid "No active carrier"
+msgstr "Nenhuma transportadora ativa"
+
+msgid "Activate carriers in the Frenet panel to choose their drop-off points here."
+msgstr "Ative transportadoras no painel Frenet para escolher os pontos de postagem aqui."
+
+msgid "Loading…"
+msgstr "Carregando…"
+
+msgid "Near the CEP"
+msgstr "Perto do CEP"
+
+msgid "Search points"
+msgstr "Buscar pontos"
+
+msgid "Filter by name, neighborhood or city"
+msgstr "Filtrar por nome, bairro ou cidade"
+
+msgid "Frenet did not accept this point for this carrier (\"Unidade não existe\"). Nothing changed. Choose it in the Frenet panel, in Shipping methods > Carriers."
+msgstr "A Frenet não aceitou este ponto para esta transportadora (\"Unidade não existe\"). Nada foi alterado. Escolha-o no painel Frenet, em Meios de envio > Transportadoras."
+
+msgid "No default point"
+msgstr "Sem ponto padrão"
+
+msgid "Choose"
+msgstr "Escolher"
+
+msgid "Drop-off point for %s"
+msgstr "Ponto de postagem da %s"
+
+msgid "Current:"
+msgstr "Atual:"
+
+msgid "%1$d of %2$d points"
+msgstr "%1$d de %2$d pontos"
+
+msgid "%d points found. Type to filter."
+msgstr "%d pontos encontrados. Digite para filtrar."
+
+msgid "%d point found."
+msgstr "%d ponto encontrado."
+
+msgid "up to %d business days"
+msgstr "até %d dias úteis"
+
+msgid "up to %d business day"
+msgstr "até %d dia útil"
+
+msgid "Done: %d shipments created."
+msgstr "Concluído: %d envios criados."
+
+msgid "Done: %d shipment created."
+msgstr "Concluído: %d envio criado."
+
+msgid "Done: %1$d went through, %2$d with an error. See the Notes column of the red rows."
+msgstr "Concluído: %1$d deram certo, %2$d com erro. Veja a coluna Observações das linhas em vermelho."
+
+msgid "Some carriers let you choose where you drop off your packages. Frenet uses the default point of each carrier for its next labels. To turn a default point off, use the Frenet panel."
+msgstr "Algumas transportadoras deixam você escolher onde postar os seus pacotes. A Frenet usa o ponto padrão de cada transportadora nas próximas etiquetas. Para desativar um ponto padrão, use o painel Frenet."
+
+msgid "In the Frenet panel"
+msgstr "No painel Frenet"
