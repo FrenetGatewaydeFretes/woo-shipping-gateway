@@ -35,6 +35,8 @@ class WC_Frenet_Labels_Service {
 	const PAID_STATUSES           = array( 4, 5, 18 );
 	const GONE_STATUSES           = array( 6, 7, 9 );
 	const UNPAID_STATUSES         = array( 1, 2, 3 );
+	// Last label error of the order ("Observações"): JSON {message, at}. Cleared when the label goes through.
+	const ISSUE = '_frenet_label_issue';
 
 	/**
 	 * ServiceCode the customer chose (woo-shipping-gateway stores the rate id as FRENET_ID = "FRENET_<code>").
@@ -101,6 +103,81 @@ class WC_Frenet_Labels_Service {
 	 * @return array<string, mixed>|WP_Error
 	 */
 	public static function create( WC_Order $order, $service_code, $journey ) {
+		$res = self::create_shipment( $order, $service_code, $journey );
+		if ( is_wp_error( $res ) ) {
+			if ( 'frenet_labels_exists' !== $res->get_error_code() ) {
+				self::set_issue( $order, $res->get_error_message() );
+			}
+			return $res;
+		}
+		// Created but not paid (no balance, payment without answer): the order keeps the reason.
+		if ( 'here' === $res['journey'] && WC_Frenet_Labels_Settings::on( 'wallet_payment' ) && ! $res['paid'] && '' !== (string) ( $res['message'] ?? '' ) ) {
+			self::set_issue( $order, (string) $res['message'] );
+		} else {
+			self::clear_issue( $order );
+		}
+		return $res;
+	}
+
+	/**
+	 * Last label error of the order, or null.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array{message: string, at: string}|null
+	 */
+	public static function issue( WC_Order $order ) {
+		$raw = json_decode( (string) $order->get_meta( self::ISSUE ), true );
+		if ( ! is_array( $raw ) || '' === (string) ( $raw['message'] ?? '' ) ) {
+			return null;
+		}
+		return array(
+			'message' => (string) $raw['message'],
+			'at'      => (string) ( $raw['at'] ?? '' ),
+		);
+	}
+
+	/**
+	 * Keeps why the label of the order failed, so the shopkeeper sees it in the lists.
+	 *
+	 * @param WC_Order $order   Order.
+	 * @param string   $message Human message.
+	 * @return void
+	 */
+	public static function set_issue( WC_Order $order, $message ) {
+		$order->update_meta_data(
+			self::ISSUE,
+			wp_json_encode(
+				array(
+					'message' => wp_strip_all_tags( (string) $message ),
+					'at'      => current_time( 'mysql' ),
+				)
+			)
+		);
+		$order->save();
+	}
+
+	/**
+	 * The label went through: forget the previous error.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return void
+	 */
+	public static function clear_issue( WC_Order $order ) {
+		if ( '' !== (string) $order->get_meta( self::ISSUE ) ) {
+			$order->delete_meta_data( self::ISSUE );
+			$order->save();
+		}
+	}
+
+	/**
+	 * Creates the shipment (see create()).
+	 *
+	 * @param WC_Order $order        Order.
+	 * @param string   $service_code Chosen ServiceCode.
+	 * @param string   $journey      "here" or "panel".
+	 * @return array<string, mixed>|WP_Error
+	 */
+	private static function create_shipment( WC_Order $order, $service_code, $journey ) {
 		if ( self::has_shipment( $order ) ) {
 			return new WP_Error( 'frenet_labels_exists', __( 'This order already has a Frenet shipment. Cancel it first.', 'woo-shipping-gateway' ) );
 		}
@@ -193,6 +270,7 @@ class WC_Frenet_Labels_Service {
 		$unknown  = is_wp_error( $res );
 		$message  = '';
 		$statuses = array();
+		$unpaid   = array();
 		if ( ! $unknown ) {
 			$errors = (array) ( WC_Frenet_Labels_Api::field( $res, 'errors' ) ?? array() );
 			if ( $errors && is_array( $errors[0] ) ) {
@@ -211,6 +289,7 @@ class WC_Frenet_Labels_Service {
 			}
 			$order->update_meta_data( '_frenet_shipment_status', (string) $status );
 			if ( in_array( $status, self::PAID_STATUSES, true ) ) {
+				$order->delete_meta_data( self::ISSUE );
 				/* translators: 1: shipment id, 2: amount */
 				$order->add_order_note( sprintf( __( 'Frenet label %1$s paid (%2$s).', 'woo-shipping-gateway' ), $id, self::money( (float) $order->get_meta( '_frenet_shipment_price' ) ) ) );
 				$order->save();
@@ -223,6 +302,7 @@ class WC_Frenet_Labels_Service {
 				self::schedule_poll( $order->get_id(), 1 );
 			} else {
 				$order->save();
+				$unpaid[] = $order;
 			}
 		}
 		if ( $unknown ) {
@@ -230,6 +310,9 @@ class WC_Frenet_Labels_Service {
 			$message = sprintf( __( 'The payment did not answer (%s). The store checks again every minute; do not pay twice.', 'woo-shipping-gateway' ), $res->get_error_message() );
 		} elseif ( '' === $message && array_diff( $statuses, self::PAID_STATUSES ) ) {
 			$message = __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' );
+		}
+		foreach ( $unpaid as $order ) {
+			self::set_issue( $order, '' !== $message ? $message : __( 'The label was not paid.', 'woo-shipping-gateway' ) );
 		}
 		$total = 0.0;
 		foreach ( $statuses as $id => $status ) {
@@ -376,6 +459,8 @@ class WC_Frenet_Labels_Service {
 			return;
 		}
 		if ( self::fetch_label( $order ) ) {
+			// Paid after all (payment without answer): the Notes column has nothing to say any more.
+			self::clear_issue( $order );
 			return;
 		}
 		if ( $attempt >= self::POLL_MAX ) {
@@ -432,6 +517,8 @@ class WC_Frenet_Labels_Service {
 		if ( $order ) {
 			$order->update_meta_data( '_frenet_shipment_status', (string) $status );
 			$order->delete_meta_data( '_frenet_label_ready' );
+			// The shopkeeper acted on the failed label: the order starts over without the old note.
+			$order->delete_meta_data( self::ISSUE );
 			self::unschedule_poll( $order->get_id() );
 			self::forget_label_tracking( $order, $id );
 			$order->add_order_note(

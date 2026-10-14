@@ -229,6 +229,12 @@
 .frenet-pill.is-wait { background: var(--fl-wait-bg); color: var(--fl-wait); }
 .frenet-pill.is-bad { background: var(--fl-bad-bg); color: var(--fl-bad); }
 .frenet-pill.is-off { background: var(--fl-off-bg); color: var(--fl-off); }
+/* "Observações": a label that failed keeps the row red until it goes through. */
+.frenet-table tbody tr.is-failed td,
+.frenet-table tbody tr.is-failed th { background: var(--fl-bad-bg); }
+.frenet-table tbody tr.is-failed > :first-child { box-shadow: inset 3px 0 0 var(--fl-bad); }
+.frenet-issue-cell { min-width: 180px; max-width: 320px; font-size: 13px; line-height: 1.45; }
+.frenet-box__issue { margin: 8px 0; padding: 8px 10px; border-left: 3px solid var(--fl-bad); border-radius: 0 var(--fl-radius) var(--fl-radius) 0; background: var(--fl-bad-bg); font-size: 13px; line-height: 1.45; }
 
 /* Filters, actions, pager */
 .frenet-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }

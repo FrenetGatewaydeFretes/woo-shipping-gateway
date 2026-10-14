@@ -437,9 +437,16 @@
 			btnCalc.disabled = true;
 			status.textContent = t.working;
 			var i = 0;
+			var failed = 0;
 			var next = function () {
 				if ( i >= sel.length ) {
-					status.textContent = t.done;
+					status.textContent = failed ? fmt( t.doneFailed, sel.length - failed, failed ) : fmt( 1 === sel.length ? t.doneAllOne : t.doneAll, sel.length );
+					if ( failed ) {
+						var first = create.querySelector( 'tr.is-failed' );
+						if ( first ) {
+							first.scrollIntoView( { behavior: 'smooth', block: 'center' } );
+						}
+					}
 					btnCalc.disabled = false;
 					refreshWallet();
 					return;
@@ -449,6 +456,18 @@
 				cell.textContent = t.working;
 				post( 'create', { order_id: x.row.getAttribute( 'data-order' ), service: x.service.code, journey: j } ).then( function ( res ) {
 					cell.textContent = '';
+					// "Observações": the reason stays on the order (saved by the server) and the row turns red.
+					var issue = res.success ? ( res.data.paid || 'panel' === res.data.journey || ! cfg.wallet ? '' : res.data.message || '' ) : ( ( res.data && res.data.message ) || t.error );
+					var note = x.row.querySelector( '[data-frenet-issue]' );
+					note.textContent = '';
+					if ( issue ) {
+						note.appendChild( el( 'span', 'frenet-error frenet-block', issue ) );
+						note.appendChild( el( 'span', 'frenet-muted frenet-block', new Date().toLocaleString( 'pt-BR' ) ) );
+					} else {
+						note.appendChild( el( 'span', 'frenet-muted', '—' ) );
+					}
+					x.row.classList.toggle( 'is-failed', !! issue );
+					failed += issue ? 1 : 0;
 					if ( res.success ) {
 						cell.appendChild( pill( res.data.status_label, res.data.tone ) );
 						cell.appendChild( el( 'span', 'frenet-muted frenet-block', '#' + res.data.shipment_id + ' · ' + money( res.data.price ) ) );

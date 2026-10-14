@@ -224,6 +224,13 @@ class WC_Frenet_Labels_Admin {
 			'working'       => __( 'Working… do not close this page.', 'woo-shipping-gateway' ),
 			'done'          => __( 'Done', 'woo-shipping-gateway' ),
 			'failed'        => __( 'Not created', 'woo-shipping-gateway' ),
+			// Outcome of the run: the Notes column keeps why a label failed.
+			/* translators: %d: number of orders */
+			'doneAll'       => __( 'Done: %d shipments created.', 'woo-shipping-gateway' ),
+			/* translators: %d: number of orders (always 1) */
+			'doneAllOne'    => __( 'Done: %d shipment created.', 'woo-shipping-gateway' ),
+			/* translators: 1: orders that went through, 2: orders with an error */
+			'doneFailed'    => __( 'Done: %1$d went through, %2$d with an error. See the Notes column of the red rows.', 'woo-shipping-gateway' ),
 			'balanceAfter'  => __( 'Balance after', 'woo-shipping-gateway' ),
 			'notEnough'     => __( 'Your balance does not cover this total. Add balance in the Frenet panel or select fewer orders.', 'woo-shipping-gateway' ),
 			'confirmCancel' => __( 'Cancel this Frenet label? If it was paid, Frenet returns the amount to the wallet (usually overnight).', 'woo-shipping-gateway' ),

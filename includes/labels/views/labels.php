@@ -87,6 +87,7 @@ $frenet_pages = max( 1, (int) ceil( $frenet_list['total'] / $frenet_per ) );
 				<th scope="col"><?php esc_html_e( 'Status', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'Tracking code', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'Updated', 'woo-shipping-gateway' ); ?></th>
+				<th scope="col"><?php esc_html_e( 'Notes', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><span class="screen-reader-text"><?php esc_html_e( 'Actions', 'woo-shipping-gateway' ); ?></span></th>
 			</tr></thead>
 			<tbody>
@@ -102,8 +103,9 @@ $frenet_pages = max( 1, (int) ceil( $frenet_list['total'] / $frenet_per ) );
 				$frenet_track  = (string) ( $frenet_s['trackingUrl'] ?? '' );
 				$frenet_unpaid = in_array( $frenet_status, WC_Frenet_Labels_Service::UNPAID_STATUSES, true );
 				$frenet_paid   = in_array( $frenet_status, WC_Frenet_Labels_Service::PAID_STATUSES, true );
+				$frenet_issue  = $frenet_mine && ! $frenet_paid && ! in_array( $frenet_status, WC_Frenet_Labels_Service::GONE_STATUSES, true ) ? WC_Frenet_Labels_Service::issue( $frenet_order ) : null;
 				?>
-				<tr data-frenet-label="<?php echo esc_attr( $frenet_id ); ?>" data-price="<?php echo esc_attr( (string) $frenet_price ); ?>" data-unpaid="<?php echo $frenet_unpaid ? '1' : '0'; ?>" data-paid="<?php echo $frenet_paid ? '1' : '0'; ?>">
+				<tr<?php echo $frenet_issue ? ' class="is-failed"' : ''; ?> data-frenet-label="<?php echo esc_attr( $frenet_id ); ?>" data-price="<?php echo esc_attr( (string) $frenet_price ); ?>" data-unpaid="<?php echo $frenet_unpaid ? '1' : '0'; ?>" data-paid="<?php echo $frenet_paid ? '1' : '0'; ?>">
 					<th scope="row" class="check-column">
 						<?php if ( $frenet_unpaid || $frenet_paid ) : ?>
 							<input type="checkbox" data-frenet-pick aria-label="<?php /* translators: %s: shipment */ echo esc_attr( sprintf( __( 'Select shipment %s', 'woo-shipping-gateway' ), $frenet_id ) ); ?>">
@@ -135,6 +137,7 @@ else :
 	?>
 						<span class="frenet-muted">—</span><?php endif; ?></td>
 					<td class="frenet-muted"><?php echo esc_html( substr( (string) ( $frenet_vol['modifiedOn'] ?? '' ), 0, 16 ) ); ?></td>
+					<td class="frenet-issue-cell"><?php WC_Frenet_Labels_Admin::view( 'issue', array( 'issue' => $frenet_issue ) ); ?></td>
 					<td class="frenet-row-actions">
 						<?php if ( $frenet_paid ) : ?>
 							<a class="button button-small" href="<?php echo esc_url( WC_Frenet_Labels_Admin::print_url( array( $frenet_id ) ) ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Print', 'woo-shipping-gateway' ); ?></a>

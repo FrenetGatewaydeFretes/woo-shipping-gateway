@@ -14,6 +14,7 @@ $frenet_live    = WC_Frenet_Labels_Service::has_shipment( $order );
 $frenet_nfe     = WC_Frenet_Labels_Nfe::parse( (string) $order->get_meta( WC_Frenet_Labels_Nfe::META ) );
 $frenet_paid    = in_array( $frenet_status, WC_Frenet_Labels_Service::PAID_STATUSES, true );
 $frenet_journey = (string) $order->get_meta( '_frenet_label_journey' );
+$frenet_issue   = $frenet_paid ? null : WC_Frenet_Labels_Service::issue( $order );
 ?>
 <div class="frenet-box" data-frenet-box data-order="<?php echo esc_attr( (string) $order->get_id() ); ?>">
 	<?php if ( $frenet_live ) : ?>
@@ -47,6 +48,9 @@ $frenet_journey = (string) $order->get_meta( '_frenet_label_journey' );
 	<?php else : ?>
 		<p class="frenet-muted"><?php esc_html_e( 'No Frenet shipment yet.', 'woo-shipping-gateway' ); ?></p>
 		<a class="button button-primary" href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG . '-create', array( 'orders' => $order->get_id() ) ) ); ?>"><?php esc_html_e( 'Create shipment', 'woo-shipping-gateway' ); ?></a>
+	<?php endif; ?>
+	<?php if ( $frenet_issue ) : ?>
+		<p class="frenet-box__issue"><?php WC_Frenet_Labels_Admin::view( 'issue', array( 'issue' => $frenet_issue ) ); ?></p>
 	<?php endif; ?>
 	<p class="frenet-muted frenet-box__nfe"><?php esc_html_e( 'NF-e', 'woo-shipping-gateway' ); ?>: <?php echo esc_html( $frenet_nfe['ok'] ? WC_Frenet_Labels_Nfe::summary( $frenet_nfe ) : __( 'none', 'woo-shipping-gateway' ) ); ?></p>
 	<p class="frenet-status-line" role="status" aria-live="polite" data-frenet-status></p>

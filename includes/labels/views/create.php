@@ -83,6 +83,7 @@ endif;
 				<th scope="col"><?php esc_html_e( 'NF-e', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'Carrier', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'Status', 'woo-shipping-gateway' ); ?></th>
+				<th scope="col"><?php esc_html_e( 'Notes', 'woo-shipping-gateway' ); ?></th>
 			</tr></thead>
 			<tbody>
 			<?php
@@ -94,9 +95,10 @@ endif;
 					$frenet_weight += $frenet_item['weight'] * $frenet_item['qty'];
 					$frenet_count  += $frenet_item['qty'];
 				}
-				$frenet_nfe = WC_Frenet_Labels_Nfe::parse( (string) $frenet_order->get_meta( WC_Frenet_Labels_Nfe::META ) );
+				$frenet_nfe   = WC_Frenet_Labels_Nfe::parse( (string) $frenet_order->get_meta( WC_Frenet_Labels_Nfe::META ) );
+				$frenet_issue = WC_Frenet_Labels_Service::issue( $frenet_order );
 				?>
-				<tr data-frenet-row data-order="<?php echo esc_attr( (string) $frenet_order->get_id() ); ?>">
+				<tr<?php echo $frenet_issue ? ' class="is-failed"' : ''; ?> data-frenet-row data-order="<?php echo esc_attr( (string) $frenet_order->get_id() ); ?>">
 					<th scope="row" class="check-column"><input type="checkbox" data-frenet-pick checked aria-label="<?php /* translators: %s: order number */ echo esc_attr( sprintf( __( 'Select order %s', 'woo-shipping-gateway' ), $frenet_order->get_order_number() ) ); ?>"></th>
 					<td><a href="<?php echo esc_url( $frenet_order->get_edit_order_url() ); ?>">#<?php echo esc_html( $frenet_order->get_order_number() ); ?></a><br><span class="frenet-muted"><?php echo esc_html( $frenet_to['name'] ); ?></span></td>
 					<td><?php echo esc_html( trim( $frenet_to['city'] . ' / ' . $frenet_to['state'], ' /' ) ); ?><br><span class="frenet-muted">CEP <?php echo esc_html( $frenet_to['postcode'] ); ?></span></td>
@@ -112,6 +114,7 @@ endif;
 					</td>
 					<td class="frenet-service-cell"><span class="frenet-muted" data-frenet-service><?php esc_html_e( 'Calculate the freight', 'woo-shipping-gateway' ); ?></span></td>
 					<td data-frenet-result></td>
+					<td class="frenet-issue-cell" data-frenet-issue><?php WC_Frenet_Labels_Admin::view( 'issue', array( 'issue' => $frenet_issue ) ); ?></td>
 				</tr>
 			<?php endforeach; ?>
 			</tbody>
