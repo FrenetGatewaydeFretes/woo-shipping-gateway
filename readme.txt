@@ -4,8 +4,8 @@ Donate link: http://www.frenet.com.br/
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
 Requires at least: 3.5  
 Tested up to: 7.1
-Version: 2.1.24
-Stable tag: 2.1.24
+Version: 2.1.25
+Stable tag: 2.1.25
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -464,6 +464,12 @@ Notes:
 
 == Changelog ==
 
+= 2.1.25 - 15/10/2026 =
+
+* Corrige o cupom enviado à Frenet na cotação quando o cliente aplica mais de um cupom e remove o primeiro: o cupom que ficou no carrinho deixava de ser enviado, as regras de frete por cupom do painel Frenet deixavam de valer e o PHP registrava o aviso "Undefined array key 0".
+* Correção de segurança: a descrição da tela de configuração do método Frenet passa a ser escapada depois de traduzida, e o texto volta a ser encontrado pelas ferramentas de tradução.
+* Atualiza a versão testada para WooCommerce 11.1.2.
+
 = 2.1.24 - 07/10/2026 =
 
 * Corrige o simulador de frete da página do produto para produtos variáveis: ele passa a aparecer e a cotar a variação escolhida por qualquer controle (lista, radio, botão, swatch de cor ou de imagem), inclusive com plugins como Variation Swatches e Kadence Shop Kit.
@@ -624,6 +630,10 @@ Notes:
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 2.1.25 =
+
+* Corrige o envio do cupom à Frenet quando o cliente remove um de dois cupons aplicados, para que as regras de frete por cupom voltem a valer, e escapa a descrição da tela de configuração do método. Não exige mudanças de configuração.
 
 = 2.1.24 =
 
