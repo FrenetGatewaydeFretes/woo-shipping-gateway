@@ -37,6 +37,8 @@ class WC_Frenet_Labels_Service {
 	const UNPAID_STATUSES         = array( 1, 2, 3 );
 	// Last label error of the order ("Observações"): JSON {message, at}. Cleared when the label goes through.
 	const ISSUE = '_frenet_label_issue';
+	// Carrier codes Frenet refused for lack of an NF-e key (learned from its answers; QA 2026-10-15: JTE and JAD).
+	const NFE_CARRIERS = 'woocommerce_frenet_labels_nfe_carriers';
 
 	/**
 	 * ServiceCode the customer chose (woo-shipping-gateway stores the rate id as FRENET_ID = "FRENET_<code>").
@@ -85,13 +87,41 @@ class WC_Frenet_Labels_Service {
 		if ( ! $services ) {
 			return new WP_Error( 'frenet_labels_no_service', __( 'No carrier delivers this package to this CEP right now. Check the weight, the size and the address.', 'woo-shipping-gateway' ) );
 		}
-		$chosen = self::chosen_service( $order );
+		$chosen   = self::chosen_service( $order );
+		$has_nfe  = WC_Frenet_Labels_Nfe::parse( (string) $order->get_meta( WC_Frenet_Labels_Nfe::META ) )['ok'];
+		$services = WC_Frenet_Labels_Compare::mark_nfe( $services, self::nfe_carriers() );
+		// Without an NF-e key, never propose by default a carrier that Frenet refuses without one.
+		$usable = $has_nfe ? $services : WC_Frenet_Labels_Compare::usable_without_nfe( $services );
 		return array(
 			'services' => $services,
 			'best'     => WC_Frenet_Labels_Compare::best( $services ),
 			'chosen'   => $chosen,
-			'default'  => WC_Frenet_Labels_Compare::default_choice( $services, $chosen, WC_Frenet_Labels_Settings::on( 'auto_best' ), WC_Frenet_Labels_Settings::get( 'default_service' ) ),
+			'default'  => WC_Frenet_Labels_Compare::default_choice( $usable, $chosen, WC_Frenet_Labels_Settings::on( 'auto_best' ), WC_Frenet_Labels_Settings::get( 'default_service' ) ),
 		);
+	}
+
+	/**
+	 * Carrier codes that need an NF-e key.
+	 *
+	 * @return array<int, string>
+	 */
+	public static function nfe_carriers() {
+		return array_values( array_filter( array_map( 'strval', (array) get_option( self::NFE_CARRIERS, array() ) ) ) );
+	}
+
+	/**
+	 * Frenet refused a shipment of this carrier for lack of an NF-e key: remember it for the next quotes.
+	 *
+	 * @param string $carrier_code Carrier code.
+	 * @return void
+	 */
+	public static function remember_nfe_carrier( $carrier_code ) {
+		$carrier_code = strtoupper( preg_replace( '/[^A-Za-z0-9_]/', '', (string) $carrier_code ) );
+		$known        = self::nfe_carriers();
+		if ( '' !== $carrier_code && ! in_array( $carrier_code, $known, true ) ) {
+			$known[] = $carrier_code;
+			update_option( self::NFE_CARRIERS, $known, false );
+		}
 	}
 
 	/**
@@ -105,6 +135,10 @@ class WC_Frenet_Labels_Service {
 	public static function create( WC_Order $order, $service_code, $journey ) {
 		$res = self::create_shipment( $order, $service_code, $journey );
 		if ( is_wp_error( $res ) ) {
+			$data = (array) $res->get_error_data();
+			if ( ! empty( $data['nfe_carrier'] ) ) {
+				self::remember_nfe_carrier( $data['nfe_carrier'] );
+			}
 			if ( 'frenet_labels_exists' !== $res->get_error_code() ) {
 				self::set_issue( $order, $res->get_error_message() );
 			}
@@ -134,6 +168,16 @@ class WC_Frenet_Labels_Service {
 			'message' => (string) $raw['message'],
 			'at'      => (string) ( $raw['at'] ?? '' ),
 		);
+	}
+
+	/**
+	 * When the issue happened, in the store's date and time format.
+	 *
+	 * @param array{message: string, at: string} $issue Issue.
+	 * @return string
+	 */
+	public static function issue_when( array $issue ) {
+		return '' === $issue['at'] ? '' : (string) mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $issue['at'] );
 	}
 
 	/**
@@ -213,12 +257,17 @@ class WC_Frenet_Labels_Service {
 		$errors = (array) ( WC_Frenet_Labels_Api::field( $item, 'errors' ) ?? array() );
 		if ( $errors ) {
 			$message = WC_Frenet_Labels_Api::clean_error( (string) ( WC_Frenet_Labels_Api::field( (array) $errors[0], 'message' ) ?? '' ) );
+			$data    = array();
 			if ( WC_Frenet_Labels_Nfe::is_invoice_error( $message ) ) {
-				$message = $order->get_meta( WC_Frenet_Labels_Nfe::META )
+				$has_key = (bool) $order->get_meta( WC_Frenet_Labels_Nfe::META );
+				$message = $has_key
 					? __( 'Frenet did not accept the NF-e key of this order. Check that it is the invoice of this order. Nothing was charged.', 'woo-shipping-gateway' )
 					: __( 'This carrier requires an invoice. Paste the NF-e key of the order and try again, or choose another carrier. Nothing was charged.', 'woo-shipping-gateway' );
+				if ( ! $has_key ) {
+					$data['nfe_carrier'] = $service['carrier_code'];
+				}
 			}
-			return new WP_Error( 'frenet_labels_refused', $message );
+			return new WP_Error( 'frenet_labels_refused', $message, $data );
 		}
 		$id = (string) ( WC_Frenet_Labels_Api::field( $item, 'shipmentId' ) ?? '' );
 		if ( '' === $id ) {

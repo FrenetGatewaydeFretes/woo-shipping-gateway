@@ -221,6 +221,16 @@ class WC_Frenet_Labels_Admin {
 			'dceSomeOne'    => __( '%1$d of the %2$d orders has no NF-e key: Frenet will generate a DC-e for it.', 'woo-shipping-gateway' ),
 			/* translators: 1: orders without NF-e key, 2: selected orders */
 			'dceSome'       => __( '%1$d of the %2$d orders have no NF-e key: Frenet will generate a DC-e for them.', 'woo-shipping-gateway' ),
+			// Carriers that require an NF-e key (learned from Frenet's refusals).
+			'needsNfe'      => __( 'requires NF-e', 'woo-shipping-gateway' ),
+			/* translators: %d: number of orders (always 1) */
+			'needsNfeOne'   => __( '%d order has no NF-e key and this carrier requires one: add the key or choose another carrier.', 'woo-shipping-gateway' ),
+			/* translators: %d: number of orders */
+			'needsNfeSome'  => __( '%d orders have no NF-e key and this carrier requires one: add the keys or choose another carrier.', 'woo-shipping-gateway' ),
+			/* translators: 1: number of orders (always 1), 2: carrier names */
+			'refusedOne'    => __( '%1$d order has no NF-e key and goes with %2$s, which requires one: Frenet will refuse it. Go back, add the key or choose another carrier.', 'woo-shipping-gateway' ),
+			/* translators: 1: number of orders, 2: carrier names */
+			'refusedSome'   => __( '%1$d orders have no NF-e key and go with %2$s, which requires one: Frenet will refuse them. Go back, add the keys or choose another carrier.', 'woo-shipping-gateway' ),
 			'working'       => __( 'Working… do not close this page.', 'woo-shipping-gateway' ),
 			'done'          => __( 'Done', 'woo-shipping-gateway' ),
 			'failed'        => __( 'Not created', 'woo-shipping-gateway' ),
@@ -357,11 +367,25 @@ class WC_Frenet_Labels_Admin {
 		$service = sanitize_text_field( wp_unslash( $_POST['service'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
 		$journey = sanitize_key( wp_unslash( $_POST['journey'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
 		$res     = WC_Frenet_Labels_Service::create( $order, $service, $journey );
+		// "Observações" as the lists show it after a reload: same text and the store's date format.
+		$issue = WC_Frenet_Labels_Service::issue( wc_get_order( $order->get_id() ) );
+		$note  = $issue ? array(
+			'message' => $issue['message'],
+			'when'    => WC_Frenet_Labels_Service::issue_when( $issue ),
+		) : null;
 		if ( is_wp_error( $res ) ) {
-			wp_send_json_error( array( 'message' => $res->get_error_message() ) );
+			$data = (array) $res->get_error_data();
+			wp_send_json_error(
+				array(
+					'message'     => $res->get_error_message(),
+					'issue'       => $note,
+					'nfe_carrier' => (string) ( $data['nfe_carrier'] ?? '' ),
+				)
+			);
 		}
 		$res['status_label'] = WC_Frenet_Labels_Service::status_label( (int) $res['status'] );
 		$res['tone']         = WC_Frenet_Labels_Service::status_tone( (int) $res['status'] );
+		$res['issue']        = $note;
 		wp_send_json_success( $res );
 	}
 

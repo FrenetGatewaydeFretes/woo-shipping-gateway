@@ -146,6 +146,7 @@ endif;
 			<div><dt><?php esc_html_e( 'Balance after', 'woo-shipping-gateway' ); ?></dt><dd data-frenet-balance-after></dd></div>
 		</dl>
 		<p class="frenet-warning" data-frenet-review-warning hidden></p>
+		<p class="frenet-warning" role="alert" data-frenet-review-nfe hidden></p>
 		<div class="frenet-note" role="note" data-frenet-review-dce hidden>
 			<strong data-frenet-review-dce-title></strong>
 			<p><?php esc_html_e( 'Frenet generates the content declaration (DC-e) for every order without an NF-e key. If your store is required to issue an NF-e (it depends on its state registration), it cannot use the DC-e: go back and add the NF-e key of those orders.', 'woo-shipping-gateway' ); ?></p>

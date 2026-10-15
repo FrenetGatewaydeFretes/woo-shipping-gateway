@@ -1222,3 +1222,18 @@ msgstr "Algumas transportadoras deixam você escolher onde postar os seus pacote
 
 msgid "In the Frenet panel"
 msgstr "No painel Frenet"
+
+msgid "requires NF-e"
+msgstr "exige NF-e"
+
+msgid "%d order has no NF-e key and this carrier requires one: add the key or choose another carrier."
+msgstr "%d pedido não tem chave da NF-e e esta transportadora exige: adicione a chave ou escolha outra transportadora."
+
+msgid "%d orders have no NF-e key and this carrier requires one: add the keys or choose another carrier."
+msgstr "%d pedidos não têm chave da NF-e e esta transportadora exige: adicione as chaves ou escolha outra transportadora."
+
+msgid "%1$d order has no NF-e key and goes with %2$s, which requires one: Frenet will refuse it. Go back, add the key or choose another carrier."
+msgstr "%1$d pedido não tem chave da NF-e e vai com %2$s, que exige: a Frenet vai recusá-lo. Volte, adicione a chave ou escolha outra transportadora."
+
+msgid "%1$d orders have no NF-e key and go with %2$s, which requires one: Frenet will refuse them. Go back, add the keys or choose another carrier."
+msgstr "%1$d pedidos não têm chave da NF-e e vão com %2$s, que exige: a Frenet vai recusá-los. Volte, adicione as chaves ou escolha outra transportadora."

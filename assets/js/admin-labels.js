@@ -112,7 +112,22 @@
 			r.querySelector( '[data-frenet-pick]' ).addEventListener( 'change', renderSummary );
 		} );
 
-		var renderService = function ( row, data ) {
+		var hasNfe = function ( row ) {
+			return '1' === row.querySelector( '.frenet-nfe-cell' ).getAttribute( 'data-nfe' );
+		};
+		// Services an order can really ship with: without an NF-e key, the carriers that require one are left out
+		// (all of them when every carrier requires it, so the screen never offers nothing).
+		var usable = function ( row, services ) {
+			if ( hasNfe( row ) ) {
+				return services;
+			}
+			var ok = services.filter( function ( s ) {
+				return ! s.needs_nfe;
+			} );
+			return ok.length ? ok : services;
+		};
+
+		var renderService = function ( row, data, keep ) {
 			var cell = row.querySelector( '.frenet-service-cell' );
 			cell.textContent = '';
 			if ( ! data.ok ) {
@@ -133,9 +148,12 @@
 				if ( s.code === data.chosen ) {
 					tags.push( t.customer );
 				}
+				if ( s.needs_nfe && ! hasNfe( row ) ) {
+					tags.push( t.needsNfe );
+				}
 				var o = el( 'option', '', s.carrier + ' · ' + s.name + ' — ' + money( s.price ) + ' · ' + fmt( 1 === Number( s.days ) ? t.day : t.days, s.days ) + ( tags.length ? ' (' + tags.join( ', ' ) + ')' : '' ) );
 				o.value = s.code;
-				o.selected = s.code === data['default'];
+				o.selected = s.code === ( keep || data[ 'default' ] );
 				select.appendChild( o );
 			} );
 			select.addEventListener( 'change', function () {
@@ -184,7 +202,7 @@
 					} );
 					s = mine.length ? cheapest( mine ) : null;
 				} else {
-					s = 'best_time' === applied.best ? fastest( q.services ) : cheapest( q.services );
+					s = 'best_time' === applied.best ? fastest( usable( r, q.services ) ) : cheapest( usable( r, q.services ) );
 				}
 				if ( s ) {
 					r.querySelector( '[data-frenet-choice]' ).value = s.code;
@@ -203,6 +221,28 @@
 			status.textContent = missing
 				? fmt( t.appliedPartly, label, n - missing, missing )
 				: fmt( 1 === n ? t.appliedOne : t.applied, label, n );
+			var blocked = blockedBy( selection() ).length;
+			if ( blocked ) {
+				status.textContent += ' ' + fmt( 1 === blocked ? t.needsNfeOne : t.needsNfeSome, blocked );
+			}
+		};
+
+		var rerender = function ( row ) {
+			var q = quotes[ row.getAttribute( 'data-order' ) ];
+			var sel = row.querySelector( '[data-frenet-choice]' );
+			if ( q && q.ok && sel ) {
+				renderService( row, q, sel.value );
+			}
+		};
+		var markNfeCarrier = function ( code ) {
+			Object.keys( quotes ).forEach( function ( id ) {
+				( quotes[ id ].services || [] ).forEach( function ( s ) {
+					if ( s.carrier_code === code ) {
+						s.needs_nfe = true;
+					}
+				} );
+			} );
+			rows.forEach( rerender );
 		};
 
 		var pickButton = function ( pick, label, active ) {
@@ -230,7 +270,8 @@
 		};
 
 		var renderSummary = function () {
-			var list = quoted().map( function ( r ) {
+			var shown = quoted();
+			var list = shown.map( function ( r ) {
 				return quotes[ r.getAttribute( 'data-order' ) ].services;
 			} );
 			if ( ! list.length ) {
@@ -247,11 +288,12 @@
 			var bestTime = 0;
 			var bestPriceDays = 0;
 			var bestTimeDays = 0;
-			list.forEach( function ( services ) {
-				bestPrice += cheapest( services ).price;
-				bestTime += fastest( services ).price;
-				bestPriceDays = Math.max( bestPriceDays, cheapest( services ).days || 0 );
-				bestTimeDays = Math.max( bestTimeDays, fastest( services ).days || 0 );
+			list.forEach( function ( services, k ) {
+				var pool = usable( shown[ k ], services );
+				bestPrice += cheapest( pool ).price;
+				bestTime += fastest( pool ).price;
+				bestPriceDays = Math.max( bestPriceDays, cheapest( pool ).days || 0 );
+				bestTimeDays = Math.max( bestTimeDays, fastest( pool ).days || 0 );
 				var by = {};
 				services.forEach( function ( s ) {
 					( by[ carrierOf( s ) ] = by[ carrierOf( s ) ] || [] ).push( s );
@@ -347,6 +389,13 @@
 			btnCalc.classList.add( 'button-primary' );
 		} );
 
+		// Selected orders without an NF-e key going with a carrier that requires one: Frenet refuses them.
+		var blockedBy = function ( sel ) {
+			return sel.filter( function ( x ) {
+				return x.service && x.service.needs_nfe && ! hasNfe( x.row );
+			} );
+		};
+
 		var selection = function () {
 			return picked().map( function ( r ) {
 				var q = quotes[ r.getAttribute( 'data-order' ) ];
@@ -413,9 +462,18 @@
 			} else {
 				confirm.textContent = fmt( t.createOnly, sel.length );
 			}
+			// Carriers that require an NF-e key refuse orders without one: say it before anything is sent.
+			var blocked = blockedBy( sel );
+			var nfeWarn = dialog.querySelector( '[data-frenet-review-nfe]' );
+			nfeWarn.hidden = ! blocked.length;
+			nfeWarn.textContent = blocked.length ? fmt( 1 === blocked.length ? t.refusedOne : t.refusedSome, blocked.length, blocked.map( function ( x ) {
+				return carrierOf( x.service );
+			} ).filter( function ( v, k, a ) {
+				return a.indexOf( v ) === k;
+			} ).join( ', ' ) ) : '';
 			// No NF-e key: Frenet issues a DC-e. Only an informative note (v1); stores required to issue NF-e go back.
 			var noNfe = sel.filter( function ( x ) {
-				return '1' !== x.row.querySelector( '.frenet-nfe-cell' ).getAttribute( 'data-nfe' );
+				return ! hasNfe( x.row ) && blocked.indexOf( x ) === -1;
 			} ).length;
 			var dce = dialog.querySelector( '[data-frenet-review-dce]' );
 			dce.hidden = ! noNfe;
@@ -457,12 +515,17 @@
 				post( 'create', { order_id: x.row.getAttribute( 'data-order' ), service: x.service.code, journey: j } ).then( function ( res ) {
 					cell.textContent = '';
 					// "Observações": the reason stays on the order (saved by the server) and the row turns red.
-					var issue = res.success ? ( res.data.paid || 'panel' === res.data.journey || ! cfg.wallet ? '' : res.data.message || '' ) : ( ( res.data && res.data.message ) || t.error );
+					var issue = res.data && res.data.issue ? res.data.issue : null;
+					if ( ! res.success && ! issue ) {
+						issue = { message: ( res.data && res.data.message ) || t.error, when: '' };
+					}
 					var note = x.row.querySelector( '[data-frenet-issue]' );
 					note.textContent = '';
 					if ( issue ) {
-						note.appendChild( el( 'span', 'frenet-error frenet-block', issue ) );
-						note.appendChild( el( 'span', 'frenet-muted frenet-block', new Date().toLocaleString( 'pt-BR' ) ) );
+						note.appendChild( el( 'span', 'frenet-error frenet-block', issue.message ) );
+						if ( issue.when ) {
+							note.appendChild( el( 'span', 'frenet-muted frenet-block', issue.when ) );
+						}
 					} else {
 						note.appendChild( el( 'span', 'frenet-muted', '—' ) );
 					}
@@ -471,15 +534,15 @@
 					if ( res.success ) {
 						cell.appendChild( pill( res.data.status_label, res.data.tone ) );
 						cell.appendChild( el( 'span', 'frenet-muted frenet-block', '#' + res.data.shipment_id + ' · ' + money( res.data.price ) ) );
-						if ( res.data.message ) {
-							cell.appendChild( el( 'span', 'frenet-error frenet-block', res.data.message ) );
-						}
 						x.row.setAttribute( 'data-done', '1' );
 						x.row.querySelector( '[data-frenet-pick]' ).checked = false;
 						x.row.querySelector( '[data-frenet-pick]' ).disabled = true;
 					} else {
 						cell.appendChild( pill( t.failed, 'bad' ) );
-						cell.appendChild( el( 'span', 'frenet-error frenet-block', ( res.data && res.data.message ) || t.error ) );
+						// Frenet refused this carrier without an NF-e key: flag it in every quote of the screen too.
+						if ( res.data && res.data.nfe_carrier ) {
+							markNfeCarrier( res.data.nfe_carrier );
+						}
 					}
 					next();
 				} );
@@ -500,6 +563,7 @@
 				if ( res.success ) {
 					row.querySelector( '[data-frenet-nfe-summary]' ).textContent = res.data.summary || t.optional;
 					row.querySelector( '.frenet-nfe-cell' ).setAttribute( 'data-nfe', res.data.summary ? '1' : '0' );
+					rerender( row );
 					msg.textContent = t.saved;
 					input.removeAttribute( 'aria-invalid' );
 				} else {

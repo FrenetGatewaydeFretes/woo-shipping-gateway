@@ -15,5 +15,5 @@ if ( empty( $issue ) ) {
 ?>
 <span class="frenet-error frenet-block"><?php echo esc_html( $issue['message'] ); ?></span>
 <?php if ( '' !== $issue['at'] ) : ?>
-	<span class="frenet-muted frenet-block"><?php echo esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $issue['at'] ) ); ?></span>
+	<span class="frenet-muted frenet-block"><?php echo esc_html( WC_Frenet_Labels_Service::issue_when( $issue ) ); ?></span>
 <?php endif; ?>

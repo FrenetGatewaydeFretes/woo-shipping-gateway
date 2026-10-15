@@ -99,6 +99,39 @@ class WC_Frenet_Labels_Compare {
 	}
 
 	/**
+	 * Flags the services of carriers that need an NF-e key (needs_nfe).
+	 *
+	 * @param array<int, array<string, mixed>> $services      normalize() result.
+	 * @param array<int, string>               $nfe_carriers Carrier codes that need an NF-e key.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function mark_nfe( array $services, array $nfe_carriers ) {
+		foreach ( $services as &$s ) {
+			$s['needs_nfe'] = in_array( strtoupper( (string) $s['carrier_code'] ), $nfe_carriers, true );
+		}
+		unset( $s );
+		return $services;
+	}
+
+	/**
+	 * Services an order without an NF-e key can use; all of them when every carrier needs one.
+	 *
+	 * @param array<int, array<string, mixed>> $services mark_nfe() result.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function usable_without_nfe( array $services ) {
+		$usable = array_values(
+			array_filter(
+				$services,
+				static function ( $s ) {
+					return empty( $s['needs_nfe'] );
+				}
+			)
+		);
+		return $usable ? $usable : $services;
+	}
+
+	/**
 	 * Service selected by default for an order.
 	 *
 	 * @param array<int, array<string, mixed>> $services normalize() result.
