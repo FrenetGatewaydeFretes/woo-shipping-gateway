@@ -11,7 +11,7 @@
  * Domain Path: languages/
  * Tested up to: 7.1
  * Requires at least: 3.5
- * WC tested up to: 11.0.1
+ * WC tested up to: 11.1.2
  * Tags: shipping, woocommerce, frete, gateway
  */
 
