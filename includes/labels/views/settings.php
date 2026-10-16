@@ -41,7 +41,7 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 		<label class="frenet-field" for="frenet-partner"><?php esc_html_e( 'Partner token', 'woo-shipping-gateway' ); ?></label>
 		<input id="frenet-partner" class="regular-text" type="password" name="frenet_labels[partner_token]" value="" autocomplete="new-password" spellcheck="false"
 			placeholder="<?php echo esc_attr( $frenet_partner ? __( 'Saved. Type a new one to replace it.', 'woo-shipping-gateway' ) : '' ); ?>" aria-describedby="frenet-partner-help">
-		<p id="frenet-partner-help" class="description"><?php esc_html_e( 'Given by Frenet to integration partners (x-partner-token). Required to create, list, pay and cancel labels. Keep it secret like a password.', 'woo-shipping-gateway' ); ?></p>
+		<p id="frenet-partner-help" class="description"><?php esc_html_e( 'Exclusive to Frenet customers with the whitelabel service: each store has its own (x-partner-token). Ask Frenet for it. Required to create, list, pay and cancel labels. Keep it secret like a password.', 'woo-shipping-gateway' ); ?></p>
 		<?php if ( $frenet_partner ) : ?>
 			<label class="frenet-inline"><input type="checkbox" name="frenet_labels[clear_partner_token]" value="1"> <?php esc_html_e( 'Remove the saved partner token', 'woo-shipping-gateway' ); ?></label>
 		<?php endif; ?>

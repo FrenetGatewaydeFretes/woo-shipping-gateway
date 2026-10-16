@@ -1,23 +1,14 @@
 <?php
 /**
- * Wallet card with "Adicionar saldo" (Mercado Pago checkout of a Frenet wallet deposit).
+ * Wallet card. Balance is added in the Frenet panel (its own payment gateway); back here, "Atualizar" reads it again.
  *
  * @package woo-shipping-gateway
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$frenet_wallet  = WC_Frenet_Labels_Service::wallet();
-$frenet_deposit = isset( $_GET['deposit'] ) ? sanitize_key( wp_unslash( $_GET['deposit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display flag only.
-$frenet_notices = array(
-	'success' => array( 'success', __( 'Payment sent. The balance shows up as soon as Mercado Pago confirms it (Pix in a few minutes).', 'woo-shipping-gateway' ) ),
-	'pending' => array( 'warning', __( 'Payment pending at Mercado Pago. The balance shows up when it is confirmed.', 'woo-shipping-gateway' ) ),
-	'failure' => array( 'error', __( 'The payment was not completed. Nothing was added to the wallet.', 'woo-shipping-gateway' ) ),
-);
+$frenet_wallet = WC_Frenet_Labels_Service::wallet();
 ?>
-<?php if ( isset( $frenet_notices[ $frenet_deposit ] ) ) : ?>
-	<div class="notice notice-<?php echo esc_attr( $frenet_notices[ $frenet_deposit ][0] ); ?> is-dismissible"><p><?php echo esc_html( $frenet_notices[ $frenet_deposit ][1] ); ?></p></div>
-<?php endif; ?>
 <div class="frenet-wallet" data-frenet-wallet>
 	<div>
 		<span class="frenet-wallet__label"><?php esc_html_e( 'Wallet balance', 'woo-shipping-gateway' ); ?></span>
@@ -34,12 +25,9 @@ $frenet_notices = array(
 			</span>
 		<?php endif; ?>
 	</div>
-	<form class="frenet-deposit" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-		<input type="hidden" name="action" value="frenet_labels_deposit">
-		<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
-		<label class="screen-reader-text" for="frenet-deposit-value"><?php esc_html_e( 'Amount to add (R$)', 'woo-shipping-gateway' ); ?></label>
-		<input id="frenet-deposit-value" class="small-text" type="text" inputmode="decimal" name="value" value="50,00" required>
-		<button type="submit" class="button"><?php esc_html_e( 'Add balance', 'woo-shipping-gateway' ); ?></button>
-		<a class="frenet-muted" href="<?php echo esc_url( WC_Frenet_Labels_Admin::PANEL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'or in the Frenet panel', 'woo-shipping-gateway' ); ?></a>
-	</form>
+	<div class="frenet-wallet__actions">
+		<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Admin::PANEL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Add balance in the Frenet panel', 'woo-shipping-gateway' ); ?></a>
+		<button type="button" class="button-link" data-frenet-wallet-refresh><?php esc_html_e( 'Update balance', 'woo-shipping-gateway' ); ?></button>
+		<span class="frenet-muted frenet-small frenet-block"><?php esc_html_e( 'After paying in the panel, update the balance here.', 'woo-shipping-gateway' ); ?></span>
+	</div>
 </div>

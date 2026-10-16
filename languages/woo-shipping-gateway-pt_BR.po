@@ -508,8 +508,6 @@ msgstr "Token do parceiro"
 msgid "Saved. Type a new one to replace it."
 msgstr "Salvo. Digite um novo para substituir."
 
-msgid "Given by Frenet to integration partners (x-partner-token). Required to create, list, pay and cancel labels. Keep it secret like a password."
-msgstr "Fornecido pela Frenet aos parceiros de integração (x-partner-token). Necessário para criar, listar, pagar e cancelar etiquetas. Guarde em segredo como uma senha."
 
 msgid "Remove the saved partner token"
 msgstr "Remover o token de parceiro salvo"
@@ -588,8 +586,6 @@ msgid_plural "%s labels available"
 msgstr[0] "%s etiqueta disponível"
 msgstr[1] "%s etiquetas disponíveis"
 
-msgid "Add balance"
-msgstr "Adicionar saldo"
 
 msgid "Shipment %s"
 msgstr "Envio %s"
@@ -724,8 +720,6 @@ msgstr "Voltar"
 msgid "Connect your Frenet account to create labels"
 msgstr "Conecte sua conta Frenet para criar etiquetas"
 
-msgid "Turn on Frenet labels and paste the partner token (x-partner-token) that Frenet gave you. The store token comes from the Frenet shipping method."
-msgstr "Ative as etiquetas Frenet e cole o token de parceiro (x-partner-token) que a Frenet enviou. O token da loja vem do método de entrega Frenet."
 
 msgid "Open settings"
 msgstr "Abrir configuração"
@@ -992,26 +986,12 @@ msgstr "Em devolução"
 msgid "Saving…"
 msgstr "Salvando…"
 
-msgid "Type an amount of at least R$ 1,00."
-msgstr "Digite um valor de pelo menos R$ 1,00."
 
-msgid "Frenet did not start the payment. Nothing was charged; try again or add balance in the Frenet panel."
-msgstr "A Frenet não iniciou o pagamento. Nada foi cobrado; tente de novo ou adicione saldo no painel Frenet."
 
-msgid "Payment sent. The balance shows up as soon as Mercado Pago confirms it (Pix in a few minutes)."
-msgstr "Pagamento enviado. O saldo aparece assim que o Mercado Pago confirmar (Pix em poucos minutos)."
 
-msgid "Payment pending at Mercado Pago. The balance shows up when it is confirmed."
-msgstr "Pagamento pendente no Mercado Pago. O saldo aparece quando for confirmado."
 
-msgid "The payment was not completed. Nothing was added to the wallet."
-msgstr "O pagamento não foi concluído. Nada foi adicionado à carteira."
 
-msgid "Amount to add (R$)"
-msgstr "Valor a adicionar (R$)"
 
-msgid "or in the Frenet panel"
-msgstr "ou no painel Frenet"
 
 msgctxt "Frenet admin menu"
 msgid "Settings"
@@ -1237,3 +1217,27 @@ msgstr "%1$d pedido não tem chave da NF-e e vai com %2$s, que exige: a Frenet v
 
 msgid "%1$d orders have no NF-e key and go with %2$s, which requires one: Frenet will refuse them. Go back, add the keys or choose another carrier."
 msgstr "%1$d pedidos não têm chave da NF-e e vão com %2$s, que exige: a Frenet vai recusá-los. Volte, adicione as chaves ou escolha outra transportadora."
+
+msgid "Add balance in the Frenet panel"
+msgstr "Adicionar saldo no painel Frenet"
+
+msgid "Update balance"
+msgstr "Atualizar saldo"
+
+msgid "After paying in the panel, update the balance here."
+msgstr "Depois de pagar no painel, atualize o saldo aqui."
+
+msgid "Updating…"
+msgstr "Atualizando…"
+
+msgid "Balance updated"
+msgstr "Saldo atualizado"
+
+msgid "Creating labels from the store is exclusive to Frenet customers with the whitelabel service active. Each of them has its own partner token (x-partner-token): turn on Frenet labels and paste it in the settings. The store token comes from the Frenet shipping method."
+msgstr "Gerar etiquetas pela loja é exclusivo para clientes Frenet com o serviço whitelabel ativo. Cada um tem o seu próprio token de parceiro (x-partner-token): ative as etiquetas Frenet e cole o token nas configurações. O token da loja vem do método de envio Frenet."
+
+msgid "Do not have the whitelabel service? Talk to Frenet to activate it. Quotes and tracking keep working without it."
+msgstr "Não tem o serviço whitelabel? Fale com a Frenet para ativá-lo. A cotação e o rastreio continuam funcionando sem ele."
+
+msgid "Exclusive to Frenet customers with the whitelabel service: each store has its own (x-partner-token). Ask Frenet for it. Required to create, list, pay and cancel labels. Keep it secret like a password."
+msgstr "Exclusivo para clientes Frenet com o serviço whitelabel: cada loja tem o seu (x-partner-token). Peça à Frenet. Necessário para criar, listar, pagar e cancelar etiquetas. Guarde-o em segredo, como uma senha."

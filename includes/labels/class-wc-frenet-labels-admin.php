@@ -23,7 +23,6 @@ class WC_Frenet_Labels_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
 		add_action( 'admin_post_frenet_labels_save', array( __CLASS__, 'save_settings' ) );
 		add_action( 'admin_post_frenet_labels_print', array( __CLASS__, 'print_pdf' ) );
-		add_action( 'admin_post_frenet_labels_deposit', array( __CLASS__, 'deposit' ) );
 		foreach ( array( 'quote', 'create', 'pay', 'cancel', 'nfe', 'tracking', 'wallet', 'branches', 'default_branch', 'dropoff_default' ) as $action ) {
 			add_action( 'wp_ajax_frenet_labels_' . $action, array( __CLASS__, 'ajax_' . $action ) );
 		}
@@ -263,6 +262,8 @@ class WC_Frenet_Labels_Admin {
 			/* translators: 1: points shown, 2: points found */
 			'pointsShown'   => __( '%1$d of %2$d points', 'woo-shipping-gateway' ),
 			'openPanel'     => __( 'Open the Frenet panel', 'woo-shipping-gateway' ),
+			'updating'      => __( 'Updating…', 'woo-shipping-gateway' ),
+			'balanceOk'     => __( 'Balance updated', 'woo-shipping-gateway' ),
 			'error'         => __( 'Something went wrong. Reload the page and try again.', 'woo-shipping-gateway' ),
 		);
 	}
@@ -282,33 +283,6 @@ class WC_Frenet_Labels_Admin {
 		WC_Frenet_Labels_Settings::save( $input );
 		delete_transient( WC_Frenet_Labels_Service::WALLET );
 		wp_safe_redirect( self::url( self::SLUG, array( 'saved' => 1 ) ) );
-		exit;
-	}
-
-	/**
-	 * "Adicionar saldo": opens the Mercado Pago checkout of a Frenet wallet deposit.
-	 *
-	 * @return void
-	 */
-	public static function deposit() {
-		if ( ! current_user_can( self::CAP ) || ! check_admin_referer( self::NONCE ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'woo-shipping-gateway' ), 403 );
-		}
-		$value = (float) str_replace( ',', '.', preg_replace( '/[^\d,.]/', '', sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) ) );
-		$back  = wp_get_referer() ? wp_get_referer() : self::url( self::SLUG );
-		$back  = remove_query_arg( array( 'deposit', 'saved' ), $back );
-		$url   = WC_Frenet_Labels_Service::deposit( $value, $back, rest_url( WC_Frenet_Labels_Service::DEPOSIT_ROUTE ) );
-		if ( is_wp_error( $url ) ) {
-			wp_die(
-				esc_html( $url->get_error_message() ),
-				esc_html__( 'Add balance', 'woo-shipping-gateway' ),
-				array(
-					'back_link' => true,
-					'response'  => 502,
-				)
-			);
-		}
-		wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Mercado Pago checkout (checked in the service).
 		exit;
 	}
 

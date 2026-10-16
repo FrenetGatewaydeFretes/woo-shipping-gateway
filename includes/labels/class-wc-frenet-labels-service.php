@@ -20,8 +20,6 @@ class WC_Frenet_Labels_Service {
 	const POLL_MAX  = 10;
 	const WALLET    = 'woocommerce_frenet_labels_wallet';
 
-	/** REST route (under /wp-json/) Frenet calls when a wallet deposit changes. */
-	const DEPOSIT_ROUTE = 'frenet/v1/deposit';
 
 	const STATUS_CREATED          = 1;
 	const STATUS_PENDING_PAYMENT  = 2;
@@ -583,72 +581,6 @@ class WC_Frenet_Labels_Service {
 			'status'   => $status,
 			'refunded' => $paid,
 		);
-	}
-
-	/**
-	 * Mercado Pago checkout of a wallet deposit (POST /wallet/deposit → PreferenceId).
-	 * Frenet credits the wallet when Mercado Pago confirms; NotificationUrl only tells this store to refresh the balance.
-	 *
-	 * @param float  $value   Amount in BRL.
-	 * @param string $back    Admin URL Mercado Pago returns to (gets deposit=success|failure|pending).
-	 * @param string $notify  URL Frenet calls when the deposit changes.
-	 * @return string|WP_Error Checkout URL.
-	 */
-	public static function deposit( $value, $back, $notify ) {
-		$value = round( (float) $value, 2 );
-		if ( $value < 1 ) {
-			return new WP_Error( 'frenet_labels_deposit_value', __( 'Type an amount of at least R$ 1,00.', 'woo-shipping-gateway' ) );
-		}
-		$res = WC_Frenet_Labels_Api::whitelabel(
-			'POST',
-			'/wallet/deposit',
-			array(
-				'Value'           => $value,
-				'NotificationUrl' => $notify,
-				'CallbackUrls'    => array(
-					'SuccessUrl' => add_query_arg( 'deposit', 'success', $back ),
-					'FailureUrl' => add_query_arg( 'deposit', 'failure', $back ),
-					'PendingUrl' => add_query_arg( 'deposit', 'pending', $back ),
-				),
-			)
-		);
-		if ( is_wp_error( $res ) ) {
-			return $res;
-		}
-		$preference = (string) ( WC_Frenet_Labels_Api::field( $res, 'preferenceId' ) ?? '' );
-		if ( '' === $preference ) {
-			return new WP_Error( 'frenet_labels_deposit', __( 'Frenet did not start the payment. Nothing was charged; try again or add balance in the Frenet panel.', 'woo-shipping-gateway' ) );
-		}
-		delete_transient( self::WALLET );
-		$init_point = (string) ( WC_Frenet_Labels_Api::field( $res, 'initPoint' ) ?? '' );
-		return self::allowed_checkout( $init_point, WC_Frenet_Labels_Settings::simulated() ) ? $init_point : self::checkout_url( $preference );
-	}
-
-	/**
-	 * Whether a payment link Frenet returned can be opened: Mercado Pago over https, or anything in simulator mode.
-	 * Pure: unit tested.
-	 *
-	 * @param string $url       Link.
-	 * @param bool   $simulated Simulator mode.
-	 * @return bool
-	 */
-	public static function allowed_checkout( $url, $simulated ) {
-		$url = (string) $url;
-		if ( '' === $url ) {
-			return false;
-		}
-		$host = (string) wp_parse_url( $url, PHP_URL_HOST );
-		return $simulated || ( 0 === strpos( $url, 'https://' ) && (bool) preg_match( '/(^|\.)mercadopago\.com(\.[a-z]{2})?$/', $host ) );
-	}
-
-	/**
-	 * Mercado Pago Checkout Pro URL of a preference. Pure: unit tested.
-	 *
-	 * @param string $preference PreferenceId.
-	 * @return string
-	 */
-	public static function checkout_url( $preference ) {
-		return 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=' . rawurlencode( (string) $preference );
 	}
 
 	/**

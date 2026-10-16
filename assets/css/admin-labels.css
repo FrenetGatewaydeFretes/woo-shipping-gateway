@@ -176,8 +176,8 @@
 .frenet-wallet__label { color: var(--fl-muted); font-size: 13px; }
 .frenet-wallet__value { color: var(--fl-navy); font-family: var(--fl-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 .frenet-wallet__value.is-muted { color: var(--fl-muted); font-size: 16px; }
-.frenet-deposit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.frenet-deposit .small-text { width: 7em; text-align: right; font-variant-numeric: tabular-nums; }
+.frenet-wallet__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.frenet-wallet__actions .frenet-block { flex-basis: 100%; }
 
 /* Create screen */
 .frenet-top { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(320px, 1fr); gap: 16px; align-items: start; max-width: 1280px; margin-bottom: 8px; }
