@@ -58,6 +58,68 @@
 		return n;
 	}
 
+	// Carrier logos: the bundled official files (see WC_Frenet_Labels_Carriers); a monogram in the brand colour otherwise.
+	var brand = cfg.carriers || { logos: {}, colors: {}, names: {}, palette: [ '#0c005a' ] };
+
+	function carrierCode( code, name ) {
+		code = String( code || '' ).toUpperCase().trim();
+		if ( code && brand.logos[ code ] ) {
+			return code;
+		}
+		var lower = ( String( name || '' ) + ' ' + code ).toLowerCase();
+		var k;
+		for ( k in brand.names ) {
+			if ( Object.prototype.hasOwnProperty.call( brand.names, k ) && lower.indexOf( k ) !== -1 ) {
+				return brand.names[ k ];
+			}
+		}
+		return code;
+	}
+
+	function carrierColor( code ) {
+		if ( brand.colors[ code ] ) {
+			return brand.colors[ code ];
+		}
+		var sum = 0;
+		var i;
+		for ( i = 0; i < code.length; i++ ) {
+			sum += code.charCodeAt( i );
+		}
+		return brand.palette[ sum % brand.palette.length ];
+	}
+
+	function carrierInitials( name, code ) {
+		var words = String( name || '' ).trim().split( /[\s\-_]+/ ).filter( function ( w ) {
+			return /[\p{L}\p{N}]/u.test( w );
+		} );
+		if ( words.length >= 2 ) {
+			return ( words[ 0 ].charAt( 0 ) + words[ 1 ].charAt( 0 ) ).toUpperCase();
+		}
+		return String( name || code ).replace( /[^\p{L}\p{N}]/gu, '' ).slice( 0, 2 ).toUpperCase();
+	}
+
+	function carrierNode( code, name ) {
+		var known = carrierCode( code, name );
+		var label = String( name || '' ).trim() || known;
+		var wrap = el( 'span', 'frenet-carrier' );
+		if ( brand.logos[ known ] ) {
+			var img = el( 'img', 'frenet-carrier__logo' );
+			img.src = brand.logos[ known ];
+			img.alt = label;
+			img.height = 20;
+			img.loading = 'lazy';
+			img.decoding = 'async';
+			wrap.appendChild( img );
+			return wrap;
+		}
+		var mark = el( 'span', 'frenet-carrier__mark', carrierInitials( label, known ) );
+		mark.style.background = carrierColor( known );
+		mark.setAttribute( 'aria-hidden', 'true' );
+		wrap.appendChild( mark );
+		wrap.appendChild( el( 'span', 'frenet-carrier__name', label ) );
+		return wrap;
+	}
+
 	function pill( label, tone ) {
 		return el( 'span', 'frenet-pill is-' + ( tone || 'wait' ), label );
 	}
@@ -97,6 +159,40 @@
 		} );
 	} );
 
+	/* ---------------------------------------------------------------- Configurações: automação */
+
+	var autoOn = document.querySelector( '[data-frenet-auto-on]' );
+	var autoConsent = document.querySelector( '[data-frenet-auto-consent]' );
+	var autoDialog = document.querySelector( '[data-frenet-auto-dialog]' );
+	if ( autoOn && autoConsent && autoDialog && autoDialog.showModal ) {
+		var autoRule = function () {
+			var picked = document.querySelector( 'input[name="frenet_labels[auto_create_rule]"]:checked' );
+			return picked && picked.parentNode ? picked.parentNode.textContent.trim() : '';
+		};
+		// Turning the automation on is a money decision: the warning comes first, the authorisation box follows it.
+		autoOn.addEventListener( 'change', function () {
+			if ( ! autoOn.checked || autoConsent.checked ) {
+				return;
+			}
+			autoDialog.querySelector( '[data-frenet-auto-rule]' ).textContent = autoRule();
+			autoDialog.returnValue = '';
+			autoDialog.showModal();
+		} );
+		autoDialog.addEventListener( 'close', function () {
+			if ( 'confirm' === autoDialog.returnValue ) {
+				autoConsent.checked = true;
+			} else {
+				autoOn.checked = false;
+			}
+		} );
+		// Taking the authorisation back switches the automation off (the server does the same when saving).
+		autoConsent.addEventListener( 'change', function () {
+			if ( ! autoConsent.checked && autoOn.checked ) {
+				autoOn.checked = false;
+			}
+		} );
+	}
+
 	/* ---------------------------------------------------------------- Criar envio */
 
 	var create = document.querySelector( '[data-frenet-create]' );
@@ -110,15 +206,62 @@
 		var dialog = document.querySelector( '[data-frenet-dialog]' );
 		var summary = document.querySelector( '[data-frenet-summary]' );
 
+		// Labels are always bought from the store (there is no "send to the Frenet panel" choice any more).
 		var journey = function () {
-			var r = document.querySelector( 'input[name="frenet_journey"]:checked' );
-			return r ? r.value : cfg.journey;
+			return 'here';
 		};
 		var picked = function () {
 			return rows.filter( function ( r ) {
 				return r.querySelector( '[data-frenet-pick]' ).checked && ! r.hasAttribute( 'data-done' );
 			} );
 		};
+		// Sticky bar: how many orders are selected and, once quoted, what the chosen services add up to.
+		var barCount = create.querySelector( '[data-frenet-bar-count]' );
+		var barTotalWrap = create.querySelector( '[data-frenet-bar-total-wrap]' );
+		var barTotal = create.querySelector( '[data-frenet-bar-total]' );
+		var barAfterWrap = create.querySelector( '[data-frenet-bar-after-wrap]' );
+		var barAfter = create.querySelector( '[data-frenet-bar-after]' );
+		var barAfterLabel = create.querySelector( '[data-frenet-bar-after-label]' );
+		var barAfterText = barAfterLabel ? barAfterLabel.textContent : '';
+		var updateBar = function () {
+			if ( ! barCount ) {
+				return;
+			}
+			var list = picked();
+			barCount.textContent = String( list.length );
+			var sel = typeof selection === 'function' ? selection() : [];
+			var priced = sel.filter( function ( x ) {
+				return x.service;
+			} );
+			if ( ! priced.length ) {
+				barTotalWrap.hidden = true;
+				barAfterWrap.hidden = true;
+				return;
+			}
+			var total = priced.reduce( function ( a, x ) {
+				return a + ( parseFloat( x.service.price ) || 0 );
+			}, 0 );
+			barTotalWrap.hidden = false;
+			barTotal.textContent = money( total );
+			var now = balanceNow();
+			var pays = 'here' === journey() && cfg.wallet;
+			// No balance for this total: say it instead of a negative number, and hold "Criar envio" until it fits.
+			var short = pays && now !== null && now - total < 0;
+			barAfterWrap.hidden = ! ( pays && now !== null );
+			if ( pays && now !== null ) {
+				barAfter.textContent = short ? fmt( t.missing, money( total - now ) ) : money( now - total );
+				barAfter.classList.toggle( 'frenet-error', short );
+				if ( barAfterLabel ) {
+					barAfterLabel.textContent = short ? t.noBalance : barAfterText;
+					barAfterLabel.classList.toggle( 'frenet-error', short );
+				}
+			}
+			if ( short ) {
+				btnReview.disabled = true;
+			}
+			btnReview.title = short ? t.notEnough : '';
+		};
+		create.addEventListener( 'change', updateBar );
 
 		create.querySelector( '[data-frenet-all]' ).addEventListener( 'change', function ( e ) {
 			rows.forEach( function ( r ) {
@@ -145,6 +288,210 @@
 			return ok.length ? ok : services;
 		};
 
+		// Two lines per service: "Carrier · Service" and "price · days · tags".
+		var optionText = function ( data, s, row ) {
+			var tags = [];
+			if ( s.code === data.best.best_price ) {
+				tags.push( t.bestPrice );
+			}
+			if ( s.code === data.best.best_time ) {
+				tags.push( t.bestTime );
+			}
+			if ( s.code === data.chosen ) {
+				tags.push( t.customer );
+			}
+			if ( s.needs_nfe && ! hasNfe( row ) ) {
+				tags.push( t.needsNfe );
+			}
+			return {
+				name: s.carrier + ' · ' + s.name,
+				sub: money( s.price ) + ' · ' + fmt( 1 === Number( s.days ) ? t.day : t.days, s.days ) + ( tags.length ? ' · ' + tags.join( ' · ' ) : '' )
+			};
+		};
+
+		// Service picker: a listbox with the carrier logo in every option, backed by the native select the rest of
+		// the script reads ([data-frenet-choice]). The list is fixed-positioned so the table never clips it.
+		var closeBoxes = function ( except ) {
+			document.querySelectorAll( '[data-frenet-choice-box].is-open' ).forEach( function ( b ) {
+				if ( b === except ) {
+					return;
+				}
+				b.classList.remove( 'is-open' );
+				b.querySelector( '.frenet-choice-box__btn' ).setAttribute( 'aria-expanded', 'false' );
+				b.querySelector( '[role="listbox"]' ).hidden = true;
+			} );
+		};
+		var setActive = function ( list, li ) {
+			list.querySelectorAll( '.is-active' ).forEach( function ( x ) {
+				x.classList.remove( 'is-active' );
+			} );
+			if ( li ) {
+				li.classList.add( 'is-active' );
+				list.setAttribute( 'aria-activedescendant', li.id );
+				// Scroll the list only, never the page (a page scroll would close the list).
+				if ( li.offsetTop < list.scrollTop ) {
+					list.scrollTop = li.offsetTop;
+				} else if ( li.offsetTop + li.offsetHeight > list.scrollTop + list.clientHeight ) {
+					list.scrollTop = li.offsetTop + li.offsetHeight - list.clientHeight;
+				}
+			}
+		};
+		var openBox = function ( box ) {
+			var btn = box.querySelector( '.frenet-choice-box__btn' );
+			var list = box.querySelector( '[role="listbox"]' );
+			var r = btn.getBoundingClientRect();
+			var width = Math.max( r.width, 340 );
+			var below = window.innerHeight - r.bottom;
+			closeBoxes( box );
+			list.hidden = false;
+			list.style.width = width + 'px';
+			list.style.left = Math.max( 8, Math.min( r.left, window.innerWidth - width - 8 ) ) + 'px';
+			if ( below >= 240 || below >= r.top ) {
+				list.style.top = ( r.bottom + 4 ) + 'px';
+				list.style.bottom = 'auto';
+				list.style.maxHeight = Math.max( 160, Math.min( 380, below - 16 ) ) + 'px';
+			} else {
+				list.style.top = 'auto';
+				list.style.bottom = ( window.innerHeight - r.top + 4 ) + 'px';
+				list.style.maxHeight = Math.max( 160, Math.min( 380, r.top - 16 ) ) + 'px';
+			}
+			box.classList.add( 'is-open' );
+			btn.setAttribute( 'aria-expanded', 'true' );
+			setActive( list, list.querySelector( '[aria-selected="true"]' ) || list.firstElementChild );
+			list.focus( { preventScroll: true } );
+		};
+		var choose = function ( box, code ) {
+			var row = box.closest( '[data-frenet-row]' );
+			var select = row.querySelector( '[data-frenet-choice]' );
+			closeBoxes();
+			if ( select.value !== code ) {
+				select.value = code;
+				select.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+			}
+			paintChoice( row );
+			box.querySelector( '.frenet-choice-box__btn' ).focus();
+		};
+		var choiceBox = function ( row, data ) {
+			var box = el( 'div', 'frenet-choice-box' );
+			var btn = el( 'button', 'frenet-choice-box__btn' );
+			var list = el( 'ul', 'frenet-choice-box__list' );
+			var id = 'frenet-choice-' + row.getAttribute( 'data-order' );
+			box.setAttribute( 'data-frenet-choice-box', '' );
+			btn.type = 'button';
+			btn.setAttribute( 'aria-haspopup', 'listbox' );
+			btn.setAttribute( 'aria-expanded', 'false' );
+			btn.appendChild( el( 'span', 'frenet-choice-box__logo' ) );
+			btn.appendChild( el( 'span', 'frenet-choice-box__text' ) );
+			btn.appendChild( el( 'span', 'frenet-choice-box__caret' ) ).setAttribute( 'aria-hidden', 'true' );
+			list.setAttribute( 'role', 'listbox' );
+			list.id = id;
+			list.tabIndex = -1;
+			list.hidden = true;
+			data.services.forEach( function ( s, i ) {
+				var li = el( 'li', 'frenet-choice-box__item' );
+				var o = optionText( data, s, row );
+				var tx = el( 'span', 'frenet-choice-box__text' );
+				li.id = id + '-' + i;
+				li.setAttribute( 'role', 'option' );
+				li.setAttribute( 'data-code', s.code );
+				li.setAttribute( 'aria-selected', 'false' );
+				li.appendChild( el( 'span', 'frenet-choice-box__logo' ) ).appendChild( carrierNode( s.carrier_code, s.carrier ) );
+				tx.appendChild( el( 'strong', '', o.name ) );
+				tx.appendChild( el( 'span', 'frenet-cell-sub', o.sub ) );
+				li.appendChild( tx );
+				li.addEventListener( 'click', function () {
+					choose( box, s.code );
+				} );
+				li.addEventListener( 'mousemove', function () {
+					if ( ! li.classList.contains( 'is-active' ) ) {
+						setActive( list, li );
+					}
+				} );
+				list.appendChild( li );
+			} );
+			btn.addEventListener( 'click', function () {
+				if ( box.classList.contains( 'is-open' ) ) {
+					closeBoxes();
+				} else {
+					openBox( box );
+				}
+			} );
+			btn.addEventListener( 'keydown', function ( e ) {
+				if ( 'ArrowDown' === e.key || 'ArrowUp' === e.key ) {
+					e.preventDefault();
+					openBox( box );
+				}
+			} );
+			list.addEventListener( 'keydown', function ( e ) {
+				var items = Array.prototype.slice.call( list.children );
+				var i = items.indexOf( list.querySelector( '.is-active' ) );
+				if ( 'ArrowDown' === e.key || 'ArrowUp' === e.key || 'Home' === e.key || 'End' === e.key ) {
+					e.preventDefault();
+					if ( 'ArrowDown' === e.key ) {
+						i = Math.min( items.length - 1, i + 1 );
+					} else if ( 'ArrowUp' === e.key ) {
+						i = Math.max( 0, i - 1 );
+					} else {
+						i = 'Home' === e.key ? 0 : items.length - 1;
+					}
+					setActive( list, items[ i ] );
+				} else if ( 'Enter' === e.key || ' ' === e.key ) {
+					e.preventDefault();
+					if ( items[ i ] ) {
+						choose( box, items[ i ].getAttribute( 'data-code' ) );
+					}
+				} else if ( 'Escape' === e.key ) {
+					e.preventDefault();
+					closeBoxes();
+					btn.focus();
+				} else if ( 'Tab' === e.key ) {
+					closeBoxes();
+				}
+			} );
+			box.appendChild( btn );
+			box.appendChild( list );
+			return box;
+		};
+		document.addEventListener( 'click', function ( e ) {
+			if ( ! e.target.closest || ! e.target.closest( '[data-frenet-choice-box]' ) ) {
+				closeBoxes();
+			}
+		} );
+		window.addEventListener( 'resize', function () {
+			closeBoxes();
+		} );
+		document.addEventListener( 'scroll', function ( e ) {
+			if ( ! e.target.closest || ! e.target.closest( '[role="listbox"]' ) ) {
+				closeBoxes();
+			}
+		}, true );
+
+		// The picker shows the chosen service; repainted whenever the choice changes, by hand or by the summary.
+		var paintChoice = function ( row ) {
+			var q = quotes[ row.getAttribute( 'data-order' ) ];
+			var select = row.querySelector( '[data-frenet-choice]' );
+			var box = row.querySelector( '[data-frenet-choice-box]' );
+			if ( ! q || ! q.ok || ! select || ! box ) {
+				return;
+			}
+			var s = q.services.filter( function ( x ) {
+				return x.code === select.value;
+			} )[ 0 ];
+			var logo = box.querySelector( '.frenet-choice-box__btn .frenet-choice-box__logo' );
+			var text = box.querySelector( '.frenet-choice-box__btn .frenet-choice-box__text' );
+			logo.textContent = '';
+			text.textContent = '';
+			if ( s ) {
+				var o = optionText( q, s, row );
+				logo.appendChild( carrierNode( s.carrier_code, s.carrier ) );
+				text.appendChild( el( 'strong', '', o.name ) );
+				text.appendChild( el( 'span', 'frenet-cell-sub', o.sub ) );
+			}
+			box.querySelectorAll( '[role="option"]' ).forEach( function ( li ) {
+				li.setAttribute( 'aria-selected', li.getAttribute( 'data-code' ) === select.value ? 'true' : 'false' );
+			} );
+		};
+
 		var renderService = function ( row, data, keep ) {
 			var cell = row.querySelector( '.frenet-service-cell' );
 			cell.textContent = '';
@@ -154,7 +501,9 @@
 			}
 			var select = el( 'select', 'frenet-select' );
 			select.setAttribute( 'data-frenet-choice', '' );
-			select.setAttribute( 'aria-label', t.bestPrice );
+			select.hidden = true;
+			select.setAttribute( 'aria-hidden', 'true' );
+			select.tabIndex = -1;
 			data.services.forEach( function ( s ) {
 				var tags = [];
 				if ( s.code === data.best.best_price ) {
@@ -180,6 +529,8 @@
 				renderSummary();
 			} );
 			cell.appendChild( select );
+			cell.appendChild( choiceBox( row, data ) );
+			paintChoice( row );
 		};
 
 		// What the summary applied to every order: { carrier: name } | { best: 'best_price' | 'best_time' } | null.
@@ -288,6 +639,8 @@
 		};
 
 		var renderSummary = function () {
+			updateBar();
+			rows.forEach( paintChoice );
 			var shown = quoted();
 			var list = shown.map( function ( r ) {
 				return quotes[ r.getAttribute( 'data-order' ) ].services;
@@ -317,7 +670,7 @@
 					( by[ carrierOf( s ) ] = by[ carrierOf( s ) ] || [] ).push( s );
 				} );
 				Object.keys( by ).forEach( function ( name ) {
-					var c = carriers[ name ] = carriers[ name ] || { name: name, available: 0, price: 0, time: 0, priceDays: 0, timeDays: 0 };
+					var c = carriers[ name ] = carriers[ name ] || { name: name, code: by[ name ][ 0 ].carrier_code, available: 0, price: 0, time: 0, priceDays: 0, timeDays: 0 };
 					c.available++;
 					c.price += cheapest( by[ name ] ).price;
 					c.time += fastest( by[ name ] ).price;
@@ -334,7 +687,9 @@
 			} ).forEach( function ( c ) {
 				var active = !! ( applied && applied.carrier === c.name );
 				var tr = el( 'tr', active ? 'is-applied' : '' );
-				tr.appendChild( el( 'td', '', c.name ) );
+				var tdCarrier = el( 'td' );
+				tdCarrier.appendChild( carrierNode( c.code, c.name ) );
+				tr.appendChild( tdCarrier );
 				tr.appendChild( el( 'td', '', c.available + ' / ' + list.length ) );
 				tr.appendChild( priceCell( c.price, c.priceDays ) );
 				tr.appendChild( priceCell( c.time, c.timeDays ) );
@@ -360,6 +715,7 @@
 			} );
 			summary.hidden = false;
 			btnReview.disabled = false;
+			updateBar();
 		};
 
 		btnCalc.addEventListener( 'click', function () {
@@ -378,6 +734,7 @@
 					btnCalc.classList.remove( 'button-primary' );
 					status.textContent = '';
 					renderSummary();
+					updateBar();
 					btnReview.focus();
 					return;
 				}
@@ -405,6 +762,7 @@
 			btnReview.disabled = true;
 			btnClear.disabled = true;
 			btnCalc.classList.add( 'button-primary' );
+			updateBar();
 		} );
 
 		// Selected orders without an NF-e key going with a carrier that requires one: Frenet refuses them.
@@ -438,7 +796,7 @@
 			var total = 0;
 			sel.forEach( function ( x ) {
 				var name = x.service.carrier || x.service.carrier_code;
-				by[ name ] = by[ name ] || { n: 0, sum: 0 };
+				by[ name ] = by[ name ] || { n: 0, sum: 0, code: x.service.carrier_code };
 				by[ name ].n++;
 				by[ name ].sum += x.service.price;
 				total += x.service.price;
@@ -447,7 +805,9 @@
 			body.textContent = '';
 			Object.keys( by ).forEach( function ( name ) {
 				var tr = el( 'tr' );
-				tr.appendChild( el( 'td', '', name ) );
+				var tdName = el( 'td' );
+				tdName.appendChild( carrierNode( by[ name ].code, name ) );
+				tr.appendChild( tdName );
 				tr.appendChild( el( 'td', 'is-num', String( by[ name ].n ) ) );
 				tr.appendChild( el( 'td', 'is-num', money( by[ name ].sum ) ) );
 				body.appendChild( tr );
@@ -591,6 +951,8 @@
 				}
 			} );
 		} );
+		// The rows come checked from the server: the bar must say so before the first click.
+		updateBar();
 	}
 
 	/* ---------------------------------------------------------------- Etiquetas: cart, print, cancel */
@@ -606,6 +968,9 @@
 				return c && c.checked && '1' === r.getAttribute( attr );
 			} );
 		};
+		var lCount = labels.querySelector( '[data-frenet-bar-count]' );
+		var lTotalWrap = labels.querySelector( '[data-frenet-bar-total-wrap]' );
+		var lTotal = labels.querySelector( '[data-frenet-bar-total]' );
 		var update = function () {
 			var unpaid = checked( 'data-unpaid' );
 			var paid = checked( 'data-paid' );
@@ -616,6 +981,11 @@
 			btnPay.textContent = unpaid.length ? fmt( t.confirmPay, unpaid.length, money( sum ) ).replace( /\?$/, '' ) : btnPay.getAttribute( 'data-label' );
 			if ( btnPrint ) {
 				btnPrint.disabled = ! paid.length;
+			}
+			if ( lCount ) {
+				lCount.textContent = String( unpaid.length + paid.length );
+				lTotalWrap.hidden = ! unpaid.length;
+				lTotal.textContent = money( sum );
 			}
 		};
 		btnPay.setAttribute( 'data-label', btnPay.textContent );
@@ -896,12 +1266,29 @@
 
 	/* ---------------------------------------------------------------- Impressão: select all */
 
-	var all = document.querySelector( '[data-frenet-print-form] [data-frenet-all]' );
-	if ( all ) {
-		all.addEventListener( 'change', function () {
-			document.querySelectorAll( '[data-frenet-print-form] [data-frenet-pick]' ).forEach( function ( c ) {
-				c.checked = all.checked;
+	var printForm = document.querySelector( '[data-frenet-print-form]' );
+	if ( printForm ) {
+		var all = printForm.querySelector( '[data-frenet-all]' );
+		var printCount = printForm.querySelector( '[data-frenet-bar-count]' );
+		var printSubmit = printForm.querySelector( '[data-frenet-print-submit]' );
+		var countPrint = function () {
+			var n = printForm.querySelectorAll( '[data-frenet-pick]:checked' ).length;
+			if ( printCount ) {
+				printCount.textContent = String( n );
+			}
+			if ( printSubmit ) {
+				printSubmit.disabled = ! n;
+			}
+		};
+		if ( all ) {
+			all.addEventListener( 'change', function () {
+				printForm.querySelectorAll( '[data-frenet-pick]' ).forEach( function ( c ) {
+					c.checked = all.checked;
+				} );
+				countPrint();
 			} );
-		} );
+		}
+		printForm.addEventListener( 'change', countPrint );
+		countPrint();
 	}
 }() );

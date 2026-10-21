@@ -39,6 +39,10 @@ class WC_Frenet_Tracking_Admin {
 					'updating'   => __( 'Checking with Frenet…', 'woo-shipping-gateway' ),
 					'saving'     => __( 'Saving…', 'woo-shipping-gateway' ),
 					'updated'    => __( 'Updated', 'woo-shipping-gateway' ),
+					'noMovement' => __( 'No movement yet', 'woo-shipping-gateway' ),
+					'checkedNone' => __( 'Checked: no movement yet. Events appear once the carrier scans the package.', 'woo-shipping-gateway' ),
+					/* translators: %s: message from Frenet */
+					'checkedNote' => __( 'Checked. Frenet answered: %s', 'woo-shipping-gateway' ),
 					'saved'      => __( 'Code saved', 'woo-shipping-gateway' ),
 					'removed'    => __( 'Code removed', 'woo-shipping-gateway' ),
 					'paste'      => __( 'Paste at least one line "order;code".', 'woo-shipping-gateway' ),
@@ -55,8 +59,8 @@ class WC_Frenet_Tracking_Admin {
 					'resultSame' => __( 'Already has this code', 'woo-shipping-gateway' ),
 					'resultNone' => __( 'Order not found', 'woo-shipping-gateway' ),
 					'resultDup'  => __( 'Repeated order: only the first line counts', 'woo-shipping-gateway' ),
-					/* translators: 1: synced orders, 2: status changes, 3: errors */
-					'syncedAll'  => __( '%1$d orders checked, %2$d status changes, %3$d errors.', 'woo-shipping-gateway' ),
+					/* translators: 1: synced orders, 2: status changes, 3: orders without events yet, 4: errors */
+					'syncedAll'  => __( '%1$d orders checked, %2$d status changes, %3$d without movement yet, %4$d errors.', 'woo-shipping-gateway' ),
 				),
 			)
 		);
@@ -122,7 +126,12 @@ class WC_Frenet_Tracking_Admin {
 			wp_send_json_error( array( 'message' => $r->get_error_message() ) );
 		}
 		$order = wc_get_order( $order->get_id() );
-		wp_send_json_success( self::summary( $order ) );
+		wp_send_json_success(
+			self::summary( $order ) + array(
+				'pending' => ! empty( $r['pending'] ),
+				'note'    => (string) ( $r['note'] ?? '' ),
+			)
+		);
 	}
 
 	/**

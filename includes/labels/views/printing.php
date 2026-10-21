@@ -25,14 +25,15 @@ $frenet_format = WC_Frenet_Labels_Settings::get( 'label_format' );
 	<div class="frenet-empty frenet-empty--small"><p><?php esc_html_e( 'No paid label to print among the latest 100 shipments.', 'woo-shipping-gateway' ); ?></p>
 		<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG . '-labels', array( 'status' => 2 ) ) ); ?>"><?php esc_html_e( 'See unpaid labels', 'woo-shipping-gateway' ); ?></a></div>
 <?php else : ?>
-<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" target="_blank" class="frenet-card" data-frenet-print-form>
+<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" target="_blank" data-frenet-print-form>
 	<input type="hidden" name="action" value="frenet_labels_print">
 	<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
-	<fieldset class="frenet-format">
+	<fieldset class="frenet-format frenet-card">
 		<legend class="frenet-field"><?php esc_html_e( 'Paper format', 'woo-shipping-gateway' ); ?></legend>
 		<label class="frenet-choice"><input type="radio" name="format" value="A4" <?php checked( 'A4', $frenet_format ); ?>> <span><strong>A4</strong> <?php esc_html_e( 'Common printer, several labels per page.', 'woo-shipping-gateway' ); ?></span></label>
 		<label class="frenet-choice"><input type="radio" name="format" value="10x15" <?php checked( '10x15', $frenet_format ); ?>> <span><strong>10x15</strong> <?php esc_html_e( 'Thermal label printer.', 'woo-shipping-gateway' ); ?></span></label>
 	</fieldset>
+	<?php // A4 or 10x15 side by side, then every paid label with its checkbox. ?>
 	<div class="frenet-table-wrap">
 		<table class="frenet-table">
 			<thead><tr>
@@ -49,16 +50,21 @@ $frenet_format = WC_Frenet_Labels_Settings::get( 'label_format' );
 					<th scope="row" class="check-column"><input type="checkbox" name="ids[]" value="<?php echo esc_attr( (string) $frenet_s['shipmentId'] ); ?>" data-frenet-pick checked></th>
 					<td class="frenet-code"><?php echo esc_html( (string) $frenet_s['shipmentId'] ); ?></td>
 					<td><?php echo esc_html( mb_strimwidth( (string) ( $frenet_s['orderId'] ?? '' ), 0, 14, '…' ) ); ?></td>
-					<td><?php echo esc_html( trim( (string) ( $frenet_q['carrierCode'] ?? '' ) . ' ' . (string) ( $frenet_q['shippingServiceName'] ?? $frenet_q['shippingServiceCode'] ?? '' ) ) ); ?></td>
+					<td><span class="frenet-service"><?php echo wp_kses( WC_Frenet_Labels_Carriers::html( (string) ( $frenet_q['carrierCode'] ?? '' ), (string) ( $frenet_q['carrier'] ?? '' ) ), WC_Frenet_Labels_Carriers::kses() ); ?><span><?php echo esc_html( trim( (string) ( $frenet_q['shippingServiceName'] ?? $frenet_q['shippingServiceCode'] ?? '' ) ) ); ?></span></span></td>
 					<td><span class="frenet-pill is-ok"><?php echo esc_html( WC_Frenet_Labels_Service::status_label( (int) $frenet_s['shipmentStatus'] ) ); ?></span></td>
 				</tr>
 			<?php endforeach; ?>
 			</tbody>
 		</table>
 	</div>
-	<div class="frenet-actions">
-		<button type="submit" class="button button-primary" data-frenet-print-submit><?php esc_html_e( 'Print selected labels', 'woo-shipping-gateway' ); ?></button>
-		<span class="frenet-muted"><?php esc_html_e( 'Opens the PDF in a new tab.', 'woo-shipping-gateway' ); ?></span>
+	<div class="frenet-bar" aria-live="polite">
+		<div class="frenet-bar__facts">
+			<span class="frenet-bar__fact"><?php esc_html_e( 'Selected labels', 'woo-shipping-gateway' ); ?><strong data-frenet-bar-count><?php echo (int) count( $frenet_paid ); ?></strong></span>
+		</div>
+		<div class="frenet-bar__actions">
+			<span class="frenet-muted frenet-small"><?php esc_html_e( 'Opens the PDF in a new tab.', 'woo-shipping-gateway' ); ?></span>
+			<button type="submit" class="button button-primary" data-frenet-print-submit><?php esc_html_e( 'Print selected labels', 'woo-shipping-gateway' ); ?></button>
+		</div>
 	</div>
 </form>
 <?php endif; ?>

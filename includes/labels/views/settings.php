@@ -16,12 +16,12 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 	<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved.', 'woo-shipping-gateway' ); ?></p></div>
 <?php endif; ?>
 <?php if ( WC_Frenet_Labels_Settings::ready() ) : ?>
-	<?php WC_Frenet_Labels_Admin::view( 'wallet' ); ?>
 <?php endif; ?>
 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-form">
 	<input type="hidden" name="action" value="frenet_labels_save">
 	<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
-
+	<?php // Two columns on wide screens: the whole form fits with less scrolling, and Save stays in the bar below. ?>
+	<div class="frenet-grid">
 	<section class="frenet-card">
 		<h2><?php esc_html_e( 'General', 'woo-shipping-gateway' ); ?></h2>
 		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[enabled]" value="1" <?php checked( 'yes', $frenet_s['enabled'] ); ?>> <span><?php esc_html_e( 'Enable Frenet labels', 'woo-shipping-gateway' ); ?></span></label>
@@ -73,15 +73,22 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 
 	<section class="frenet-card">
 		<h2><?php esc_html_e( 'Payment', 'woo-shipping-gateway' ); ?></h2>
-		<fieldset>
-			<legend class="frenet-field"><?php esc_html_e( 'How labels are generated', 'woo-shipping-gateway' ); ?></legend>
-			<label class="frenet-choice"><input type="radio" name="frenet_labels[journey]" value="here" <?php checked( 'here', $frenet_s['journey'] ); ?>>
-				<span><strong><?php esc_html_e( 'Buy here', 'woo-shipping-gateway' ); ?></strong> <?php esc_html_e( 'The store creates, pays and prints the labels.', 'woo-shipping-gateway' ); ?></span></label>
-			<label class="frenet-choice"><input type="radio" name="frenet_labels[journey]" value="panel" <?php checked( 'panel', $frenet_s['journey'] ); ?>>
-				<span><strong><?php esc_html_e( 'Send to the Frenet panel', 'woo-shipping-gateway' ); ?></strong> <?php esc_html_e( 'The orders go to the Frenet panel, where you pay and print them.', 'woo-shipping-gateway' ); ?></span></label>
-		</fieldset>
 		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[wallet_payment]" value="1" <?php checked( 'yes', $frenet_s['wallet_payment'] ); ?>> <span><?php esc_html_e( 'Pay with the wallet when creating', 'woo-shipping-gateway' ); ?></span></label>
 		<p class="description"><?php esc_html_e( 'Off: labels bought here are created unpaid and wait in Labels until you pay them.', 'woo-shipping-gateway' ); ?></p>
+	</section>
+
+	<section class="frenet-card" id="frenet-auto-settings">
+		<h2><?php esc_html_e( 'Automation', 'woo-shipping-gateway' ); ?></h2>
+		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[auto_create]" value="1" <?php checked( 'yes', $frenet_s['auto_create'] ); ?> data-frenet-auto-on> <span><?php esc_html_e( 'Create the shipment automatically when an order is paid', 'woo-shipping-gateway' ); ?></span></label>
+		<p class="description"><?php esc_html_e( 'A minute after a paid order with delivery in Brazil comes in, the store quotes it, picks the service by the rule below, creates the shipment and pays it with the wallet (when wallet payment is on). The result goes to the order history and to Create shipment > Notes.', 'woo-shipping-gateway' ); ?></p>
+		<fieldset>
+			<legend class="frenet-field"><?php esc_html_e( 'Which service', 'woo-shipping-gateway' ); ?></legend>
+			<label class="frenet-inline"><input type="radio" name="frenet_labels[auto_create_rule]" value="customer" <?php checked( 'customer', $frenet_s['auto_create_rule'] ); ?>> <?php esc_html_e( 'The carrier the customer chose at checkout (best price when it is not available)', 'woo-shipping-gateway' ); ?></label>
+			<label class="frenet-inline"><input type="radio" name="frenet_labels[auto_create_rule]" value="best_price" <?php checked( 'best_price', $frenet_s['auto_create_rule'] ); ?>> <?php esc_html_e( 'Best price', 'woo-shipping-gateway' ); ?></label>
+			<label class="frenet-inline"><input type="radio" name="frenet_labels[auto_create_rule]" value="best_time" <?php checked( 'best_time', $frenet_s['auto_create_rule'] ); ?>> <?php esc_html_e( 'Fastest', 'woo-shipping-gateway' ); ?></label>
+		</fieldset>
+		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[auto_create_consent]" value="1" <?php checked( 'yes', $frenet_s['auto_create_consent'] ); ?> data-frenet-auto-consent> <span><?php esc_html_e( 'I authorise the store to buy labels and debit my Frenet wallet automatically, without confirming each order.', 'woo-shipping-gateway' ); ?></span></label>
+		<p class="description"><?php esc_html_e( 'Without this authorisation the automation stays off. Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes.', 'woo-shipping-gateway' ); ?></p>
 	</section>
 
 	<section class="frenet-card">
@@ -103,5 +110,31 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 		</p>
 	</section>
 
-	<p><button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Save changes', 'woo-shipping-gateway' ); ?></button></p>
+	</div>
+	<div class="frenet-bar">
+		<span class="frenet-muted frenet-small"><?php esc_html_e( 'Changes apply to the next labels and quotes.', 'woo-shipping-gateway' ); ?></span>
+		<div class="frenet-bar__actions">
+			<button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Save changes', 'woo-shipping-gateway' ); ?></button>
+		</div>
+	</div>
 </form>
+<dialog class="frenet-dialog frenet-dialog--auto" data-frenet-auto-dialog aria-labelledby="frenet-auto-title">
+	<form method="dialog">
+		<h2 id="frenet-auto-title"><?php esc_html_e( 'Turn on automatic shipments?', 'woo-shipping-gateway' ); ?></h2>
+		<div class="frenet-note frenet-note--warn" role="alert">
+			<strong><?php esc_html_e( 'The store will spend your Frenet balance on its own.', 'woo-shipping-gateway' ); ?></strong>
+			<p><?php esc_html_e( 'A minute after each paid order with delivery in Brazil, it quotes the freight, creates the shipment and pays it with the wallet, without asking anyone. Each label is charged exactly like one you create by hand.', 'woo-shipping-gateway' ); ?></p>
+		</div>
+		<ul class="frenet-list">
+			<li><?php esc_html_e( 'Service:', 'woo-shipping-gateway' ); ?> <strong data-frenet-auto-rule></strong></li>
+			<li><?php esc_html_e( 'Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes.', 'woo-shipping-gateway' ); ?></li>
+			<li><?php esc_html_e( 'A label that should not go out: cancel it in Labels and Frenet returns the amount to the wallet.', 'woo-shipping-gateway' ); ?></li>
+			<li><?php esc_html_e( 'You can turn it off here at any time.', 'woo-shipping-gateway' ); ?></li>
+		</ul>
+		<div class="frenet-actions">
+			<button value="cancel" class="button"><?php esc_html_e( 'Not now', 'woo-shipping-gateway' ); ?></button>
+			<button value="confirm" class="button button-primary"><?php esc_html_e( 'I understand, turn it on', 'woo-shipping-gateway' ); ?></button>
+		</div>
+	</form>
+</dialog>
+

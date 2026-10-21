@@ -27,23 +27,15 @@ foreach ( $frenet_orders as $frenet_order ) {
 	}
 	$frenet_rows[] = $frenet_order;
 }
-$frenet_journey = WC_Frenet_Labels_Settings::get( 'journey' );
 ?>
 <p class="frenet-lead"><?php esc_html_e( 'Choose the orders, calculate the freight to compare carriers and create the shipments. Nothing is charged before you confirm.', 'woo-shipping-gateway' ); ?></p>
+<?php if ( WC_Frenet_Labels_Auto::enabled() ) : ?>
+	<div class="notice notice-info inline"><p><strong><?php esc_html_e( 'Automation on:', 'woo-shipping-gateway' ); ?></strong> <?php /* translators: %s: rule */ printf( esc_html__( 'paid orders create their shipment on their own (%s). This screen is for the ones that did not go through or that you want to send by hand.', 'woo-shipping-gateway' ), esc_html( WC_Frenet_Labels_Auto::rule_label() ) ); ?></p></div>
+<?php endif; ?>
 <?php if ( ! WC_Frenet_Labels_Payload::sender_ready() ) : ?>
 	<div class="notice notice-warning inline"><p><?php esc_html_e( 'Fill in the store address in WooCommerce > Settings > General before creating shipments: Frenet requires the sender.', 'woo-shipping-gateway' ); ?></p></div>
 <?php endif; ?>
 
-<div class="frenet-top">
-	<?php WC_Frenet_Labels_Admin::view( 'wallet' ); ?>
-	<fieldset class="frenet-journey">
-		<legend><?php esc_html_e( 'How to generate the labels', 'woo-shipping-gateway' ); ?></legend>
-		<label class="frenet-choice"><input type="radio" name="frenet_journey" value="here" <?php checked( 'here', $frenet_journey ); ?>>
-			<span><strong><?php esc_html_e( 'Buy here', 'woo-shipping-gateway' ); ?></strong> <?php echo esc_html( WC_Frenet_Labels_Settings::on( 'wallet_payment' ) ? __( 'Paid with the wallet now.', 'woo-shipping-gateway' ) : __( 'Created unpaid; pay them in Labels.', 'woo-shipping-gateway' ) ); ?></span></label>
-		<label class="frenet-choice"><input type="radio" name="frenet_journey" value="panel" <?php checked( 'panel', $frenet_journey ); ?>>
-			<span><strong><?php esc_html_e( 'Send to the Frenet panel', 'woo-shipping-gateway' ); ?></strong> <?php esc_html_e( 'Pay and print in the Frenet panel.', 'woo-shipping-gateway' ); ?></span></label>
-	</fieldset>
-</div>
 
 <section class="frenet-summary" data-frenet-summary hidden>
 	<h2><?php esc_html_e( 'Carriers for the selected orders', 'woo-shipping-gateway' ); ?></h2>
@@ -121,10 +113,18 @@ endif;
 		</table>
 	</div>
 
-	<div class="frenet-actions">
-		<button type="button" class="button button-primary" data-frenet-calc><?php esc_html_e( 'Calculate freight', 'woo-shipping-gateway' ); ?></button>
-		<button type="button" class="button" data-frenet-clear disabled><?php esc_html_e( 'Clear quotes', 'woo-shipping-gateway' ); ?></button>
-		<button type="button" class="button button-primary" data-frenet-review disabled><?php esc_html_e( 'Create shipment', 'woo-shipping-gateway' ); ?></button>
+	<?php // The bar sticks to the bottom of the screen: the actions stay in sight however long the table is. ?>
+	<div class="frenet-bar" aria-live="polite">
+		<div class="frenet-bar__facts">
+			<span class="frenet-bar__fact"><?php esc_html_e( 'Selected orders', 'woo-shipping-gateway' ); ?><strong data-frenet-bar-count>0</strong></span>
+			<span class="frenet-bar__fact" data-frenet-bar-total-wrap hidden><?php esc_html_e( 'Freight total', 'woo-shipping-gateway' ); ?><strong data-frenet-bar-total></strong></span>
+			<span class="frenet-bar__fact" data-frenet-bar-after-wrap hidden><span data-frenet-bar-after-label><?php esc_html_e( 'Balance after', 'woo-shipping-gateway' ); ?></span><strong data-frenet-bar-after></strong></span>
+		</div>
+		<div class="frenet-bar__actions">
+			<button type="button" class="button" data-frenet-clear disabled><?php esc_html_e( 'Clear quotes', 'woo-shipping-gateway' ); ?></button>
+			<button type="button" class="button button-primary" data-frenet-calc><?php esc_html_e( 'Calculate freight', 'woo-shipping-gateway' ); ?></button>
+			<button type="button" class="button button-primary" data-frenet-review disabled><?php esc_html_e( 'Create shipment', 'woo-shipping-gateway' ); ?></button>
+		</div>
 		<span class="frenet-status-line" role="status" aria-live="polite" data-frenet-status></span>
 	</div>
 </form>

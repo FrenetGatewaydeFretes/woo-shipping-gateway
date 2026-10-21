@@ -41,7 +41,7 @@
 		if ( s.description ) {
 			return '<strong>' + esc( s.description ) + '</strong><br><span class="frenet-muted">' + esc( s.when ) + '</span>';
 		}
-		return '<span class="frenet-muted">' + esc( frenetTracking.i18n.updated ) + '</span>';
+		return '<span class="frenet-muted">' + esc( frenetTracking.i18n.noMovement ) + '</span>';
 	}
 
 	// Update one order (row of the tracking page or the order box).
@@ -70,7 +70,14 @@
 			if ( sy ) {
 				sy.textContent = s.synced;
 			}
-			say( msg, t.updated, 'ok' );
+			// No events is normal right after the label is created: say so in a calm tone, never as an error.
+			if ( s.note ) {
+				say( msg, t.checkedNote.replace( '%s', s.note ), 'warn' );
+			} else if ( s.pending ) {
+				say( msg, t.checkedNone, 'ok' );
+			} else {
+				say( msg, t.updated, 'ok' );
+			}
 		} ).catch( function ( err ) {
 			say( msg, err.message, 'error' );
 		} ).then( function () {
@@ -88,7 +95,7 @@
 		btn.disabled = true;
 		say( msg, t.updating, 'loading' );
 		post( 'sync_all', {} ).then( function ( r ) {
-			say( msg, t.syncedAll.replace( '%1$d', r.synced ).replace( '%2$d', r.changed ).replace( '%3$d', r.errors ), r.errors ? 'warn' : 'ok' );
+			say( msg, t.syncedAll.replace( '%1$d', r.synced ).replace( '%2$d', r.changed ).replace( '%3$d', r.pending || 0 ).replace( '%4$d', r.errors ), r.errors ? 'warn' : 'ok' );
 			window.setTimeout( function () { window.location.reload(); }, 1500 );
 		} ).catch( function ( err ) {
 			say( msg, err.message, 'error' );

@@ -3,6 +3,9 @@
  * Host Grotesk for headings and Inter for the interface. Fonts are bundled (OFL, see assets/fonts) so no
  * external request is made. Data areas stay flat; the brand gradient lives only in the thin page header.
  * Text contrast >= 4.5:1, UI components >= 3:1.
+ *
+ * Layout rules: every screen shares one width (1280px); the actions of a screen live in a bar that sticks to
+ * the bottom of the viewport (.frenet-bar), so they are never "down there" after a long table.
  */
 @font-face {
 	font-family: "Frenet Inter";
@@ -46,13 +49,14 @@
 	--fl-off-bg: #f2f4f7;
 	--fl-off: #4a4f5c;
 	--fl-radius: 8px;
+	--fl-width: 1280px;
 	--fl-font: "Frenet Inter", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 	--fl-display: "Frenet Host Grotesk", "Host Grotesk", "Frenet Inter", -apple-system, sans-serif;
 	font-family: var(--fl-font);
 	color: var(--fl-ink);
 }
 
-.frenet-labels { max-width: 1280px; }
+.frenet-labels { max-width: var(--fl-width); }
 .frenet-labels p,
 .frenet-labels td,
 .frenet-labels th,
@@ -71,13 +75,26 @@
 	display: flex;
 	align-items: center;
 	gap: 16px;
-	margin: 10px 0 20px;
-	padding: 16px 24px;
+	margin: 10px 0 16px;
+	padding: 14px 24px;
 	border-radius: 12px;
 	background: linear-gradient(110deg, var(--fl-navy) 0%, var(--fl-navy-2) 55%, var(--fl-violet) 100%);
 	color: #fff;
 }
 .frenet-brand { display: inline-flex; align-items: center; gap: 8px; padding-right: 16px; border-right: 1px solid rgba(249, 245, 255, .28); }
+/* Wallet inside the brand strip: balance, labels left, add balance (Frenet panel) and refresh. */
+.frenet-header__wallet { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-left: auto; }
+.frenet-header__label { color: #d9ccff; font-size: 13px; }
+.frenet-header__value { color: #fff; font-family: var(--fl-display); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; line-height: 1; }
+.frenet-header__value.is-muted { color: #d9ccff; font-size: 15px; }
+.frenet-header__meta { color: #d9ccff; font-size: 13px; }
+.frenet-header__cta { display: inline-flex; align-items: center; min-height: 34px; padding: 0 14px; border-radius: 8px; background: #fff; color: var(--fl-navy); font-weight: 500; text-decoration: none; }
+.frenet-header__cta:hover,
+.frenet-header__cta:focus { background: var(--fl-violet-soft); color: var(--fl-navy); }
+.frenet-header__cta:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.frenet-header__link { margin: 0; padding: 0; border: 0; background: none; color: #f9f5ff; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+.frenet-header__link:hover,
+.frenet-header__link:focus-visible { color: #fff; outline: none; text-decoration-thickness: 2px; }
 .frenet-brand img { width: 28px; height: 28px; border-radius: 7px; }
 .frenet-brand__word { font-family: var(--fl-display); font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
 .frenet-labels .frenet-header .frenet-title { margin: 0; padding: 0; color: #fff; font-family: var(--fl-display); font-size: 22px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
@@ -85,8 +102,12 @@
 .frenet-labels h2,
 .frenet-box h2,
 .frenet-dialog h2 { font-family: var(--fl-display); font-weight: 700; letter-spacing: -.01em; }
+/* WordPress notices (update nags, Action Scheduler) share the screen width and keep a steady rhythm. */
+.frenet-labels > .notice,
+.frenet-labels > .updated,
+.frenet-labels > .error { margin: 0 0 14px; }
 
-.frenet-lead { max-width: 780px; margin: 0 0 18px; color: var(--fl-muted); font-size: 14px; line-height: 1.6; }
+.frenet-lead { max-width: 780px; margin: 0 0 16px; color: var(--fl-muted); font-size: 14px; line-height: 1.6; }
 .frenet-muted { color: var(--fl-muted); }
 .frenet-block { display: block; }
 .frenet-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .03em; color: var(--fl-navy); }
@@ -131,22 +152,23 @@
 .frenet-box .button.frenet-danger { border-color: #e7a3a5; background: #fff; color: var(--fl-bad); }
 .frenet-labels .button.frenet-danger:hover,
 .frenet-box .button.frenet-danger:hover { border-color: var(--fl-bad); background: var(--fl-bad-bg); color: #7a0f12; }
-
 .frenet-labels .button.button-small,
 .frenet-box .button.button-small { min-height: 30px; padding: 0 12px; font-size: 13px; line-height: 28px; }
+.frenet-labels .button.button-hero { min-height: 42px; padding: 0 22px; font-size: 15px; line-height: 40px; }
 
-/* Simulator banner */
-.frenet-sim { display: flex; gap: 8px; margin: 0 0 18px; padding: 10px 14px; border: 1px solid #f3d38b; border-radius: var(--fl-radius); background: var(--fl-wait-bg); color: var(--fl-wait); }
-
-/* Cards and forms */
-.frenet-card { max-width: 780px; margin: 0 0 20px; padding: 22px 26px; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; }
+/* Cards and forms: cards fill the screen width; the settings form lays them out in two columns. */
+.frenet-card { margin: 0 0 16px; padding: 22px 26px; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; }
 .frenet-card h2 { margin: 0 0 6px; color: var(--fl-navy); font-size: 18px; }
+.frenet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 16px; align-items: start; }
+.frenet-grid .frenet-card { margin: 0; height: 100%; box-sizing: border-box; }
+.frenet-grid > .frenet-card:last-child:nth-child(odd) { grid-column: 1 / -1; height: auto; }
 .frenet-field { display: block; margin: 16px 0 6px; color: var(--fl-navy); font-weight: 600; }
 .frenet-labels input[type="text"],
 .frenet-labels input[type="password"],
 .frenet-labels input[type="url"],
 .frenet-labels select,
 .frenet-box input[type="text"] { min-height: 38px; border: 1px solid #d0d5dd; border-radius: var(--fl-radius); color: var(--fl-ink); }
+.frenet-labels .regular-text { width: 100%; max-width: 440px; }
 .frenet-labels input:focus,
 .frenet-labels select:focus,
 .frenet-box input:focus { border-color: var(--fl-violet); box-shadow: 0 0 0 3px rgba(123, 63, 243, .18); outline: 0; }
@@ -167,11 +189,11 @@
 .frenet-choice:has(input:checked) { border-color: var(--fl-violet); background: var(--fl-violet-soft); }
 .frenet-choice input { margin-top: 2px; }
 .frenet-choice strong { display: block; color: var(--fl-navy); font-weight: 600; }
-.frenet-form .description { max-width: 640px; color: var(--fl-muted); }
+.frenet-form .description { max-width: 640px; margin-top: 4px; color: var(--fl-muted); }
 .frenet-labels fieldset { margin: 0; padding: 0; border: 0; }
 
 /* Wallet */
-.frenet-wallet { display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: 780px; margin: 0 0 20px; padding: 16px 22px; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; }
+.frenet-wallet { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; margin: 0 0 16px; padding: 14px 22px; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; }
 .frenet-wallet > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
 .frenet-wallet__label { color: var(--fl-muted); font-size: 13px; }
 .frenet-wallet__value { color: var(--fl-navy); font-family: var(--fl-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
@@ -179,37 +201,66 @@
 .frenet-wallet__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
 .frenet-wallet__actions .frenet-block { flex-basis: 100%; }
 
+/* Action bar: sticks to the bottom of the screen while the table scrolls under it. */
+.frenet-bar {
+	position: sticky;
+	bottom: 0;
+	z-index: 5;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 24px;
+	margin: 0;
+	padding: 12px 20px;
+	border: 1px solid var(--fl-line);
+	border-top: 3px solid var(--fl-violet);
+	border-radius: 12px 12px 0 0;
+	background: #fff;
+	box-shadow: 0 -8px 20px rgba(12, 0, 90, .07);
+}
+.frenet-table-wrap + .frenet-bar,
+.frenet-grid + .frenet-bar { margin-top: 16px; }
+.frenet-bar__facts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 22px; }
+.frenet-bar__fact { display: flex; flex-direction: column; color: var(--fl-muted); font-size: 12px; }
+.frenet-bar__fact strong { color: var(--fl-navy); font-family: var(--fl-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; line-height: 1.2; }
+.frenet-bar__fact[hidden] { display: none; }
+.frenet-bar__fact .frenet-error,
+.frenet-bar__fact strong.frenet-error { color: var(--fl-bad); }
+.frenet-bar__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
+.frenet-bar .frenet-status-line { flex-basis: 100%; min-height: 0; margin: 0; }
+.frenet-bar .frenet-status-line:empty { display: none; }
+.frenet-bar .frenet-muted.frenet-small { margin-left: 4px; }
+
 /* Create screen */
-.frenet-top { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(320px, 1fr); gap: 16px; align-items: start; max-width: 1280px; margin-bottom: 8px; }
-.frenet-top .frenet-wallet { max-width: none; margin: 0; }
-.frenet-journey { padding: 16px 18px 12px; border: 1px solid var(--fl-line) !important; border-radius: 12px; background: #fff; }
-.frenet-journey legend { float: left; width: 100%; margin: 0 0 6px; padding: 0; color: var(--fl-navy); font-weight: 600; }
-.frenet-journey .frenet-choice { margin: 6px 0; padding: 8px 12px; }
-.frenet-summary { max-width: 780px; margin: 22px 0; }
-.frenet-summary h2 { margin-bottom: 10px; color: var(--fl-navy); font-size: 17px; }
-.frenet-select { width: 100%; min-width: 380px; max-width: 540px; }
+.frenet-summary { margin: 0 0 16px; padding: 18px 22px; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; }
+.frenet-summary h2 { margin: 0 0 10px; color: var(--fl-navy); font-size: 17px; }
+.frenet-select { width: 100%; min-width: 300px; max-width: 440px; }
+.frenet-nfe-cell { min-width: 160px; }
 .frenet-nfe-cell input { width: 100%; min-width: 200px; margin: 6px 0; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .frenet-nfe-cell summary { color: var(--fl-violet-dark); font-weight: 500; cursor: pointer; }
 .frenet-field-msg { display: block; margin-top: 4px; font-size: 12px; }
 
-/* Tables: flat surfaces behind data */
+/* Tables: flat surfaces behind data. Dense enough to fit the screen without a horizontal scroll. */
 .frenet-table-wrap { overflow-x: auto; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; }
-.frenet-table { width: 100%; border-collapse: collapse; background: #fff; }
+.frenet-table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13px; }
 .frenet-summary .frenet-table,
 .frenet-dialog .frenet-table { overflow: hidden; border: 1px solid var(--fl-line); border-radius: 12px; border-collapse: separate; border-spacing: 0; }
-.frenet-table th { padding: 11px 14px; border-bottom: 1px solid var(--fl-line); background: var(--fl-page); color: var(--fl-muted); font-size: 12px; font-weight: 600; letter-spacing: .02em; text-align: left; white-space: nowrap; }
+.frenet-table th { padding: 10px 12px; border-bottom: 1px solid var(--fl-line); background: var(--fl-page); color: var(--fl-muted); font-size: 12px; font-weight: 600; letter-spacing: .02em; text-align: left; white-space: nowrap; }
 .frenet-table td,
-.frenet-table tbody th { padding: 12px 14px; border-bottom: 1px solid var(--fl-row); color: var(--fl-ink); vertical-align: middle; }
+.frenet-table tbody th { padding: 10px 12px; border-bottom: 1px solid var(--fl-row); color: var(--fl-ink); font-size: 13px; line-height: 1.45; vertical-align: middle; }
 .frenet-table tfoot th,
 .frenet-table tfoot td { border-top: 1px solid var(--fl-line); border-bottom: 0; background: var(--fl-violet-soft); color: var(--fl-navy); font-weight: 600; }
 .frenet-table tbody tr:last-child td,
 .frenet-table tbody tr:last-child th { border-bottom: 0; }
 .frenet-table tbody tr:hover td,
 .frenet-table tbody tr:hover th { background: #fcfbff; }
-.frenet-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+.frenet-table .is-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.frenet-table .is-nowrap { white-space: nowrap; }
 .frenet-table .check-column { width: 32px; }
-.frenet-row-actions { white-space: nowrap; }
-.frenet-row-actions .button { margin-left: 4px; }
+.frenet-table .frenet-code { font-size: 12px; }
+.frenet-cell-sub { display: block; margin-top: 2px; color: var(--fl-muted); font-size: 12px; }
+.frenet-row-actions { width: 1%; white-space: nowrap; text-align: right; }
+.frenet-row-actions .button { margin-left: 6px; }
 /* Summary of carriers: the option applied to every order, and the two "any carrier" rows below the carriers. */
 .frenet-table .is-action { width: 1%; text-align: right; white-space: nowrap; }
 .frenet-table tbody tr.is-applied td,
@@ -220,7 +271,35 @@
 .frenet-summary__best td { background: var(--fl-violet-soft); color: var(--fl-navy); font-weight: 600; }
 .frenet-summary__hint { margin: 8px 0 0; font-size: 13px; }
 .frenet-small { font-size: 12px; }
-.frenet-service-cell .frenet-select { max-width: 280px; }
+.frenet-service-cell { min-width: 260px; }
+/* Service picker: the carrier logo lives inside the control and inside every option. */
+.frenet-choice-box { position: relative; max-width: 380px; }
+.frenet-choice-box__btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; margin: 0; padding: 6px 34px 6px 10px; border: 1px solid #c3c4c7; border-radius: 8px; background: #fff; color: var(--fl-ink); font: inherit; text-align: left; cursor: pointer; }
+.frenet-choice-box__btn:hover { border-color: var(--fl-lavender); }
+.frenet-choice-box__btn:focus-visible,
+.frenet-choice-box.is-open .frenet-choice-box__btn { border-color: var(--fl-violet); box-shadow: 0 0 0 1px var(--fl-violet); outline: none; }
+.frenet-choice-box__logo { display: flex; flex: none; justify-content: center; width: 64px; }
+.frenet-choice-box__logo .frenet-carrier__logo { height: 18px; max-width: 64px; }
+.frenet-choice-box__logo .frenet-carrier__name { display: none; }
+.frenet-choice-box__text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.frenet-choice-box__text strong { overflow: hidden; color: var(--fl-navy); font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.frenet-choice-box__text .frenet-cell-sub { margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.frenet-choice-box__caret { position: absolute; top: 50%; right: 12px; width: 8px; height: 8px; border-right: 2px solid var(--fl-muted); border-bottom: 2px solid var(--fl-muted); transform: translateY(-70%) rotate(45deg); }
+.frenet-choice-box__list { position: fixed; z-index: 100000; margin: 0; padding: 4px; list-style: none; border: 1px solid var(--fl-line); border-radius: 10px; background: #fff; box-shadow: 0 12px 32px rgba(12, 0, 90, .14); overflow: auto; outline: none; }
+.frenet-choice-box__list[hidden] { display: none; }
+.frenet-choice-box__item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+.frenet-choice-box__item.is-active { background: var(--fl-violet-soft); }
+.frenet-choice-box__item[aria-selected="true"] { background: var(--fl-violet-tint); }
+.frenet-choice-box__item[aria-selected="true"] strong { color: var(--fl-violet-dark); }
+/* Carrier logos: bundled official files; a monogram in the brand colour when a carrier has none. */
+.frenet-carrier { display: inline-flex; align-items: center; gap: 8px; vertical-align: middle; }
+.frenet-carrier__logo { display: block; width: auto; height: 20px; max-width: 84px; object-fit: contain; }
+.frenet-carrier__mark { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .02em; line-height: 1; }
+.frenet-carrier__name { color: var(--fl-navy); font-weight: 600; }
+.frenet-service { display: inline-flex; align-items: center; gap: 10px; }
+.frenet-summary .frenet-carrier__logo,
+.frenet-dialog .frenet-carrier__logo,
+.frenet-dropoff .frenet-carrier__logo { height: 22px; max-width: 96px; }
 
 /* Status pills: text + colour, never colour alone */
 .frenet-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
@@ -229,15 +308,20 @@
 .frenet-pill.is-wait { background: var(--fl-wait-bg); color: var(--fl-wait); }
 .frenet-pill.is-bad { background: var(--fl-bad-bg); color: var(--fl-bad); }
 .frenet-pill.is-off { background: var(--fl-off-bg); color: var(--fl-off); }
-/* "Observações": a label that failed keeps the row red until it goes through. */
+/* "Observações": a label that failed keeps the row red until it goes through. Long reasons are clamped;
+   the full text is in the title. */
 .frenet-table tbody tr.is-failed td,
 .frenet-table tbody tr.is-failed th { background: var(--fl-bad-bg); }
 .frenet-table tbody tr.is-failed > :first-child { box-shadow: inset 3px 0 0 var(--fl-bad); }
-.frenet-issue-cell { min-width: 180px; max-width: 320px; font-size: 13px; line-height: 1.45; }
+.frenet-issue-cell { min-width: 160px; max-width: 260px; font-size: 12px; line-height: 1.45; }
+.frenet-issue-cell .frenet-error { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .frenet-box__issue { margin: 8px 0; padding: 8px 10px; border-left: 3px solid var(--fl-bad); border-radius: 0 var(--fl-radius) var(--fl-radius) 0; background: var(--fl-bad-bg); font-size: 13px; line-height: 1.45; }
 
-/* Filters, actions, pager */
+/* Filters, toolbar, actions, pager */
+.frenet-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 4px 0 12px; }
+.frenet-toolbar > p { margin: 0; }
 .frenet-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
+.frenet-toolbar .frenet-filters { margin: 0; }
 .frenet-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 14px; border: 1px solid var(--fl-line); border-radius: 999px; background: #fff; color: var(--fl-ink); font-weight: 500; text-decoration: none; transition: border-color .15s ease, color .15s ease; }
 .frenet-chip span { color: var(--fl-faint); font-variant-numeric: tabular-nums; }
 .frenet-chip:hover { border-color: var(--fl-violet); color: var(--fl-violet-dark); }
@@ -269,11 +353,10 @@
 .frenet-empty--small { padding: 22px; }
 
 /* Ponto de postagem: overview per carrier, then the editor of the chosen one. */
-.frenet-dropoff .frenet-table-wrap { max-width: 980px; }
 .frenet-dropoff .frenet-table tbody th { font-weight: 600; color: var(--fl-navy); }
 .frenet-dropoff .frenet-table tbody th .frenet-muted { font-weight: 400; font-size: 12px; }
 .frenet-dropoff .is-action a { margin-top: 6px; }
-.frenet-dropoff__editor { max-width: 980px; margin-top: 20px; scroll-margin-top: 48px; }
+.frenet-dropoff__editor { margin-top: 16px; scroll-margin-top: 48px; }
 .frenet-dropoff__editor[hidden] { display: none; }
 .frenet-dropoff__search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
 .frenet-dropoff__search input { width: 160px; }
@@ -296,9 +379,12 @@
 .frenet-box__nfe { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--fl-line); }
 
 @media (max-width: 960px) {
-	.frenet-top { grid-template-columns: 1fr; }
+	.frenet-grid { grid-template-columns: 1fr; }
 	.frenet-header { flex-wrap: wrap; }
 	.frenet-brand { border-right: 0; }
+	.frenet-header__wallet { flex-basis: 100%; margin-left: 0; }
+	.frenet-bar { border-radius: 0; margin-left: -10px; margin-right: -10px; }
+	.frenet-bar__actions { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
 	.frenet-labels *,
@@ -308,6 +394,7 @@
 @media (forced-colors: active) {
 	.frenet-header { border: 1px solid CanvasText; }
 	.frenet-pill { border: 1px solid CanvasText; }
+	.frenet-bar { border-top-width: 3px; }
 }
 
 /* ---- Tracking (Rastreios, order box, bulk import) ---- */
@@ -317,7 +404,7 @@
 .frenet-status-line.is-error { color: var(--fl-bad); }
 @keyframes frenet-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .frenet-status-line.is-loading::before { animation: none; } }
-.frenet-tracking-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 8px; }
+.frenet-tracking-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; padding: 0; border: 0; background: transparent; }
 .frenet-tracking-head p { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .frenet-import { max-width: 960px; }
 .frenet-import__lines { width: 100%; font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size: 13px; line-height: 1.6; border-radius: 8px; }
@@ -327,3 +414,10 @@
 .frenet-box__tracking h4 { margin: 0; color: var(--fl-ink); font-size: 13px; }
 .frenet-box__tracking p { margin: 0; }
 .frenet-box__tracking .frenet-actions { margin-top: 2px; }
+
+/* Automação: aviso antes de ligar (gasta saldo sozinho) */
+.frenet-dialog--auto { max-width: 34rem; }
+.frenet-note--warn { border-color: #f0b429; background: #fff8e6; color: #5c4300; }
+.frenet-note--warn strong { display: block; margin-bottom: .25rem; color: #5c4300; }
+.frenet-list { margin: 1rem 0 0; padding-left: 1.2rem; }
+.frenet-list li { margin: 0 0 .45rem; line-height: 1.45; }

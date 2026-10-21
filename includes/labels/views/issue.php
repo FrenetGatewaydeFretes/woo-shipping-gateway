@@ -13,7 +13,7 @@ if ( empty( $issue ) ) {
 	return;
 }
 ?>
-<span class="frenet-error frenet-block"><?php echo esc_html( $issue['message'] ); ?></span>
+<span class="frenet-error frenet-block" title="<?php echo esc_attr( $issue['message'] ); ?>"><?php echo esc_html( $issue['message'] ); ?></span>
 <?php if ( '' !== $issue['at'] ) : ?>
 	<span class="frenet-muted frenet-block"><?php echo esc_html( WC_Frenet_Labels_Service::issue_when( $issue ) ); ?></span>
 <?php endif; ?>

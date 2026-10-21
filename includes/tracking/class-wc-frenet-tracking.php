@@ -167,7 +167,7 @@ class WC_Frenet_Tracking {
 	 * Fetches the events from Frenet, stores them and applies the automatic status.
 	 *
 	 * @param WC_Order $order Order.
-	 * @return array{events: int, changed: bool}|WP_Error
+	 * @return array{events: int, changed: bool, pending: bool, note: string}|WP_Error
 	 */
 	public static function sync( WC_Order $order ) {
 		$t = self::get( $order );
@@ -184,7 +184,10 @@ class WC_Frenet_Tracking {
 			return $data;
 		}
 		$events = self::events_from( $data );
-		$url    = (string) ( WC_Frenet_Labels_Api::field( $data, 'TrackingUrl' ) ?? '' );
+		// Frenet answers HTTP 200 with "ErrorMessage" while the carrier has nothing yet ("não encontrado", "sem eventos"):
+		// that is "no movement yet", not a failure. Any other message (wrong service code…) is kept as a note.
+		$note = $events ? '' : self::note_from( (string) ( WC_Frenet_Labels_Api::field( $data, 'ErrorMessage' ) ?? '' ) );
+		$url  = (string) ( WC_Frenet_Labels_Api::field( $data, 'TrackingUrl' ) ?? '' );
 		if ( '' !== $url ) {
 			$order->update_meta_data( '_frenet_tracking_url', esc_url_raw( $url ) );
 		}
@@ -197,7 +200,29 @@ class WC_Frenet_Tracking {
 		return array(
 			'events'  => count( $events ),
 			'changed' => $changed,
+			'pending' => ! $events,
+			'note'    => $note,
 		);
+	}
+
+	/**
+	 * Frenet "ErrorMessage" of a tracking answer without events: empty when it only says there is nothing yet.
+	 * Pure: unit tested.
+	 *
+	 * @param string $message Frenet message.
+	 * @return string Cleaned message worth showing, or ''.
+	 */
+	public static function note_from( $message ) {
+		$message = trim( (string) $message );
+		if ( '' === $message ) {
+			return '';
+		}
+		foreach ( array( 'não encontrado', 'nao encontrado', 'not found', 'sem evento', 'nenhum evento', 'não há evento', 'aguardando postagem', 'ainda não' ) as $quiet ) {
+			if ( false !== mb_stripos( $message, $quiet ) ) {
+				return '';
+			}
+		}
+		return WC_Frenet_Labels_Api::clean_error( $message );
 	}
 
 	/**
@@ -342,12 +367,13 @@ class WC_Frenet_Tracking {
 	/**
 	 * Hourly run (also "Update all now" in Frenet > Tracking).
 	 *
-	 * @return array{synced: int, changed: int, errors: int}
+	 * @return array{synced: int, changed: int, pending: int, errors: int}
 	 */
 	public static function cron_sync() {
 		$out = array(
 			'synced'  => 0,
 			'changed' => 0,
+			'pending' => 0,
 			'errors'  => 0,
 		);
 		foreach ( self::open_orders() as $order ) {
@@ -358,8 +384,9 @@ class WC_Frenet_Tracking {
 			}
 			++$out['synced'];
 			$out['changed'] += $r['changed'] ? 1 : 0;
+			$out['pending'] += $r['pending'] ? 1 : 0;
 		}
-		WC_Frenet_Labels_Api::log( sprintf( 'Tracking sync: %d synced, %d status changes, %d errors.', $out['synced'], $out['changed'], $out['errors'] ) );
+		WC_Frenet_Labels_Api::log( sprintf( 'Tracking sync: %d synced, %d status changes, %d without events yet, %d errors.', $out['synced'], $out['changed'], $out['pending'], $out['errors'] ) );
 		return $out;
 	}
 

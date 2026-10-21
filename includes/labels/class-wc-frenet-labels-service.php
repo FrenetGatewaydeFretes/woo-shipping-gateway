@@ -616,6 +616,14 @@ class WC_Frenet_Labels_Service {
 	public static function shipments( $page, $per_page ) {
 		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/shipments?page=' . max( 0, (int) $page ) . '&per_page=' . max( 1, (int) $per_page ) );
 		if ( is_wp_error( $res ) ) {
+			// An account without shipments yet answers 404 ("not found") instead of an empty list: that is not an error.
+			$data = (array) $res->get_error_data();
+			if ( 404 === (int) ( $data['status'] ?? 0 ) ) {
+				return array(
+					'total'     => 0,
+					'shipments' => array(),
+				);
+			}
 			return $res;
 		}
 		return array(

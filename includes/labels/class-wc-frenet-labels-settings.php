@@ -21,21 +21,24 @@ class WC_Frenet_Labels_Settings {
 	 */
 	public static function defaults() {
 		return array(
-			'enabled'         => 'no',
-			'token'           => '',
-			'partner_token'   => '',
-			'api_url'         => self::DEFAULT_URL,
-			'default_service' => WC_Frenet_Labels_Compare::BEST_PRICE,
-			'auto_best'       => 'no',
-			'batch_print'     => 'yes',
-			'wallet_payment'  => 'yes',
-			'journey'         => 'here',
-			'label_format'    => 'A4',
-			'sender_document' => '',
-			'autofill'        => 'no',
-			'tracking_sync'   => 'no',
-			'tracking_status' => 'no',
-			'tracking_email'  => 'yes',
+			'enabled'             => 'no',
+			'token'               => '',
+			'partner_token'       => '',
+			'api_url'             => self::DEFAULT_URL,
+			'default_service'     => WC_Frenet_Labels_Compare::BEST_PRICE,
+			'auto_best'           => 'no',
+			'batch_print'         => 'yes',
+			'wallet_payment'      => 'yes',
+			'auto_create'         => 'no',
+			'auto_create_rule'    => 'customer',
+			'auto_create_consent' => 'no',
+			'journey'             => 'here',
+			'label_format'        => 'A4',
+			'sender_document'     => '',
+			'autofill'            => 'no',
+			'tracking_sync'       => 'no',
+			'tracking_status'     => 'no',
+			'tracking_email'      => 'yes',
 		);
 	}
 
@@ -80,7 +83,7 @@ class WC_Frenet_Labels_Settings {
 	public static function save( array $input ) {
 		$current = self::all();
 		$out     = $current;
-		foreach ( array( 'enabled', 'auto_best', 'batch_print', 'wallet_payment', 'autofill', 'tracking_sync', 'tracking_status', 'tracking_email' ) as $flag ) {
+		foreach ( array( 'enabled', 'auto_best', 'batch_print', 'wallet_payment', 'auto_create', 'auto_create_consent', 'autofill', 'tracking_sync', 'tracking_status', 'tracking_email' ) as $flag ) {
 			$out[ $flag ] = ! empty( $input[ $flag ] ) ? 'yes' : 'no';
 		}
 		$out['token']           = sanitize_text_field( (string) ( $input['token'] ?? '' ) );
@@ -89,8 +92,15 @@ class WC_Frenet_Labels_Settings {
 		$url                    = esc_url_raw( trim( (string) ( $input['api_url'] ?? '' ) ) );
 		$out['api_url']         = '' !== $url ? untrailingslashit( $url ) : self::DEFAULT_URL;
 		$out['default_service'] = WC_Frenet_Labels_Compare::BEST_TIME === ( $input['default_service'] ?? '' ) ? WC_Frenet_Labels_Compare::BEST_TIME : WC_Frenet_Labels_Compare::BEST_PRICE;
-		$out['journey']         = 'panel' === ( $input['journey'] ?? '' ) ? 'panel' : 'here';
-		$out['label_format']    = '10x15' === ( $input['label_format'] ?? '' ) ? '10x15' : 'A4';
+		// The labels are always bought from the store (the "send to the Frenet panel" choice was dropped on 2026-10-20).
+		$out['journey']          = 'here';
+		$out['label_format']     = '10x15' === ( $input['label_format'] ?? '' ) ? '10x15' : 'A4';
+		$rule                    = (string) ( $input['auto_create_rule'] ?? '' );
+		$out['auto_create_rule'] = in_array( $rule, array( 'customer', 'best_price', 'best_time' ), true ) ? $rule : 'customer';
+		// The automation needs the merchant's explicit authorisation to debit the wallet without confirming each order.
+		if ( 'yes' !== $out['auto_create_consent'] ) {
+			$out['auto_create'] = 'no';
+		}
 		$out['sender_document'] = preg_replace( '/\D/', '', (string) ( $input['sender_document'] ?? '' ) );
 		if ( ! empty( $input['clear_partner_token'] ) ) {
 			$out['partner_token'] = '';
@@ -147,14 +157,5 @@ class WC_Frenet_Labels_Settings {
 	 */
 	public static function ready() {
 		return self::on( 'enabled' ) && '' !== self::get( 'partner_token' ) && '' !== self::store_token();
-	}
-
-	/**
-	 * True when the API is not the real Frenet one (local simulator): the screens show a warning.
-	 *
-	 * @return bool
-	 */
-	public static function simulated() {
-		return (bool) apply_filters( 'woocommerce_frenet_labels_simulated', self::DEFAULT_URL !== self::get( 'api_url' ) );
 	}
 }

@@ -42,7 +42,7 @@ endif;
 			<?php foreach ( $frenet_carriers as $frenet_carrier ) : ?>
 				<tr data-frenet-dropoff-row="<?php echo esc_attr( $frenet_carrier['code'] ); ?>" data-name="<?php echo esc_attr( $frenet_carrier['name'] ); ?>">
 					<th scope="row">
-						<?php echo esc_html( $frenet_carrier['name'] ); ?>
+						<?php echo wp_kses( WC_Frenet_Labels_Carriers::html( $frenet_carrier['code'], $frenet_carrier['name'] ), WC_Frenet_Labels_Carriers::kses() ); ?>
 						<span class="frenet-muted frenet-block"><?php echo esc_html( implode( ', ', array_filter( $frenet_carrier['services'] ) ) ); ?></span>
 					</th>
 					<td data-frenet-dropoff-default><span class="frenet-muted"><?php esc_html_e( 'Loading…', 'woo-shipping-gateway' ); ?></span></td>

@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin of the Frenet labels: top-level "Frenet" menu (Configuração, Criar envio, Etiquetas, Impressão,
- * Rastreios, Ponto de postagem and the "em breve" items), AJAX actions, the order list bulk action and the order box.
+ * Rastreios, Ponto de postagem), AJAX actions, the order list bulk action and the order box.
  * Every action needs manage_woocommerce and the "frenet_labels" nonce.
  */
 class WC_Frenet_Labels_Admin {
@@ -46,10 +46,6 @@ class WC_Frenet_Labels_Admin {
 			self::SLUG . '-print'    => array( __( 'Printing', 'woo-shipping-gateway' ), __( 'Label printing', 'woo-shipping-gateway' ), 'printing' ),
 			self::SLUG . '-tracking' => array( __( 'Tracking', 'woo-shipping-gateway' ), __( 'Tracking', 'woo-shipping-gateway' ), 'tracking' ),
 			self::SLUG . '-dropoff'  => array( __( 'Drop-off point', 'woo-shipping-gateway' ), __( 'Drop-off point', 'woo-shipping-gateway' ), 'dropoff' ),
-			self::SLUG . '-whatsapp' => array( 'WhatsApp', 'WhatsApp', 'soon' ),
-			self::SLUG . '-reverse'  => array( __( 'Returns', 'woo-shipping-gateway' ), __( 'Returns', 'woo-shipping-gateway' ), 'soon' ),
-			self::SLUG . '-receipt'  => array( __( 'Proof of delivery', 'woo-shipping-gateway' ), __( 'Proof of delivery', 'woo-shipping-gateway' ), 'soon' ),
-			self::SLUG . '-tower'    => array( __( 'Control tower', 'woo-shipping-gateway' ), __( 'Control tower', 'woo-shipping-gateway' ), 'soon' ),
 		);
 	}
 
@@ -61,8 +57,7 @@ class WC_Frenet_Labels_Admin {
 	public static function menu() {
 		add_menu_page( 'Frenet', 'Frenet', self::CAP, self::SLUG, array( __CLASS__, 'render' ), self::menu_icon(), 56 );
 		foreach ( self::pages() as $slug => $page ) {
-			$title = 'soon' === $page[2] ? $page[0] . ' · ' . __( 'soon', 'woo-shipping-gateway' ) : $page[0];
-			add_submenu_page( self::SLUG, $page[1], $title, self::CAP, $slug, array( __CLASS__, 'render' ) );
+			add_submenu_page( self::SLUG, $page[1], $page[0], self::CAP, $slug, array( __CLASS__, 'render' ) );
 		}
 	}
 
@@ -102,13 +97,13 @@ class WC_Frenet_Labels_Admin {
 		echo '<header class="frenet-header">';
 		echo '<span class="frenet-brand"><img src="' . esc_url( $mark ) . '" alt="" width="28" height="28"> <span class="frenet-brand__word">frenet</span></span>';
 		echo '<h1 class="frenet-title">' . esc_html( $page[1] ) . '</h1>';
+		if ( WC_Frenet_Labels_Settings::ready() ) {
+			self::view( 'wallet' );
+		}
 		echo '</header>';
 		echo '<hr class="wp-header-end">';
-		if ( WC_Frenet_Labels_Settings::simulated() ) {
-			echo '<p class="frenet-sim" role="note"><strong>' . esc_html__( 'Simulator mode', 'woo-shipping-gateway' ) . '</strong> ' . esc_html__( 'Labels, balance and lists come from the local test simulator. Nothing is sent to Frenet or charged.', 'woo-shipping-gateway' ) . '</p>';
-		}
 		// Tracking only needs the store token; the label screens need the partner token too.
-		if ( ! in_array( $page[2], array( 'settings', 'soon', 'tracking' ), true ) && ! WC_Frenet_Labels_Settings::ready() ) {
+		if ( ! in_array( $page[2], array( 'settings', 'tracking' ), true ) && ! WC_Frenet_Labels_Settings::ready() ) {
 			self::view( 'not-ready' );
 			echo '</div>';
 			return;
@@ -159,11 +154,12 @@ class WC_Frenet_Labels_Admin {
 			'frenet-labels',
 			'frenetLabels',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( self::NONCE ),
-				'journey' => WC_Frenet_Labels_Settings::get( 'journey' ),
-				'wallet'  => WC_Frenet_Labels_Settings::on( 'wallet_payment' ),
-				'i18n'    => self::js_strings(),
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( self::NONCE ),
+				'journey'  => 'here',
+				'wallet'   => WC_Frenet_Labels_Settings::on( 'wallet_payment' ),
+				'carriers' => WC_Frenet_Labels_Carriers::js(),
+				'i18n'     => self::js_strings(),
 			)
 		);
 	}
@@ -242,6 +238,9 @@ class WC_Frenet_Labels_Admin {
 			'doneFailed'    => __( 'Done: %1$d went through, %2$d with an error. See the Notes column of the red rows.', 'woo-shipping-gateway' ),
 			'balanceAfter'  => __( 'Balance after', 'woo-shipping-gateway' ),
 			'notEnough'     => __( 'Your balance does not cover this total. Add balance in the Frenet panel or select fewer orders.', 'woo-shipping-gateway' ),
+			'noBalance'     => __( 'Not enough balance', 'woo-shipping-gateway' ),
+			/* translators: %s: amount */
+			'missing'       => __( 'Missing %s', 'woo-shipping-gateway' ),
 			'confirmCancel' => __( 'Cancel this Frenet label? If it was paid, Frenet returns the amount to the wallet (usually overnight).', 'woo-shipping-gateway' ),
 			/* translators: 1: number of labels, 2: total amount */
 			'confirmPay'    => __( 'Pay %1$d labels with the Frenet wallet (%2$s)?', 'woo-shipping-gateway' ),

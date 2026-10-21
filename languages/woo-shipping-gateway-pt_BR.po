@@ -268,26 +268,10 @@ msgstr "Impressão de etiqueta"
 msgid "Tracking"
 msgstr "Rastreios"
 
-msgid "Returns"
-msgstr "Reversa"
-
-msgid "Proof of delivery"
-msgstr "Comprovante"
-
-msgid "Control tower"
-msgstr "Torre de controle"
-
-msgid "soon"
-msgstr "em breve"
-
 msgid "You are not allowed to do this."
 msgstr "Você não tem permissão para fazer isto."
 
-msgid "Simulator mode"
-msgstr "Modo simulador"
 
-msgid "Labels, balance and lists come from the local test simulator. Nothing is sent to Frenet or charged."
-msgstr "Etiquetas, saldo e listas vêm do simulador local de testes. Nada é enviado à Frenet nem cobrado."
 
 msgid "Calculating freight…"
 msgstr "Calculando frete…"
@@ -565,15 +549,6 @@ msgstr "Desligado: as etiquetas compradas aqui são criadas sem pagar e esperam 
 
 msgid "Save changes"
 msgstr "Salvar alterações"
-
-msgid "Coming soon"
-msgstr "Em breve"
-
-msgid "This part of the Frenet journey is not available in the plugin yet. Labels, printing and tracking already work."
-msgstr "Esta parte da jornada Frenet ainda não está disponível no plugin. Etiquetas, impressão e rastreio já funcionam."
-
-msgid "Go to labels"
-msgstr "Ir para etiquetas"
 
 msgid "Wallet balance"
 msgstr "Saldo em carteira"
@@ -1241,3 +1216,108 @@ msgstr "Não tem o serviço whitelabel? Fale com a Frenet para ativá-lo. A cota
 
 msgid "Exclusive to Frenet customers with the whitelabel service: each store has its own (x-partner-token). Ask Frenet for it. Required to create, list, pay and cancel labels. Keep it secret like a password."
 msgstr "Exclusivo para clientes Frenet com o serviço whitelabel: cada loja tem o seu (x-partner-token). Peça à Frenet. Necessário para criar, listar, pagar e cancelar etiquetas. Guarde-o em segredo, como uma senha."
+
+msgid "Selected orders"
+msgstr "Pedidos selecionados"
+
+msgid "Freight total"
+msgstr "Total do frete"
+
+msgid "Selected labels"
+msgstr "Etiquetas selecionadas"
+
+msgid "To pay"
+msgstr "A pagar"
+
+msgid "Changes apply to the next labels and quotes."
+msgstr "As alterações valem para as próximas etiquetas e cotações."
+
+msgid "Checked: no movement yet. Events appear once the carrier scans the package."
+msgstr "Consultado: sem movimentação ainda. Os eventos aparecem quando a transportadora escaneia o pacote."
+
+msgid "Checked. Frenet answered: %s"
+msgstr "Consultado. A Frenet respondeu: %s"
+
+msgid "%1$d orders checked, %2$d status changes, %3$d without movement yet, %4$d errors."
+msgstr "%1$d pedidos consultados, %2$d mudanças de status, %3$d sem movimentação ainda, %4$d erros."
+
+msgid "Not enough balance"
+msgstr "Saldo insuficiente"
+
+msgid "Missing %s"
+msgstr "Faltam %s"
+
+msgid "Automation"
+msgstr "Automação"
+
+msgid "Create the shipment automatically when an order is paid"
+msgstr "Criar o envio automaticamente quando o pedido for pago"
+
+msgid "A minute after a paid order with delivery in Brazil comes in, the store quotes it, picks the service by the rule below, creates the shipment and pays it with the wallet (when wallet payment is on). The result goes to the order history and to Create shipment > Notes."
+msgstr "Um minuto depois de entrar um pedido pago com entrega no Brasil, a loja cota, escolhe o serviço pela regra abaixo, cria o envio e paga com a carteira (se o pagamento com carteira estiver ligado). O resultado fica no histórico do pedido e em Criar envio > Observações."
+
+msgid "Which service"
+msgstr "Qual serviço"
+
+msgid "The carrier the customer chose at checkout (best price when it is not available)"
+msgstr "A transportadora que o cliente escolheu no checkout (melhor preço quando não está disponível)"
+
+msgid "I authorise the store to buy labels and debit my Frenet wallet automatically, without confirming each order."
+msgstr "Autorizo a loja a comprar etiquetas e debitar minha carteira Frenet automaticamente, sem confirmar cada pedido."
+
+msgid "Without this authorisation the automation stays off. Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes."
+msgstr "Sem esta autorização a automação fica desligada. Pedidos sem chave NF-e só vão com transportadoras que aceitam DC-e; quando nenhuma aceita, nada é criado e o motivo fica em Observações."
+
+msgid "Automation on:"
+msgstr "Automação ligada:"
+
+msgid "paid orders create their shipment on their own (%s). This screen is for the ones that did not go through or that you want to send by hand."
+msgstr "os pedidos pagos criam o envio sozinhos (%s). Esta tela é para os que não passaram ou que você quer enviar à mão."
+
+msgid "fastest"
+msgstr "melhor prazo"
+
+msgid "best price"
+msgstr "melhor preço"
+
+msgid "the carrier the customer chose"
+msgstr "a transportadora que o cliente escolheu"
+
+msgid "Every carrier available requires an NF-e key and the order has none. Add the key or create the shipment by hand."
+msgstr "Todas as transportadoras disponíveis exigem chave NF-e e o pedido não tem. Adicione a chave ou crie o envio à mão."
+
+msgid "Frenet shipment %1$s created automatically: %2$s, %3$s (rule: %4$s)."
+msgstr "Envio Frenet %1$s criado automaticamente: %2$s, %3$s (regra: %4$s)."
+
+msgid "It was not paid: see Notes and pay it in Labels."
+msgstr "Não foi pago: veja Observações e pague em Etiquetas."
+
+msgid "Automatic Frenet shipment not created: %s"
+msgstr "Envio automático Frenet não criado: %s"
+
+msgid "Turn on automatic shipments?"
+msgstr "Ligar os envios automáticos?"
+
+msgid "The store will spend your Frenet balance on its own."
+msgstr "A loja vai gastar seu saldo Frenet sozinha."
+
+msgid "A minute after each paid order with delivery in Brazil, it quotes the freight, creates the shipment and pays it with the wallet, without asking anyone. Each label is charged exactly like one you create by hand."
+msgstr "Um minuto depois de cada pedido pago com entrega no Brasil, ela cota o frete, cria o envio e paga com a carteira, sem perguntar a ninguém. Cada etiqueta é cobrada exatamente como uma criada à mão."
+
+msgid "Service:"
+msgstr "Serviço:"
+
+msgid "A label that should not go out: cancel it in Labels and Frenet returns the amount to the wallet."
+msgstr "Uma etiqueta que não deveria sair: cancele em Etiquetas e a Frenet devolve o valor à carteira."
+
+msgid "You can turn it off here at any time."
+msgstr "Você pode desligar aqui a qualquer momento."
+
+msgid "Not now"
+msgstr "Agora não"
+
+msgid "I understand, turn it on"
+msgstr "Entendi, ligar"
+
+msgid "Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes."
+msgstr "Pedidos sem chave NF-e só vão com transportadoras que aceitam DC-e; quando nenhuma aceita, nada é criado e o motivo fica em Observações."
