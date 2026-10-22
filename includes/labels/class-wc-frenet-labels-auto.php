@@ -20,6 +20,20 @@ class WC_Frenet_Labels_Auto {
 	const META_DONE     = '_frenet_auto_done';
 	const RULE_CUSTOMER = 'customer';
 	const DELAY         = MINUTE_IN_SECONDS;
+	/** Product meta "Automatic shipment with": '', best_price, best_time or carrier:<CODE>. */
+	const PRODUCT_META   = '_frenet_auto_carrier';
+	const CARRIER_PREFIX = 'carrier:';
+	/** What happens when the carrier the products ask for does not quote (auto_carrier_fallback). */
+	const FALLBACK_BEST_PRICE = 'best_price';
+	const FALLBACK_SKIP       = 'skip';
+	/** Why choose_with_products() picked (or not) a service. */
+	const WHY_CUSTOMER        = 'customer';
+	const WHY_PRODUCT_CARRIER = 'product_carrier';
+	const WHY_PRODUCT_RULE    = 'product_rule';
+	const WHY_GENERAL         = 'general';
+	const WHY_FALLBACK        = 'fallback';
+	const WHY_CONFLICT        = 'conflict';
+	const WHY_UNAVAILABLE     = 'unavailable';
 
 	/**
 	 * Hooks: paid orders are queued; the queue runs later.
@@ -61,6 +75,278 @@ class WC_Frenet_Labels_Auto {
 	 * @param string $rule Rule code; the configured one when empty.
 	 * @return string
 	 */
+	/**
+	 * Rules the merchant can pick: "the carrier the customer chose" only exists while Frenet quotes at checkout.
+	 *
+	 * @return array<string, string> rule => label.
+	 */
+	public static function rule_options() {
+		$out = array();
+		if ( WC_Frenet_Labels_Settings::quotes_at_checkout() ) {
+			$out[ self::RULE_CUSTOMER ] = __( 'The carrier the customer chose at checkout (best price when it is not available)', 'woo-shipping-gateway' );
+		}
+		$out[ WC_Frenet_Labels_Compare::BEST_PRICE ] = __( 'Best price', 'woo-shipping-gateway' );
+		$out[ WC_Frenet_Labels_Compare::BEST_TIME ]  = __( 'Fastest', 'woo-shipping-gateway' );
+		return $out;
+	}
+
+	/**
+	 * Options of the product field "Automatic shipment with": the general rule, a rule, or always one carrier.
+	 *
+	 * @return array<string, string> value => label.
+	 */
+	public static function product_options() {
+		$out = array(
+			''                                   => __( 'The general rule', 'woo-shipping-gateway' ),
+			WC_Frenet_Labels_Compare::BEST_PRICE => __( 'Best price', 'woo-shipping-gateway' ),
+			WC_Frenet_Labels_Compare::BEST_TIME  => __( 'Fastest', 'woo-shipping-gateway' ),
+		);
+		foreach ( WC_Frenet_Labels_Carriers::LABELS as $code => $name ) {
+			/* translators: %s: carrier name */
+			$out[ self::CARRIER_PREFIX . $code ] = sprintf( __( 'Always %s', 'woo-shipping-gateway' ), $name );
+		}
+		return $out;
+	}
+
+	/**
+	 * Whether a product value can be saved.
+	 *
+	 * @param string $value Value.
+	 * @return bool
+	 */
+	public static function valid_product_value( $value ) {
+		return array_key_exists( (string) $value, self::product_options() );
+	}
+
+	/**
+	 * Short human form of a product value ("Loggi", "best price").
+	 *
+	 * @param string $value Value.
+	 * @return string
+	 */
+	public static function product_label( $value ) {
+		$value = (string) $value;
+		if ( 0 === strpos( $value, self::CARRIER_PREFIX ) ) {
+			return WC_Frenet_Labels_Carriers::label( substr( $value, strlen( self::CARRIER_PREFIX ) ) );
+		}
+		if ( WC_Frenet_Labels_Compare::BEST_TIME === $value ) {
+			return __( 'fastest', 'woo-shipping-gateway' );
+		}
+		if ( WC_Frenet_Labels_Compare::BEST_PRICE === $value ) {
+			return __( 'best price', 'woo-shipping-gateway' );
+		}
+		return __( 'the general rule', 'woo-shipping-gateway' );
+	}
+
+	/**
+	 * Product name => value, for the products of the order that ask something (a variation answers with its own
+	 * value, or its parent's).
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array<string, string>
+	 */
+	public static function product_rules( WC_Order $order ) {
+		$out = array();
+		foreach ( $order->get_items() as $item ) {
+			if ( ! $item instanceof WC_Order_Item_Product ) {
+				continue;
+			}
+			$product = $item->get_product();
+			if ( ! $product || $product->is_virtual() ) {
+				continue;
+			}
+			$value = (string) $product->get_meta( self::PRODUCT_META );
+			if ( '' === $value && $product->get_parent_id() ) {
+				$parent = wc_get_product( $product->get_parent_id() );
+				$value  = $parent ? (string) $parent->get_meta( self::PRODUCT_META ) : '';
+			}
+			if ( '' !== $value && self::valid_product_value( $value ) ) {
+				$out[ $item->get_name() ] = $value;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * "Loggi (Produto A), best price (Produto B)".
+	 *
+	 * @param array<string, string> $asks product_rules() result.
+	 * @return string
+	 */
+	public static function product_summary( array $asks ) {
+		$parts = array();
+		foreach ( $asks as $name => $value ) {
+			$parts[] = self::product_label( $value ) . ' (' . $name . ')';
+		}
+		return implode( ', ', $parts );
+	}
+
+	/**
+	 * What the products ask: one carrier when every product that names one names the same; a rule (best price
+	 * wins over fastest) when no product names a carrier; a conflict when two products name different carriers.
+	 * Pure (unit tested).
+	 *
+	 * @param string[] $values Product values.
+	 * @return array{carrier: string, rule: string, conflict: bool}
+	 */
+	public static function product_rule( array $values ) {
+		$carriers = array();
+		$rules    = array();
+		foreach ( $values as $value ) {
+			$value = trim( (string) $value );
+			if ( 0 === strpos( $value, self::CARRIER_PREFIX ) ) {
+				$carriers[ strtoupper( substr( $value, strlen( self::CARRIER_PREFIX ) ) ) ] = true;
+			} elseif ( in_array( $value, array( WC_Frenet_Labels_Compare::BEST_PRICE, WC_Frenet_Labels_Compare::BEST_TIME ), true ) ) {
+				$rules[ $value ] = true;
+			}
+		}
+		if ( count( $carriers ) > 1 ) {
+			return array(
+				'carrier'  => '',
+				'rule'     => '',
+				'conflict' => true,
+			);
+		}
+		if ( $carriers ) {
+			return array(
+				'carrier'  => (string) array_key_first( $carriers ),
+				'rule'     => '',
+				'conflict' => false,
+			);
+		}
+		$rule = isset( $rules[ WC_Frenet_Labels_Compare::BEST_PRICE ] ) ? WC_Frenet_Labels_Compare::BEST_PRICE : (string) array_key_first( $rules );
+		return array(
+			'carrier'  => '',
+			'rule'     => $rule,
+			'conflict' => false,
+		);
+	}
+
+	/**
+	 * Service to buy once the products have had their say. Order: 1) the service the customer paid for, when the
+	 * rule is "customer" and Frenet still offers it; 2) what the products ask; 3) the general rule. A carrier the
+	 * products ask for that does not quote follows $fallback. Pure (unit tested).
+	 *
+	 * @param array    $services compare() services (with needs_nfe).
+	 * @param string   $chosen   Service the customer chose ('' if not Frenet).
+	 * @param string   $rule     General rule.
+	 * @param bool     $has_nfe  Whether the order has a valid NF-e key.
+	 * @param string[] $values   Product values.
+	 * @param string   $fallback FALLBACK_BEST_PRICE | FALLBACK_SKIP.
+	 * @return array{code: string, why: string, carrier: string}
+	 */
+	public static function choose_with_products( array $services, $chosen, $rule, $has_nfe, array $values, $fallback ) {
+		$usable = self::usable( $services, $has_nfe );
+		if ( ! $usable ) {
+			return array(
+				'code'    => '',
+				'why'     => self::WHY_GENERAL,
+				'carrier' => '',
+			);
+		}
+		if ( self::RULE_CUSTOMER === $rule && '' !== (string) $chosen && in_array( (string) $chosen, array_column( $usable, 'code' ), true ) ) {
+			return array(
+				'code'    => (string) $chosen,
+				'why'     => self::WHY_CUSTOMER,
+				'carrier' => '',
+			);
+		}
+		$ask = self::product_rule( $values );
+		if ( $ask['conflict'] ) {
+			return array(
+				'code'    => self::choose( $services, $chosen, $rule, $has_nfe ),
+				'why'     => self::WHY_CONFLICT,
+				'carrier' => '',
+			);
+		}
+		if ( '' !== $ask['carrier'] ) {
+			$own = array_values(
+				array_filter(
+					$usable,
+					static function ( $s ) use ( $ask ) {
+						return strtoupper( (string) ( $s['carrier_code'] ?? '' ) ) === $ask['carrier'];
+					}
+				)
+			);
+			if ( $own ) {
+				$best = WC_Frenet_Labels_Compare::best( $own );
+				return array(
+					'code'    => (string) ( $best['best_price'] ?? '' ),
+					'why'     => self::WHY_PRODUCT_CARRIER,
+					'carrier' => $ask['carrier'],
+				);
+			}
+			if ( self::FALLBACK_SKIP === $fallback ) {
+				return array(
+					'code'    => '',
+					'why'     => self::WHY_UNAVAILABLE,
+					'carrier' => $ask['carrier'],
+				);
+			}
+			return array(
+				'code'    => self::choose( $services, '', WC_Frenet_Labels_Compare::BEST_PRICE, $has_nfe ),
+				'why'     => self::WHY_FALLBACK,
+				'carrier' => $ask['carrier'],
+			);
+		}
+		if ( '' !== $ask['rule'] ) {
+			return array(
+				'code'    => self::choose( $services, '', $ask['rule'], $has_nfe ),
+				'why'     => self::WHY_PRODUCT_RULE,
+				'carrier' => '',
+			);
+		}
+		return array(
+			'code'    => self::choose( $services, $chosen, $rule, $has_nfe ),
+			'why'     => self::WHY_GENERAL,
+			'carrier' => '',
+		);
+	}
+
+	/**
+	 * Order note that explains why the products decided; '' for the customer or the general rule.
+	 *
+	 * @param array                 $pick choose_with_products() result.
+	 * @param array<string, string> $asks product_rules() result.
+	 * @return string
+	 */
+	public static function product_note( array $pick, array $asks ) {
+		$summary = self::product_summary( $asks );
+		switch ( $pick['why'] ) {
+			case self::WHY_PRODUCT_CARRIER:
+				/* translators: %s: products and what they ask */
+				return sprintf( __( 'Carrier chosen by the products: %s.', 'woo-shipping-gateway' ), $summary );
+			case self::WHY_PRODUCT_RULE:
+				/* translators: %s: products and what they ask */
+				return sprintf( __( 'Service chosen by the rule of the products: %s.', 'woo-shipping-gateway' ), $summary );
+			case self::WHY_FALLBACK:
+				/* translators: 1: carrier, 2: products and what they ask */
+				return sprintf( __( '%1$s did not quote for this order: the best price was used instead (the products asked for %2$s).', 'woo-shipping-gateway' ), WC_Frenet_Labels_Carriers::label( $pick['carrier'] ), $summary );
+			case self::WHY_CONFLICT:
+				/* translators: %s: products and what they ask */
+				return sprintf( __( 'The products ask for different carriers (%s): the general rule was used.', 'woo-shipping-gateway' ), $summary );
+		}
+		return '';
+	}
+
+	/**
+	 * Services the order can really use: without an NF-e key, the carriers that require one are left out.
+	 *
+	 * @param array $services Services.
+	 * @param bool  $has_nfe  Whether the order has a valid NF-e key.
+	 * @return array
+	 */
+	private static function usable( array $services, $has_nfe ) {
+		return $has_nfe ? $services : array_values(
+			array_filter(
+				$services,
+				static function ( $s ) {
+					return empty( $s['needs_nfe'] );
+				}
+			)
+		);
+	}
+
 	public static function rule_label( $rule = '' ) {
 		$rule = '' !== (string) $rule ? (string) $rule : self::rule();
 		if ( WC_Frenet_Labels_Compare::BEST_TIME === $rule ) {
@@ -139,9 +425,15 @@ class WC_Frenet_Labels_Auto {
 			return;
 		}
 		$has_nfe = WC_Frenet_Labels_Nfe::parse( (string) $order->get_meta( WC_Frenet_Labels_Nfe::META ) )['ok'];
-		$code    = self::choose( $cmp['services'], (string) $cmp['chosen'], $rule, $has_nfe );
+		$asks    = self::product_rules( $order );
+		$pick    = self::choose_with_products( $cmp['services'], (string) $cmp['chosen'], $rule, $has_nfe, array_values( $asks ), WC_Frenet_Labels_Settings::get( 'auto_carrier_fallback' ) );
+		$code    = $pick['code'];
 		if ( '' === $code ) {
-			self::failed( $order, __( 'Every carrier available requires an NF-e key and the order has none. Add the key or create the shipment by hand.', 'woo-shipping-gateway' ), true );
+			$reason = self::WHY_UNAVAILABLE === $pick['why']
+				/* translators: 1: carrier, 2: products and what they ask */
+				? sprintf( __( '%1$s did not quote for this order and the products ask for it (%2$s).', 'woo-shipping-gateway' ), WC_Frenet_Labels_Carriers::label( $pick['carrier'] ), self::product_summary( $asks ) )
+				: __( 'Every carrier available requires an NF-e key and the order has none. Add the key or create the shipment by hand.', 'woo-shipping-gateway' );
+			self::failed( $order, $reason, true );
 			return;
 		}
 		$res = WC_Frenet_Labels_Service::create( $order, $code, 'here' );
@@ -157,15 +449,36 @@ class WC_Frenet_Labels_Auto {
 			(string) ( $res['shipment_id'] ?? $res['id'] ?? '' ),
 			$service['name'],
 			WC_Frenet_Labels_Service::money( $service['price'] ),
-			self::rule_label( $rule )
+			self::decided_by( $pick['why'], $rule )
 		);
 		if ( WC_Frenet_Labels_Settings::on( 'wallet_payment' ) && empty( $res['paid'] ) ) {
 			$note .= ' ' . __( 'It was not paid: see Notes and pay it in Labels.', 'woo-shipping-gateway' );
 		}
 		$order = wc_get_order( $order->get_id() );
 		$order->add_order_note( $note );
+		$why = self::product_note( $pick, $asks );
+		if ( '' !== $why ) {
+			$order->add_order_note( $why );
+		}
 		$order->update_meta_data( self::META_DONE, current_time( 'mysql' ) );
 		$order->save();
+	}
+
+	/**
+	 * Who decided, for the "(rule: …)" of the success note.
+	 *
+	 * @param string $why  choose_with_products() reason.
+	 * @param string $rule General rule.
+	 * @return string
+	 */
+	private static function decided_by( $why, $rule ) {
+		if ( self::WHY_CUSTOMER === $why ) {
+			return self::rule_label( self::RULE_CUSTOMER );
+		}
+		if ( in_array( $why, array( self::WHY_PRODUCT_CARRIER, self::WHY_PRODUCT_RULE ), true ) ) {
+			return __( 'the products', 'woo-shipping-gateway' );
+		}
+		return self::rule_label( $rule );
 	}
 
 	/**

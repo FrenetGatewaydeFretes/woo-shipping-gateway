@@ -193,6 +193,91 @@
 		} );
 	}
 
+	/* ---------------------------------------------------------------- Produtos */
+
+	var products = document.querySelector( '[data-frenet-products]' );
+	if ( products ) {
+		var pAll = products.querySelector( '[data-frenet-all]' );
+		var pCount = products.querySelector( '[data-frenet-count]' );
+		var pApply = products.querySelector( '[data-frenet-apply]' );
+		var pSave = products.querySelector( '[data-frenet-save]' );
+		var pDirty = products.querySelector( '[data-frenet-dirty-count]' );
+		var pSubmitting = false;
+		var pPicked = function () {
+			return Array.prototype.slice.call( products.querySelectorAll( '[data-frenet-pick]:checked' ) );
+		};
+		var pRefresh = function () {
+			var n = pPicked().length;
+			var all = products.querySelectorAll( '[data-frenet-pick]' ).length;
+			pCount.textContent = n ? pCount.getAttribute( 'data-some' ).replace( '%d', String( n ) ) : pCount.getAttribute( 'data-zero' );
+			pApply.disabled = n === 0;
+			pAll.checked = n > 0 && n === all;
+		};
+		// A changed row is highlighted and listed in changed[]: the server saves only those.
+		var pMark = function ( tr ) {
+			if ( ! tr.classList.contains( 'is-dirty' ) ) {
+				tr.classList.add( 'is-dirty' );
+				var hidden = document.createElement( 'input' );
+				hidden.type = 'hidden';
+				hidden.name = 'changed[]';
+				hidden.value = tr.getAttribute( 'data-frenet-id' );
+				products.appendChild( hidden );
+			}
+			pDirty.textContent = String( products.querySelectorAll( 'tr.is-dirty' ).length );
+			pSave.disabled = false;
+		};
+		pAll.addEventListener( 'change', function () {
+			products.querySelectorAll( '[data-frenet-pick]' ).forEach( function ( c ) {
+				c.checked = pAll.checked;
+			} );
+			pRefresh();
+		} );
+		products.addEventListener( 'change', function ( e ) {
+			if ( e.target.hasAttribute( 'data-frenet-pick' ) ) {
+				pRefresh();
+			} else if ( e.target.hasAttribute( 'data-frenet-field' ) ) {
+				pMark( e.target.closest( 'tr' ) );
+			}
+		} );
+		products.addEventListener( 'input', function ( e ) {
+			if ( e.target.hasAttribute( 'data-frenet-field' ) ) {
+				pMark( e.target.closest( 'tr' ) );
+			}
+		} );
+		pApply.addEventListener( 'click', function () {
+			var values = {};
+			products.querySelectorAll( '[data-frenet-bulk]' ).forEach( function ( b ) {
+				values[ b.getAttribute( 'data-frenet-bulk' ) ] = b.value;
+			} );
+			pPicked().forEach( function ( c ) {
+				var tr = c.closest( 'tr' );
+				var changed = false;
+				Object.keys( values ).forEach( function ( key ) {
+					var field = tr.querySelector( '[data-frenet-field="' + key + '"]' );
+					var next = values[ key ] === 'general' ? '' : values[ key ];
+					if ( values[ key ] === '' || ! field || field.value === next ) {
+						return;
+					}
+					field.value = next;
+					changed = true;
+				} );
+				if ( changed ) {
+					pMark( tr );
+				}
+			} );
+		} );
+		products.addEventListener( 'submit', function () {
+			pSubmitting = true;
+		} );
+		window.addEventListener( 'beforeunload', function ( e ) {
+			if ( ! pSubmitting && products.querySelectorAll( 'tr.is-dirty' ).length ) {
+				e.preventDefault();
+				e.returnValue = '';
+			}
+		} );
+		pRefresh();
+	}
+
 	/* ---------------------------------------------------------------- Criar envio */
 
 	var create = document.querySelector( '[data-frenet-create]' );

@@ -15,6 +15,7 @@ require_once __DIR__ . '/class-wc-frenet-labels-service.php';
 require_once __DIR__ . '/class-wc-frenet-labels-dropoff.php';
 require_once __DIR__ . '/class-wc-frenet-labels-admin.php';
 require_once __DIR__ . '/class-wc-frenet-labels-auto.php';
+require_once __DIR__ . '/class-wc-frenet-labels-products.php';
 
 require_once dirname( __DIR__ ) . '/tracking/class-wc-frenet-tracking-module.php';
 
@@ -23,4 +24,5 @@ add_action( WC_Frenet_Labels_Service::POLL_HOOK, array( 'WC_Frenet_Labels_Servic
 WC_Frenet_Labels_Auto::init();
 if ( is_admin() ) {
 	WC_Frenet_Labels_Admin::init();
+	WC_Frenet_Labels_Products::init();
 }

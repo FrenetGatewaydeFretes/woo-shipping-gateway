@@ -1321,3 +1321,178 @@ msgstr "Entendi, ligar"
 
 msgid "Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes."
 msgstr "Pedidos sem chave NF-e só vão com transportadoras que aceitam DC-e; quando nenhuma aceita, nada é criado e o motivo fica em Observações."
+
+msgid "Products"
+msgstr "Produtos"
+
+msgid "Products: weight, size and automatic carrier"
+msgstr "Produtos: peso, medidas e transportadora automática"
+
+msgid "The general rule"
+msgstr "A regra geral"
+
+msgid "Always %s"
+msgstr "Sempre %s"
+
+msgid "the general rule"
+msgstr "a regra geral"
+
+msgid "Carrier chosen by the products: %s."
+msgstr "Transportadora escolhida pelos produtos: %s."
+
+msgid "Service chosen by the rule of the products: %s."
+msgstr "Serviço escolhido pela regra dos produtos: %s."
+
+msgid "%1$s did not quote for this order: the best price was used instead (the products asked for %2$s)."
+msgstr "%1$s não cotou para este pedido: foi usado o melhor preço (os produtos pediam %2$s)."
+
+msgid "The products ask for different carriers (%s): the general rule was used."
+msgstr "Os produtos pedem transportadoras diferentes (%s): foi usada a regra geral."
+
+msgid "%1$s did not quote for this order and the products ask for it (%2$s)."
+msgstr "%1$s não cotou para este pedido e os produtos pedem essa transportadora (%2$s)."
+
+msgid "the products"
+msgstr "os produtos"
+
+msgid "Automatic Frenet shipment with"
+msgstr "Envio automático Frenet com"
+
+msgid "Carrier of the automatic shipment when this product is in the order. Empty: the general rule of Frenet > Settings > Automation. Also editable in Frenet > Products."
+msgstr "Transportadora do envio automático quando este produto está no pedido. Vazio: a regra geral de Frenet > Configurações > Automação. Também editável em Frenet > Produtos."
+
+msgid "Weight, size and the carrier of the automatic shipment, product by product. What you save here also shows in the product form and can be imported by CSV."
+msgstr "Peso, medidas e transportadora do envio automático, produto por produto. O que você salva aqui também aparece na ficha do produto e pode ser importado por CSV."
+
+msgid "Automatic shipments are on"
+msgstr "Os envios automáticos estão ligados"
+
+msgid "(rule: %s)."
+msgstr "(regra: %s)."
+
+msgid "A product that asks for a carrier or a rule wins over the general rule for the orders it is in."
+msgstr "Um produto que pede uma transportadora ou uma regra manda sobre a regra geral nos pedidos em que está."
+
+msgid "Automatic shipments are off."
+msgstr "Os envios automáticos estão desligados."
+
+msgid "What you set here is used when you turn them on in Settings."
+msgstr "O que você define aqui é usado quando os ligar em Configurações."
+
+msgid "Customers see the Frenet carriers at checkout."
+msgstr "Os clientes veem as transportadoras da Frenet no checkout."
+
+msgid "Customers do not see Frenet at checkout: they pay your other shipping method and the carrier is decided here."
+msgstr "Os clientes não veem a Frenet no checkout: pagam seu outro método de envio e a transportadora se decide aqui."
+
+msgid "Search products"
+msgstr "Buscar produtos"
+
+msgid "Product name or SKU"
+msgstr "Nome do produto ou SKU"
+
+msgid "Show"
+msgstr "Mostrar"
+
+msgid "All products"
+msgstr "Todos os produtos"
+
+msgid "Without weight or size"
+msgstr "Sem peso ou medidas"
+
+msgid "With their own carrier or rule"
+msgstr "Com transportadora ou regra própria"
+
+msgid "No product found"
+msgstr "Nenhum produto encontrado"
+
+msgid "Simple products and variations are listed: a variation without its own carrier follows its parent product."
+msgstr "Produtos simples e variações aparecem na lista: uma variação sem transportadora própria segue o produto pai."
+
+msgid "Product"
+msgstr "Produto"
+
+msgid "Weight"
+msgstr "Peso"
+
+msgid "Length"
+msgstr "Comprimento"
+
+msgid "Width"
+msgstr "Largura"
+
+msgid "Height"
+msgstr "Altura"
+
+msgid "Automatic shipment with"
+msgstr "Envio automático com"
+
+msgid "variation"
+msgstr "variação"
+
+msgid "missing weight or size"
+msgstr "falta peso ou medidas"
+
+msgid "Like the parent product (%s)"
+msgstr "Como o produto pai (%s)"
+
+msgid "Edit product"
+msgstr "Editar produto"
+
+msgid "Apply to the selected products"
+msgstr "Aplicar aos produtos selecionados"
+
+msgid "Select products to change several at once."
+msgstr "Selecione produtos para alterar vários de uma vez."
+
+msgid "%d product(s) selected"
+msgstr "%d produto(s) selecionado(s)"
+
+msgid "Automatic shipment with…"
+msgstr "Envio automático com…"
+
+msgid "Apply to the selected"
+msgstr "Aplicar aos selecionados"
+
+msgid "Unsaved changes:"
+msgstr "Alterações sem salvar:"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Próxima"
+
+msgid "Who decides, in this order: 1) the customer, when the rule is \"the carrier the customer chose\" and they paid for a Frenet service; 2) the products (Frenet > Products); 3) this rule."
+msgstr "Quem decide, nesta ordem: 1) o cliente, quando a regra é \"a transportadora que o cliente escolheu\" e ele pagou um serviço da Frenet; 2) os produtos (Frenet > Produtos); 3) esta regra."
+
+msgid "Frenet is not offered at checkout (no shipping zone has the Frenet method), so the customer never chooses. Who decides, in this order: 1) the products (Frenet > Products); 2) this rule."
+msgstr "A Frenet não aparece no checkout (nenhuma zona de entrega tem o método Frenet), então o cliente nunca escolhe. Quem decide, nesta ordem: 1) os produtos (Frenet > Produtos); 2) esta regra."
+
+msgid "If the carrier a product asks for does not quote"
+msgstr "Se a transportadora que um produto pede não cotar"
+
+msgid "Use the best price instead"
+msgstr "Usar o melhor preço no lugar"
+
+msgid "Do not create the shipment (leave the reason in Notes)"
+msgstr "Não criar o envio (deixar o motivo em Observações)"
+
+msgid "What the products ask for the automatic shipment"
+msgstr "O que os produtos pedem para o envio automático"
+
+msgid "Products ask: %s"
+msgstr "Os produtos pedem: %s"
+
+msgid "%d product saved."
+msgid_plural "%d products saved."
+msgstr[0] "%d produto salvo."
+msgstr[1] "%d produtos salvos."
+
+msgid "%d product"
+msgid_plural "%d products"
+msgstr[0] "%d produto"
+msgstr[1] "%d produtos"
+
+msgid "Search"
+msgstr "Buscar"

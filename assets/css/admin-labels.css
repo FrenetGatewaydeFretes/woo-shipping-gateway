@@ -421,3 +421,13 @@
 .frenet-note--warn strong { display: block; margin-bottom: .25rem; color: #5c4300; }
 .frenet-list { margin: 1rem 0 0; padding-left: 1.2rem; }
 .frenet-list li { margin: 0 0 .45rem; line-height: 1.45; }
+
+/* Produtos: peso, medidas e transportadora por produto, editáveis na tabela */
+.frenet-products .frenet-table td.is-num input { width: 6.5rem; text-align: right; }
+.frenet-products .frenet-table select { max-width: 18rem; }
+.frenet-products tr.is-dirty td, .frenet-products tr.is-dirty th { background: #fff8e1; }
+.frenet-bar--products { flex-wrap: wrap; align-items: flex-end; gap: 1rem; }
+.frenet-bulk { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; flex: 1 1 36rem; }
+.frenet-bulk__count { flex: 1 1 100%; font-weight: 600; }
+.frenet-bulk input { width: 7.5rem; }
+.frenet-bulk select { min-width: 17rem; }

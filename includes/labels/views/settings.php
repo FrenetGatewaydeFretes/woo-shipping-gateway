@@ -81,14 +81,29 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 		<h2><?php esc_html_e( 'Automation', 'woo-shipping-gateway' ); ?></h2>
 		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[auto_create]" value="1" <?php checked( 'yes', $frenet_s['auto_create'] ); ?> data-frenet-auto-on> <span><?php esc_html_e( 'Create the shipment automatically when an order is paid', 'woo-shipping-gateway' ); ?></span></label>
 		<p class="description"><?php esc_html_e( 'A minute after a paid order with delivery in Brazil comes in, the store quotes it, picks the service by the rule below, creates the shipment and pays it with the wallet (when wallet payment is on). The result goes to the order history and to Create shipment > Notes.', 'woo-shipping-gateway' ); ?></p>
-		<fieldset>
-			<legend class="frenet-field"><?php esc_html_e( 'Which service', 'woo-shipping-gateway' ); ?></legend>
-			<label class="frenet-inline"><input type="radio" name="frenet_labels[auto_create_rule]" value="customer" <?php checked( 'customer', $frenet_s['auto_create_rule'] ); ?>> <?php esc_html_e( 'The carrier the customer chose at checkout (best price when it is not available)', 'woo-shipping-gateway' ); ?></label>
-			<label class="frenet-inline"><input type="radio" name="frenet_labels[auto_create_rule]" value="best_price" <?php checked( 'best_price', $frenet_s['auto_create_rule'] ); ?>> <?php esc_html_e( 'Best price', 'woo-shipping-gateway' ); ?></label>
-			<label class="frenet-inline"><input type="radio" name="frenet_labels[auto_create_rule]" value="best_time" <?php checked( 'best_time', $frenet_s['auto_create_rule'] ); ?>> <?php esc_html_e( 'Fastest', 'woo-shipping-gateway' ); ?></label>
-		</fieldset>
 		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[auto_create_consent]" value="1" <?php checked( 'yes', $frenet_s['auto_create_consent'] ); ?> data-frenet-auto-consent> <span><?php esc_html_e( 'I authorise the store to buy labels and debit my Frenet wallet automatically, without confirming each order.', 'woo-shipping-gateway' ); ?></span></label>
 		<p class="description"><?php esc_html_e( 'Without this authorisation the automation stays off. Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes.', 'woo-shipping-gateway' ); ?></p>
+		<?php $frenet_quotes = WC_Frenet_Labels_Settings::quotes_at_checkout(); ?>
+		<fieldset>
+			<legend class="frenet-field"><?php esc_html_e( 'Which service', 'woo-shipping-gateway' ); ?></legend>
+			<?php foreach ( WC_Frenet_Labels_Auto::rule_options() as $frenet_rule => $frenet_rule_label ) : ?>
+				<label class="frenet-inline"><input type="radio" name="frenet_labels[auto_create_rule]" value="<?php echo esc_attr( $frenet_rule ); ?>" <?php checked( $frenet_rule, isset( WC_Frenet_Labels_Auto::rule_options()[ $frenet_s['auto_create_rule'] ] ) ? $frenet_s['auto_create_rule'] : 'best_price' ); ?>> <?php echo esc_html( $frenet_rule_label ); ?></label>
+			<?php endforeach; ?>
+		</fieldset>
+		<p class="description">
+		<?php
+		echo esc_html(
+			$frenet_quotes
+			? __( 'Who decides, in this order: 1) the customer, when the rule is "the carrier the customer chose" and they paid for a Frenet service; 2) the products (Frenet > Products); 3) this rule.', 'woo-shipping-gateway' )
+			: __( 'Frenet is not offered at checkout (no shipping zone has the Frenet method), so the customer never chooses. Who decides, in this order: 1) the products (Frenet > Products); 2) this rule.', 'woo-shipping-gateway' )
+		);
+		?>
+			<a href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG . '-products' ) ); ?>"><?php esc_html_e( 'Products', 'woo-shipping-gateway' ); ?></a></p>
+		<label class="frenet-field" for="frenet-fallback"><?php esc_html_e( 'If the carrier a product asks for does not quote', 'woo-shipping-gateway' ); ?></label>
+		<select id="frenet-fallback" name="frenet_labels[auto_carrier_fallback]">
+			<option value="best_price" <?php selected( 'best_price', $frenet_s['auto_carrier_fallback'] ); ?>><?php esc_html_e( 'Use the best price instead', 'woo-shipping-gateway' ); ?></option>
+			<option value="skip" <?php selected( 'skip', $frenet_s['auto_carrier_fallback'] ); ?>><?php esc_html_e( 'Do not create the shipment (leave the reason in Notes)', 'woo-shipping-gateway' ); ?></option>
+		</select>
 	</section>
 
 	<section class="frenet-card">

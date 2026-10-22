@@ -21,24 +21,25 @@ class WC_Frenet_Labels_Settings {
 	 */
 	public static function defaults() {
 		return array(
-			'enabled'             => 'no',
-			'token'               => '',
-			'partner_token'       => '',
-			'api_url'             => self::DEFAULT_URL,
-			'default_service'     => WC_Frenet_Labels_Compare::BEST_PRICE,
-			'auto_best'           => 'no',
-			'batch_print'         => 'yes',
-			'wallet_payment'      => 'yes',
-			'auto_create'         => 'no',
-			'auto_create_rule'    => 'customer',
-			'auto_create_consent' => 'no',
-			'journey'             => 'here',
-			'label_format'        => 'A4',
-			'sender_document'     => '',
-			'autofill'            => 'no',
-			'tracking_sync'       => 'no',
-			'tracking_status'     => 'no',
-			'tracking_email'      => 'yes',
+			'enabled'               => 'no',
+			'token'                 => '',
+			'partner_token'         => '',
+			'api_url'               => self::DEFAULT_URL,
+			'default_service'       => WC_Frenet_Labels_Compare::BEST_PRICE,
+			'auto_best'             => 'no',
+			'batch_print'           => 'yes',
+			'wallet_payment'        => 'yes',
+			'auto_create'           => 'no',
+			'auto_create_rule'      => 'customer',
+			'auto_create_consent'   => 'no',
+			'auto_carrier_fallback' => 'best_price',
+			'journey'               => 'here',
+			'label_format'          => 'A4',
+			'sender_document'       => '',
+			'autofill'              => 'no',
+			'tracking_sync'         => 'no',
+			'tracking_status'       => 'no',
+			'tracking_email'        => 'yes',
 		);
 	}
 
@@ -97,6 +98,11 @@ class WC_Frenet_Labels_Settings {
 		$out['label_format']     = '10x15' === ( $input['label_format'] ?? '' ) ? '10x15' : 'A4';
 		$rule                    = (string) ( $input['auto_create_rule'] ?? '' );
 		$out['auto_create_rule'] = in_array( $rule, array( 'customer', 'best_price', 'best_time' ), true ) ? $rule : 'customer';
+		// Without Frenet quoting at checkout the customer never chooses: that rule cannot be saved.
+		if ( 'customer' === $out['auto_create_rule'] && ! self::quotes_at_checkout() ) {
+			$out['auto_create_rule'] = 'best_price';
+		}
+		$out['auto_carrier_fallback'] = 'skip' === ( $input['auto_carrier_fallback'] ?? '' ) ? 'skip' : 'best_price';
 		// The automation needs the merchant's explicit authorisation to debit the wallet without confirming each order.
 		if ( 'yes' !== $out['auto_create_consent'] ) {
 			$out['auto_create'] = 'no';
@@ -157,5 +163,18 @@ class WC_Frenet_Labels_Settings {
 	 */
 	public static function ready() {
 		return self::on( 'enabled' ) && '' !== self::get( 'partner_token' ) && '' !== self::store_token();
+	}
+
+	/**
+	 * Whether customers see Frenet carriers at checkout: the Frenet shipping method is enabled in some zone.
+	 * When it is not, they pay another method (flat rate, free shipping) and the store decides the carrier.
+	 *
+	 * @return bool
+	 */
+	public static function quotes_at_checkout() {
+		if ( ! class_exists( 'WC_Frenet_Helper' ) ) {
+			return false;
+		}
+		return (bool) ( new WC_Frenet_Helper() )->get_instance_ids();
 	}
 }

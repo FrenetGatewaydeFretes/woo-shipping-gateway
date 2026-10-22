@@ -46,6 +46,7 @@ class WC_Frenet_Labels_Admin {
 			self::SLUG . '-print'    => array( __( 'Printing', 'woo-shipping-gateway' ), __( 'Label printing', 'woo-shipping-gateway' ), 'printing' ),
 			self::SLUG . '-tracking' => array( __( 'Tracking', 'woo-shipping-gateway' ), __( 'Tracking', 'woo-shipping-gateway' ), 'tracking' ),
 			self::SLUG . '-dropoff'  => array( __( 'Drop-off point', 'woo-shipping-gateway' ), __( 'Drop-off point', 'woo-shipping-gateway' ), 'dropoff' ),
+			self::SLUG . '-products' => array( __( 'Products', 'woo-shipping-gateway' ), __( 'Products: weight, size and automatic carrier', 'woo-shipping-gateway' ), 'products' ),
 		);
 	}
 

@@ -49,6 +49,19 @@ class WC_Frenet_Labels_Carriers {
 	/**
 	 * Lower-case needle found in the carrier name (or in an unknown code) => known code.
 	 */
+	/** Display name of each carrier code (what the merchant reads in selects and notes). */
+	const LABELS = array(
+		'COR' => 'Correios',
+		'JAD' => 'Jadlog',
+		'JTE' => 'J&T Express',
+		'LOG' => 'Loggi',
+		'TOT' => 'Total Express',
+		'LAT' => 'LATAM Cargo',
+		'AZU' => 'Azul Cargo',
+		'BUS' => 'Buslog',
+		'SEQ' => 'Sequoia',
+	);
+
 	const NAMES = array(
 		'correios' => 'COR',
 		'jadlog'   => 'JAD',
@@ -197,6 +210,17 @@ class WC_Frenet_Labels_Carriers {
 	 *
 	 * @return array<string, array<string, string>>
 	 */
+	/**
+	 * Display name of a carrier code ("LOG" → "Loggi"); the code itself when unknown.
+	 *
+	 * @param string $code Carrier code.
+	 * @return string
+	 */
+	public static function label( $code ) {
+		$code = strtoupper( (string) $code );
+		return self::LABELS[ $code ] ?? $code;
+	}
+
 	public static function js() {
 		$logos = array();
 		foreach ( array_keys( self::FILES ) as $code ) {

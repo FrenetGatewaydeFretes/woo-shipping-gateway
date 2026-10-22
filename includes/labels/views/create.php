@@ -88,13 +88,18 @@ endif;
 					$frenet_count  += $frenet_item['qty'];
 				}
 				$frenet_nfe   = WC_Frenet_Labels_Nfe::parse( (string) $frenet_order->get_meta( WC_Frenet_Labels_Nfe::META ) );
+				$frenet_asks  = WC_Frenet_Labels_Auto::product_summary( WC_Frenet_Labels_Auto::product_rules( $frenet_order ) );
 				$frenet_issue = WC_Frenet_Labels_Service::issue( $frenet_order );
 				?>
 				<tr<?php echo $frenet_issue ? ' class="is-failed"' : ''; ?> data-frenet-row data-order="<?php echo esc_attr( (string) $frenet_order->get_id() ); ?>">
 					<th scope="row" class="check-column"><input type="checkbox" data-frenet-pick checked aria-label="<?php /* translators: %s: order number */ echo esc_attr( sprintf( __( 'Select order %s', 'woo-shipping-gateway' ), $frenet_order->get_order_number() ) ); ?>"></th>
 					<td><a href="<?php echo esc_url( $frenet_order->get_edit_order_url() ); ?>">#<?php echo esc_html( $frenet_order->get_order_number() ); ?></a><br><span class="frenet-muted"><?php echo esc_html( $frenet_to['name'] ); ?></span></td>
 					<td><?php echo esc_html( trim( $frenet_to['city'] . ' / ' . $frenet_to['state'], ' /' ) ); ?><br><span class="frenet-muted">CEP <?php echo esc_html( $frenet_to['postcode'] ); ?></span></td>
-					<td><?php echo esc_html( wc_format_localized_decimal( (string) round( $frenet_weight, 3 ) ) ); ?> kg<br><span class="frenet-muted"><?php /* translators: %d: items */ echo esc_html( sprintf( _n( '%d item', '%d items', $frenet_count, 'woo-shipping-gateway' ), $frenet_count ) ); ?></span></td>
+					<td><?php echo esc_html( wc_format_localized_decimal( (string) round( $frenet_weight, 3 ) ) ); ?> kg<br><span class="frenet-muted"><?php /* translators: %d: items */ echo esc_html( sprintf( _n( '%d item', '%d items', $frenet_count, 'woo-shipping-gateway' ), $frenet_count ) ); ?></span>
+						<?php
+						if ( '' !== $frenet_asks ) :
+							?>
+							<br><span class="frenet-chip" title="<?php esc_attr_e( 'What the products ask for the automatic shipment', 'woo-shipping-gateway' ); ?>"><?php /* translators: %s: products and what they ask */ echo esc_html( sprintf( __( 'Products ask: %s', 'woo-shipping-gateway' ), $frenet_asks ) ); ?></span><?php endif; ?></td>
 					<td class="frenet-nfe-cell" data-nfe="<?php echo $frenet_nfe['ok'] ? '1' : '0'; ?>">
 						<span data-frenet-nfe-summary><?php echo esc_html( $frenet_nfe['ok'] ? WC_Frenet_Labels_Nfe::summary( $frenet_nfe ) : __( 'optional', 'woo-shipping-gateway' ) ); ?></span>
 						<details>
