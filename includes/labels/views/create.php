@@ -33,7 +33,7 @@ foreach ( $frenet_orders as $frenet_order ) {
 	<div class="notice notice-info inline"><p><strong><?php esc_html_e( 'Automation on:', 'woo-shipping-gateway' ); ?></strong> <?php /* translators: %s: rule */ printf( esc_html__( 'paid orders create their shipment on their own (%s). This screen is for the ones that did not go through or that you want to send by hand.', 'woo-shipping-gateway' ), esc_html( WC_Frenet_Labels_Auto::rule_label() ) ); ?></p></div>
 <?php endif; ?>
 <?php if ( ! WC_Frenet_Labels_Payload::sender_ready() ) : ?>
-	<div class="notice notice-warning inline"><p><?php esc_html_e( 'Fill in the store address in WooCommerce > Settings > General before creating shipments: Frenet requires the sender.', 'woo-shipping-gateway' ); ?></p></div>
+	<div class="notice notice-warning inline"><p><?php esc_html_e( 'Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender before creating shipments: Frenet requires it.', 'woo-shipping-gateway' ); ?></p></div>
 <?php endif; ?>
 
 

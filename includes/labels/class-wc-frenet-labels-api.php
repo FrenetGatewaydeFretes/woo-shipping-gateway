@@ -33,6 +33,11 @@ class WC_Frenet_Labels_Api {
 	public static function whitelabel( $method, $path, $body = null ) {
 		$token   = WC_Frenet_Labels_Settings::store_token();
 		$partner = WC_Frenet_Labels_Settings::get( 'partner_token' );
+		// Reading the wallet is the one WhiteLabel call that needs no partner token: Frenet accepts the store token in both
+		// headers there (validated live 2026-10-27). Creating, listing, paying, cancelling and deposits refuse it.
+		if ( '' === $partner && 'GET' === $method && '/wallet' === $path ) {
+			$partner = $token;
+		}
 		if ( '' === $token || '' === $partner ) {
 			return new WP_Error( 'frenet_labels_tokens', __( 'Frenet labels need the store token and the partner token. Check the Frenet settings.', 'woo-shipping-gateway' ) );
 		}
@@ -165,6 +170,19 @@ class WC_Frenet_Labels_Api {
 	}
 
 	/**
+	 * Which token a Frenet message refuses: 'store', 'partner' or ''. Pure.
+	 *
+	 * @param string $message Raw message.
+	 * @return string
+	 */
+	public static function refused( $message ) {
+		if ( false !== stripos( (string) $message, 'negado para o parceiro' ) ) {
+			return 'partner';
+		}
+		return false !== stripos( (string) $message, 'negado para o cliente' ) ? 'store' : '';
+	}
+
+	/**
 	 * Keeps the human part of a Frenet error and explains the known ones.
 	 *
 	 * @param string $message Raw message.
@@ -244,9 +262,17 @@ class WC_Frenet_Labels_Api {
 					$msg = (string) ( self::field( $details[0], 'message' ) ?? '' );
 				}
 			}
-			$msg = '' !== $msg ? self::clean_error( $msg ) : sprintf( /* translators: %d: HTTP status */ __( 'Frenet answered HTTP %d.', 'woo-shipping-gateway' ), $code );
+			$refused = self::refused( $msg );
+			$msg     = '' !== $msg ? self::clean_error( $msg ) : sprintf( /* translators: %d: HTTP status */ __( 'Frenet answered HTTP %d.', 'woo-shipping-gateway' ), $code );
 			self::log( "Frenet {$method} {$path} HTTP {$code}: " . substr( $raw, 0, 400 ) );
-			return new WP_Error( 'frenet_labels_http_' . $code, $msg, array( 'status' => $code ) );
+			return new WP_Error(
+				'frenet_labels_http_' . $code,
+				$msg,
+				array(
+					'status'  => $code,
+					'refused' => $refused,
+				)
+			);
 		}
 		return is_array( $data ) ? $data : array();
 	}

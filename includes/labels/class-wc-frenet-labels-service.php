@@ -20,6 +20,12 @@ class WC_Frenet_Labels_Service {
 	const POLL_MAX  = 10;
 	const WALLET    = 'woocommerce_frenet_labels_wallet';
 
+	/** Smallest deposit Mercado Pago takes through Frenet: R$ 3 is refused, R$ 4 passes (validated live 2026-10-27). */
+	const DEPOSIT_MIN = 5;
+
+	/** REST route (under /wp-json/) Frenet calls when a wallet deposit changes. */
+	const DEPOSIT_ROUTE = 'frenet/v1/deposit';
+
 
 	const STATUS_CREATED          = 1;
 	const STATUS_PENDING_PAYMENT  = 2;
@@ -224,7 +230,7 @@ class WC_Frenet_Labels_Service {
 			return new WP_Error( 'frenet_labels_exists', __( 'This order already has a Frenet shipment. Cancel it first.', 'woo-shipping-gateway' ) );
 		}
 		if ( ! WC_Frenet_Labels_Payload::sender_ready() ) {
-			return new WP_Error( 'frenet_labels_sender', __( 'Fill in the store address (address, city and postcode) in WooCommerce > Settings > General: Frenet requires the sender. Nothing was charged.', 'woo-shipping-gateway' ) );
+			return new WP_Error( 'frenet_labels_sender', __( 'Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender: Frenet requires it. Nothing was charged.', 'woo-shipping-gateway' ) );
 		}
 		// Re-quote now: Frenet needs the current carrier, price and delivery time.
 		$cmp = self::compare( $order );
@@ -584,6 +590,77 @@ class WC_Frenet_Labels_Service {
 	}
 
 	/**
+	 * Mercado Pago checkout of a wallet deposit (POST /wallet/deposit → PreferenceId).
+	 * Frenet credits the wallet when Mercado Pago confirms; NotificationUrl only tells this store to refresh the balance.
+	 *
+	 * @param float  $value   Amount in BRL.
+	 * @param string $back    Admin URL Mercado Pago returns to (gets deposit=success|failure|pending).
+	 * @param string $notify  URL Frenet calls when the deposit changes.
+	 * @return string|WP_Error Checkout URL.
+	 */
+	public static function deposit( $value, $back, $notify ) {
+		$value = round( (float) $value, 2 );
+		if ( $value < self::DEPOSIT_MIN ) {
+			/* translators: %s: minimum amount, e.g. R$ 5,00 */
+			return new WP_Error( 'frenet_labels_deposit_value', sprintf( __( 'Type an amount of at least %s.', 'woo-shipping-gateway' ), self::money( self::DEPOSIT_MIN ) ) );
+		}
+		// Mercado Pago only returns to https pages ("back_url.success must be defined" otherwise, validated live 2026-10-27).
+		if ( 'https' !== wp_parse_url( (string) $back, PHP_URL_SCHEME ) ) {
+			return new WP_Error( 'frenet_labels_deposit_https', __( 'Mercado Pago only returns to stores with HTTPS, and this admin is on HTTP. Add the balance in the Frenet panel. Nothing was charged.', 'woo-shipping-gateway' ) );
+		}
+		$res = WC_Frenet_Labels_Api::whitelabel(
+			'POST',
+			'/wallet/deposit',
+			array(
+				'Value'           => $value,
+				'NotificationUrl' => $notify,
+				'CallbackUrls'    => array(
+					'SuccessUrl' => add_query_arg( 'deposit', 'success', $back ),
+					'FailureUrl' => add_query_arg( 'deposit', 'failure', $back ),
+					'PendingUrl' => add_query_arg( 'deposit', 'pending', $back ),
+				),
+			)
+		);
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		$preference = (string) ( WC_Frenet_Labels_Api::field( $res, 'preferenceId' ) ?? '' );
+		if ( '' === $preference ) {
+			// A refused token comes back as HTTP 200 with only a "message": say which one (validated live 2026-10-27).
+			$raw = (string) ( WC_Frenet_Labels_Api::field( $res, 'message' ) ?? '' );
+			return new WP_Error( 'frenet_labels_deposit', '' !== WC_Frenet_Labels_Api::refused( $raw ) ? WC_Frenet_Labels_Api::clean_error( $raw ) : __( 'Frenet did not start the payment. Nothing was charged; try again or add balance in the Frenet panel.', 'woo-shipping-gateway' ) );
+		}
+		delete_transient( self::WALLET );
+		$init_point = (string) ( WC_Frenet_Labels_Api::field( $res, 'initPoint' ) ?? '' );
+		return self::allowed_checkout( $init_point ) ? $init_point : self::checkout_url( $preference );
+	}
+
+	/**
+	 * Whether a payment link Frenet returned can be opened: only Mercado Pago over https. Pure.
+	 *
+	 * @param string $url Link.
+	 * @return bool
+	 */
+	public static function allowed_checkout( $url ) {
+		$url = (string) $url;
+		if ( '' === $url ) {
+			return false;
+		}
+		$host = (string) wp_parse_url( $url, PHP_URL_HOST );
+		return 0 === strpos( $url, 'https://' ) && (bool) preg_match( '/(^|\.)mercadopago\.com(\.[a-z]{2})?$/', $host );
+	}
+
+	/**
+	 * Mercado Pago Checkout Pro URL of a preference. Pure.
+	 *
+	 * @param string $preference PreferenceId.
+	 * @return string
+	 */
+	public static function checkout_url( $preference ) {
+		return 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=' . rawurlencode( (string) $preference );
+	}
+
+	/**
 	 * Wallet (GET /wallet), cached five minutes.
 	 *
 	 * @param bool $fresh Skip the cache.
@@ -597,6 +674,13 @@ class WC_Frenet_Labels_Service {
 		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/wallet' );
 		if ( is_wp_error( $res ) ) {
 			return $res;
+		}
+		// A refused token comes back as HTTP 200 with only a "message" (validated live 2026-10-27): not a R$ 0,00 wallet.
+		if ( null === WC_Frenet_Labels_Api::field( $res, 'balance' ) ) {
+			$raw     = (string) ( WC_Frenet_Labels_Api::field( $res, 'message' ) ?? '' );
+			$msg     = WC_Frenet_Labels_Api::clean_error( $raw );
+			$refused = WC_Frenet_Labels_Api::refused( $raw );
+			return new WP_Error( '' !== $refused ? 'frenet_labels_' . $refused . '_token' : 'frenet_labels_wallet', '' !== $msg ? $msg : __( 'Frenet did not return the wallet balance.', 'woo-shipping-gateway' ) );
 		}
 		$wallet = array(
 			'balance' => (float) ( WC_Frenet_Labels_Api::field( $res, 'balance' ) ?? 0 ),
@@ -617,8 +701,9 @@ class WC_Frenet_Labels_Service {
 		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/shipments?page=' . max( 0, (int) $page ) . '&per_page=' . max( 1, (int) $per_page ) );
 		if ( is_wp_error( $res ) ) {
 			// An account without shipments yet answers 404 ("not found") instead of an empty list: that is not an error.
+			// A refused partner token is a 404 too, with "acesso negado para o parceiro" (validated live 2026-10-27).
 			$data = (array) $res->get_error_data();
-			if ( 404 === (int) ( $data['status'] ?? 0 ) ) {
+			if ( 404 === (int) ( $data['status'] ?? 0 ) && '' === ( $data['refused'] ?? '' ) ) {
 				return array(
 					'total'     => 0,
 					'shipments' => array(),

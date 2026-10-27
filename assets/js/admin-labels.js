@@ -159,6 +159,56 @@
 		} );
 	} );
 
+	/* ---------------------------------------------------------------- Primeiros passos: remetente */
+
+	// A new CEP fills street, neighborhood, city and state; number and complement are never touched.
+	var senderForm = document.querySelector( '[data-frenet-setup-sender]' );
+	if ( senderForm ) {
+		var cepInput = senderForm.querySelector( '[data-frenet-sender="postcode"]' );
+		var cepStatus = senderForm.querySelector( '[data-frenet-cep-status]' );
+		var lastCep = ( cepInput.value || '' ).replace( /\D/g, '' );
+		cepInput.addEventListener( 'blur', function () {
+			var cep = cepInput.value.replace( /\D/g, '' );
+			if ( 8 !== cep.length || cep === lastCep ) {
+				return;
+			}
+			lastCep = cep;
+			cepStatus.textContent = t.cepLoading;
+			var body = new FormData();
+			body.append( 'action', 'frenet_labels_setup_cep' );
+			body.append( 'nonce', cfg.nonce );
+			body.append( 'cep', cep );
+			fetch( cfg.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+				.then( function ( r ) {
+					return r.json();
+				} )
+				.then( function ( res ) {
+					if ( ! res.success ) {
+						cepStatus.textContent = ( res.data && res.data.message ) || t.error;
+						return;
+					}
+					var map = { address_1: 'address_1', neighborhood: 'district', city: 'city', state: 'state' };
+					Object.keys( map ).forEach( function ( key ) {
+						var field = senderForm.querySelector( '[data-frenet-sender="' + key + '"]' );
+						if ( field && res.data[ map[ key ] ] ) {
+							field.value = res.data[ map[ key ] ];
+							field.removeAttribute( 'aria-invalid' );
+						}
+					} );
+					cepStatus.textContent = t.cepFilled;
+				} )
+				.catch( function () {
+					cepStatus.textContent = t.error;
+				} );
+		} );
+	}
+
+	// First steps: focus the first field with a problem, so the merchant does not have to look for it.
+	var firstBad = document.querySelector( '.frenet-setup [aria-invalid="true"]' );
+	if ( firstBad ) {
+		firstBad.focus();
+	}
+
 	/* ---------------------------------------------------------------- Configurações: automação */
 
 	var autoOn = document.querySelector( '[data-frenet-auto-on]' );

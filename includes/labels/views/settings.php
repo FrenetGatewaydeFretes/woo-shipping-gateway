@@ -15,7 +15,35 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 <?php if ( $frenet_saved ) : ?>
 	<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved.', 'woo-shipping-gateway' ); ?></p></div>
 <?php endif; ?>
-<?php if ( WC_Frenet_Labels_Settings::ready() ) : ?>
+<?php
+$frenet_left = WC_Frenet_Labels_Setup::remaining();
+if ( $frenet_left ) :
+	?>
+	<div class="frenet-setup-banner">
+		<p>
+			<strong><?php esc_html_e( 'Finish the first steps', 'woo-shipping-gateway' ); ?></strong>
+			<?php
+			$frenet_todo   = array();
+			$frenet_titles = WC_Frenet_Labels_Setup::titles();
+			foreach ( WC_Frenet_Labels_Setup::steps() as $frenet_key ) {
+				if ( ! WC_Frenet_Labels_Setup::done( $frenet_key ) ) {
+					$frenet_todo[] = $frenet_titles[ $frenet_key ][0];
+				}
+			}
+			/* translators: %s: list of steps, e.g. "Connect your account, Confirm the sender" */
+			echo esc_html( sprintf( __( 'Still to do: %s.', 'woo-shipping-gateway' ), implode( ', ', $frenet_todo ) ) );
+			?>
+		</p>
+		<a class="button button-primary" href="<?php echo esc_url( WC_Frenet_Labels_Setup::url() ); ?>"><?php esc_html_e( 'Continue setup', 'woo-shipping-gateway' ); ?></a>
+	</div>
+<?php elseif ( 'basic' === WC_Frenet_Labels_Settings::mode() ) : ?>
+	<div class="frenet-setup-banner">
+		<p>
+			<strong><?php esc_html_e( 'Basic mode: no partner token', 'woo-shipping-gateway' ); ?></strong>
+			<?php esc_html_e( 'Quotes, simulator, tracking, address by CEP and the balance work. Buying labels from the store needs the partner token; until then, buy them in the Frenet panel.', 'woo-shipping-gateway' ); ?>
+		</p>
+		<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'account' ) ); ?>"><?php esc_html_e( 'Add the partner token', 'woo-shipping-gateway' ); ?></a>
+	</div>
 <?php endif; ?>
 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-form">
 	<input type="hidden" name="action" value="frenet_labels_save">
@@ -38,7 +66,7 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 			?>
 		</p>
 
-		<label class="frenet-field" for="frenet-partner"><?php esc_html_e( 'Partner token', 'woo-shipping-gateway' ); ?></label>
+		<label class="frenet-field" for="frenet-partner"><?php esc_html_e( 'Partner token (optional, for labels)', 'woo-shipping-gateway' ); ?></label>
 		<input id="frenet-partner" class="regular-text" type="password" name="frenet_labels[partner_token]" value="" autocomplete="new-password" spellcheck="false"
 			placeholder="<?php echo esc_attr( $frenet_partner ? __( 'Saved. Type a new one to replace it.', 'woo-shipping-gateway' ) : '' ); ?>" aria-describedby="frenet-partner-help">
 		<p id="frenet-partner-help" class="description"><?php esc_html_e( 'Exclusive to Frenet customers with the whitelabel service: each store has its own (x-partner-token). Ask Frenet for it. Required to create, list, pay and cancel labels. Keep it secret like a password.', 'woo-shipping-gateway' ); ?></p>
@@ -66,9 +94,36 @@ $frenet_partner = '' !== $frenet_s['partner_token'];
 			<option value="A4" <?php selected( 'A4', $frenet_s['label_format'] ); ?>>A4</option>
 			<option value="10x15" <?php selected( '10x15', $frenet_s['label_format'] ); ?>>10x15</option>
 		</select>
-		<label class="frenet-field" for="frenet-doc"><?php esc_html_e( 'Sender CPF/CNPJ', 'woo-shipping-gateway' ); ?></label>
-		<input id="frenet-doc" class="regular-text" type="text" inputmode="numeric" name="frenet_labels[sender_document]" value="<?php echo esc_attr( $frenet_s['sender_document'] ); ?>">
-		<p class="description"><?php esc_html_e( 'The sender address comes from WooCommerce > Settings > General.', 'woo-shipping-gateway' ); ?></p>
+	</section>
+
+	<section class="frenet-card" id="frenet-sender-settings">
+		<h2><?php esc_html_e( 'Sender', 'woo-shipping-gateway' ); ?></h2>
+		<p class="description"><?php esc_html_e( 'Filled in from the store settings (WooCommerce > Settings > General and the Frenet shipping method). Change only what is different on the labels; empty a field to use the store value again.', 'woo-shipping-gateway' ); ?></p>
+		<div class="frenet-sender">
+			<?php
+			$frenet_sender = WC_Frenet_Labels_Payload::sender();
+			$frenet_fields = array(
+				'name'         => array( __( 'Name', 'woo-shipping-gateway' ), 'text', 'organization', 'frenet-sender__wide' ),
+				'document'     => array( __( 'CPF/CNPJ', 'woo-shipping-gateway' ), 'numeric', 'off', '' ),
+				'email'        => array( __( 'E-mail', 'woo-shipping-gateway' ), 'email', 'email', '' ),
+				'postcode'     => array( __( 'CEP', 'woo-shipping-gateway' ), 'numeric', 'postal-code', '' ),
+				'address_1'    => array( __( 'Street', 'woo-shipping-gateway' ), 'text', 'address-line1', 'frenet-sender__wide' ),
+				'number'       => array( __( 'Number', 'woo-shipping-gateway' ), 'text', 'off', '' ),
+				'address_2'    => array( __( 'Complement', 'woo-shipping-gateway' ), 'text', 'address-line2', '' ),
+				'neighborhood' => array( __( 'Neighborhood', 'woo-shipping-gateway' ), 'text', 'address-level3', '' ),
+				'city'         => array( __( 'City', 'woo-shipping-gateway' ), 'text', 'address-level2', '' ),
+				'state'        => array( __( 'State (UF)', 'woo-shipping-gateway' ), 'text', 'address-level1', '' ),
+			);
+			foreach ( $frenet_fields as $frenet_key => $frenet_field ) :
+				?>
+				<p class="<?php echo esc_attr( $frenet_field[3] ); ?>">
+					<label class="frenet-field" for="frenet-sender-<?php echo esc_attr( $frenet_key ); ?>"><?php echo esc_html( $frenet_field[0] ); ?></label>
+					<input id="frenet-sender-<?php echo esc_attr( $frenet_key ); ?>" class="widefat" name="frenet_labels[sender_<?php echo esc_attr( $frenet_key ); ?>]"
+						type="<?php echo 'email' === $frenet_field[1] ? 'email' : 'text'; ?>"<?php echo 'numeric' === $frenet_field[1] ? ' inputmode="numeric"' : ''; ?><?php echo 'state' === $frenet_key ? ' maxlength="2"' : ''; ?>
+						autocomplete="<?php echo esc_attr( $frenet_field[2] ); ?>" value="<?php echo esc_attr( $frenet_sender[ $frenet_key ] ); ?>">
+				</p>
+			<?php endforeach; ?>
+		</div>
 	</section>
 
 	<section class="frenet-card">

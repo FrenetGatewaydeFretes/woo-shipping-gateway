@@ -11,24 +11,55 @@ defined( 'ABSPATH' ) || exit;
  */
 class WC_Frenet_Labels_Payload {
 
+	/** Sender fields the merchant can change in Frenet > Settings; empty means "use the store's". */
+	const SENDER_FIELDS = array( 'name', 'postcode', 'address_1', 'number', 'address_2', 'neighborhood', 'city', 'state', 'email', 'document' );
+
 	/**
-	 * Store (sender) data from WooCommerce > Settings > General.
+	 * Sender as the store is configured: WooCommerce > Settings > General, the origin CEP of the Frenet
+	 * shipping method and the admin e-mail. It fills the Sender fields of the settings.
 	 *
 	 * @return array<string, string>
 	 */
-	public static function sender() {
+	public static function store_sender() {
 		$country = explode( ':', (string) get_option( 'woocommerce_default_country', 'BR' ) );
+		list( $street, $number ) = self::street_number( (string) get_option( 'woocommerce_store_address' ), '' );
 		return array(
 			'name'         => (string) get_bloginfo( 'name' ),
-			'address_1'    => (string) get_option( 'woocommerce_store_address' ),
-			'number'       => '',
+			'postcode'     => WC_Frenet_Labels_Settings::origin_cep(),
+			'address_1'    => $street,
+			'number'       => $number,
 			'address_2'    => '',
 			'neighborhood' => (string) get_option( 'woocommerce_store_address_2' ),
 			'city'         => (string) get_option( 'woocommerce_store_city' ),
 			'state'        => isset( $country[1] ) ? (string) $country[1] : '',
-			'postcode'     => (string) get_option( 'woocommerce_store_postcode' ),
-			'document'     => WC_Frenet_Labels_Settings::get( 'sender_document' ),
+			'email'        => (string) get_option( 'admin_email' ),
+			'document'     => '',
 		);
+	}
+
+	/**
+	 * Sender of the labels: each field set in Frenet > Settings, otherwise the store's.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function sender() {
+		return self::merge_sender( self::store_sender(), WC_Frenet_Labels_Settings::sender_overrides() );
+	}
+
+	/**
+	 * Store sender with the non-empty overrides on top. Pure: unit tested.
+	 *
+	 * @param array<string, string> $store     Store sender.
+	 * @param array<string, string> $overrides Values set by the merchant ('' = use the store's).
+	 * @return array<string, string>
+	 */
+	public static function merge_sender( array $store, array $overrides ) {
+		$out = array();
+		foreach ( self::SENDER_FIELDS as $key ) {
+			$own         = trim( (string) ( $overrides[ $key ] ?? '' ) );
+			$out[ $key ] = '' !== $own ? $own : trim( (string) ( $store[ $key ] ?? '' ) );
+		}
+		return $out;
 	}
 
 	/**
@@ -298,7 +329,7 @@ class WC_Frenet_Labels_Payload {
 				'From'                  => array(
 					'Name'     => $sender['name'],
 					'Document' => $sender['document'],
-					'Email'    => (string) get_option( 'admin_email' ),
+					'Email'    => $sender['email'],
 					'Address'  => $address( $sender ),
 				),
 				'To'                    => array(

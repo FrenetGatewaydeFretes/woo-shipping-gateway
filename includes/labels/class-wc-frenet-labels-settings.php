@@ -35,11 +35,24 @@ class WC_Frenet_Labels_Settings {
 			'auto_carrier_fallback' => 'best_price',
 			'journey'               => 'here',
 			'label_format'          => 'A4',
+			'sender_name'           => '',
+			'sender_postcode'       => '',
+			'sender_address_1'      => '',
+			'sender_number'         => '',
+			'sender_address_2'      => '',
+			'sender_neighborhood'   => '',
+			'sender_city'           => '',
+			'sender_state'          => '',
+			'sender_email'          => '',
 			'sender_document'       => '',
 			'autofill'              => 'no',
 			'tracking_sync'         => 'no',
 			'tracking_status'       => 'no',
 			'tracking_email'        => 'yes',
+			// First steps (WC_Frenet_Labels_Setup): each one is "yes" once the merchant confirmed it.
+			'setup_account'         => 'no',
+			'setup_sender'          => 'no',
+			'setup_payment'         => 'no',
 		);
 	}
 
@@ -107,11 +120,62 @@ class WC_Frenet_Labels_Settings {
 		if ( 'yes' !== $out['auto_create_consent'] ) {
 			$out['auto_create'] = 'no';
 		}
-		$out['sender_document'] = preg_replace( '/\D/', '', (string) ( $input['sender_document'] ?? '' ) );
+		$out = array_merge( $out, self::sender_input( $input ) );
 		if ( ! empty( $input['clear_partner_token'] ) ) {
 			$out['partner_token'] = '';
 		}
 		update_option( self::OPTION, $out, false );
+	}
+
+	/**
+	 * Saves some keys and keeps the rest (the first steps save one step at a time).
+	 *
+	 * @param array<string, string> $values Already sanitized values.
+	 * @return void
+	 */
+	public static function update( array $values ) {
+		$out = array_merge( self::all(), array_intersect_key( $values, self::defaults() ) );
+		update_option( self::OPTION, array_map( 'strval', $out ), false );
+	}
+
+	/**
+	 * Sender fields of a form, sanitized, as "sender_<key>" settings.
+	 * A value equal to the store's is saved empty, so it keeps following WooCommerce > Settings > General.
+	 *
+	 * @param array<string, mixed> $input Raw form values.
+	 * @return array<string, string>
+	 */
+	public static function sender_input( array $input ) {
+		$store = WC_Frenet_Labels_Payload::store_sender();
+		$out   = array();
+		foreach ( WC_Frenet_Labels_Payload::SENDER_FIELDS as $key ) {
+			$value = sanitize_text_field( (string) ( $input[ 'sender_' . $key ] ?? '' ) );
+			if ( 'postcode' === $key ) {
+				$value = (string) preg_replace( '/\D/', '', $value );
+			} elseif ( 'document' === $key ) {
+				// Letters stay: the CNPJ is alphanumeric since July 2026.
+				$value = strtoupper( (string) preg_replace( '/[^0-9A-Za-z]/', '', $value ) );
+			} elseif ( 'state' === $key ) {
+				$value = strtoupper( substr( $value, 0, 2 ) );
+			} elseif ( 'email' === $key ) {
+				$value = sanitize_email( $value );
+			}
+			$out[ 'sender_' . $key ] = trim( (string) $store[ $key ] ) === $value ? '' : $value;
+		}
+		return $out;
+	}
+
+	/**
+	 * Sender values set by the merchant, keyed like WC_Frenet_Labels_Payload::SENDER_FIELDS ('' = the store's).
+	 *
+	 * @return array<string, string>
+	 */
+	public static function sender_overrides() {
+		$out = array();
+		foreach ( WC_Frenet_Labels_Payload::SENDER_FIELDS as $key ) {
+			$out[ $key ] = self::get( 'sender_' . $key );
+		}
+		return $out;
 	}
 
 	/**
@@ -163,6 +227,19 @@ class WC_Frenet_Labels_Settings {
 	 */
 	public static function ready() {
 		return self::on( 'enabled' ) && '' !== self::get( 'partner_token' ) && '' !== self::store_token();
+	}
+
+	/**
+	 * How far the account goes: "labels" (both tokens: everything), "basic" (store token only: quotes, simulator,
+	 * tracking, address by CEP and the wallet balance) or "none" (no token yet).
+	 *
+	 * @return string
+	 */
+	public static function mode() {
+		if ( self::ready() ) {
+			return 'labels';
+		}
+		return '' !== self::store_token() ? 'basic' : 'none';
 	}
 
 	/**

@@ -23,6 +23,7 @@ class WC_Frenet_Labels_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
 		add_action( 'admin_post_frenet_labels_save', array( __CLASS__, 'save_settings' ) );
 		add_action( 'admin_post_frenet_labels_print', array( __CLASS__, 'print_pdf' ) );
+		add_action( 'admin_post_frenet_labels_deposit', array( __CLASS__, 'deposit' ) );
 		foreach ( array( 'quote', 'create', 'pay', 'cancel', 'nfe', 'tracking', 'wallet', 'branches', 'default_branch', 'dropoff_default' ) as $action ) {
 			add_action( 'wp_ajax_frenet_labels_' . $action, array( __CLASS__, 'ajax_' . $action ) );
 		}
@@ -47,6 +48,7 @@ class WC_Frenet_Labels_Admin {
 			self::SLUG . '-tracking' => array( __( 'Tracking', 'woo-shipping-gateway' ), __( 'Tracking', 'woo-shipping-gateway' ), 'tracking' ),
 			self::SLUG . '-dropoff'  => array( __( 'Drop-off point', 'woo-shipping-gateway' ), __( 'Drop-off point', 'woo-shipping-gateway' ), 'dropoff' ),
 			self::SLUG . '-products' => array( __( 'Products', 'woo-shipping-gateway' ), __( 'Products: weight, size and automatic carrier', 'woo-shipping-gateway' ), 'products' ),
+			WC_Frenet_Labels_Setup::PAGE => array( __( 'First steps', 'woo-shipping-gateway' ), __( 'First steps', 'woo-shipping-gateway' ), 'setup' ),
 		);
 	}
 
@@ -57,8 +59,16 @@ class WC_Frenet_Labels_Admin {
 	 */
 	public static function menu() {
 		add_menu_page( 'Frenet', 'Frenet', self::CAP, self::SLUG, array( __CLASS__, 'render' ), self::menu_icon(), 56 );
+		$left = WC_Frenet_Labels_Setup::remaining();
 		foreach ( self::pages() as $slug => $page ) {
-			add_submenu_page( self::SLUG, $page[1], $page[0], self::CAP, $slug, array( __CLASS__, 'render' ) );
+			$title  = $page[0];
+			$parent = self::SLUG;
+			if ( WC_Frenet_Labels_Setup::PAGE === $slug ) {
+				// Second in the menu, with the steps left as a badge, until every step is done; then it leaves the menu (the URL keeps working).
+				$parent = $left ? self::SLUG : 'options.php';
+				$title .= $left ? ' <span class="awaiting-mod">' . (int) $left . '</span>' : '';
+			}
+			add_submenu_page( $parent, $page[1], $title, self::CAP, $slug, array( __CLASS__, 'render' ), WC_Frenet_Labels_Setup::PAGE === $slug ? 1 : null );
 		}
 	}
 
@@ -98,13 +108,14 @@ class WC_Frenet_Labels_Admin {
 		echo '<header class="frenet-header">';
 		echo '<span class="frenet-brand"><img src="' . esc_url( $mark ) . '" alt="" width="28" height="28"> <span class="frenet-brand__word">frenet</span></span>';
 		echo '<h1 class="frenet-title">' . esc_html( $page[1] ) . '</h1>';
-		if ( WC_Frenet_Labels_Settings::ready() ) {
+		// The balance needs only the store token; the first steps show it inside their own steps.
+		if ( 'none' !== WC_Frenet_Labels_Settings::mode() && 'setup' !== $page[2] ) {
 			self::view( 'wallet' );
 		}
 		echo '</header>';
 		echo '<hr class="wp-header-end">';
 		// Tracking only needs the store token; the label screens need the partner token too.
-		if ( ! in_array( $page[2], array( 'settings', 'tracking' ), true ) && ! WC_Frenet_Labels_Settings::ready() ) {
+		if ( ! in_array( $page[2], array( 'settings', 'tracking', 'setup' ), true ) && ! WC_Frenet_Labels_Settings::ready() ) {
 			self::view( 'not-ready' );
 			echo '</div>';
 			return;
@@ -173,6 +184,8 @@ class WC_Frenet_Labels_Admin {
 	private static function js_strings() {
 		return array(
 			'calculating'   => __( 'Calculating freight…', 'woo-shipping-gateway' ),
+			'cepLoading'    => __( 'Looking up the CEP…', 'woo-shipping-gateway' ),
+			'cepFilled'     => __( 'Address filled from the CEP. Check it.', 'woo-shipping-gateway' ),
 			'selectOrders'  => __( 'Select at least one order.', 'woo-shipping-gateway' ),
 			'bestPrice'     => __( 'Best price', 'woo-shipping-gateway' ),
 			'bestTime'      => __( 'Fastest', 'woo-shipping-gateway' ),
@@ -238,7 +251,7 @@ class WC_Frenet_Labels_Admin {
 			/* translators: 1: orders that went through, 2: orders with an error */
 			'doneFailed'    => __( 'Done: %1$d went through, %2$d with an error. See the Notes column of the red rows.', 'woo-shipping-gateway' ),
 			'balanceAfter'  => __( 'Balance after', 'woo-shipping-gateway' ),
-			'notEnough'     => __( 'Your balance does not cover this total. Add balance in the Frenet panel or select fewer orders.', 'woo-shipping-gateway' ),
+			'notEnough'     => __( 'Your balance does not cover this total. Add balance at the top of this screen or select fewer orders.', 'woo-shipping-gateway' ),
 			'noBalance'     => __( 'Not enough balance', 'woo-shipping-gateway' ),
 			/* translators: %s: amount */
 			'missing'       => __( 'Missing %s', 'woo-shipping-gateway' ),
@@ -286,19 +299,53 @@ class WC_Frenet_Labels_Admin {
 		exit;
 	}
 
+	/**
+	 * "Adicionar saldo": opens the Mercado Pago checkout of a Frenet wallet deposit.
+	 *
+	 * @return void
+	 */
+	public static function deposit() {
+		if ( ! current_user_can( self::CAP ) || ! check_admin_referer( self::NONCE ) ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'woo-shipping-gateway' ), 403 );
+		}
+		$value = (float) str_replace( ',', '.', preg_replace( '/[^\d,.]/', '', sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) ) );
+		$back  = wp_get_referer() ? wp_get_referer() : self::url( self::SLUG );
+		$back  = remove_query_arg( array( 'deposit', 'saved' ), $back );
+		$url   = WC_Frenet_Labels_Service::deposit( $value, $back, rest_url( WC_Frenet_Labels_Service::DEPOSIT_ROUTE ) );
+		if ( is_wp_error( $url ) ) {
+			wp_die(
+				esc_html( $url->get_error_message() ),
+				esc_html__( 'Add balance', 'woo-shipping-gateway' ),
+				array(
+					'back_link' => true,
+					'response'  => 502,
+				)
+			);
+		}
+		wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Mercado Pago checkout (checked in the service).
+		exit;
+	}
+
 	/* ------------------------------------------------------------------ AJAX */
 
 	/**
 	 * Common guard of every AJAX action.
 	 *
+	 * @param bool $labels Whether the action needs the partner token (false: the store token is enough).
 	 * @return void
 	 */
-	private static function guard() {
+	private static function guard( $labels = true ) {
 		if ( ! current_user_can( self::CAP ) || ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => __( 'Your session expired. Reload the page.', 'woo-shipping-gateway' ) ), 403 );
 		}
+		if ( ! $labels && 'none' !== WC_Frenet_Labels_Settings::mode() ) {
+			return;
+		}
 		if ( ! WC_Frenet_Labels_Settings::ready() ) {
-			wp_send_json_error( array( 'message' => __( 'Frenet labels are not configured. Open Frenet > Settings.', 'woo-shipping-gateway' ) ), 400 );
+			$message = 'basic' === WC_Frenet_Labels_Settings::mode() && '' === WC_Frenet_Labels_Settings::get( 'partner_token' )
+				? __( 'This needs the Frenet partner token. Add it in Frenet > First steps, or buy the label in the Frenet panel. Nothing was charged.', 'woo-shipping-gateway' )
+				: __( 'Frenet labels are not configured. Open Frenet > Settings.', 'woo-shipping-gateway' );
+			wp_send_json_error( array( 'message' => $message ), 400 );
 		}
 	}
 
@@ -424,7 +471,7 @@ class WC_Frenet_Labels_Admin {
 	 * @return void
 	 */
 	public static function ajax_tracking() {
-		self::guard();
+		self::guard( false );
 		$service = sanitize_text_field( wp_unslash( $_POST['service'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
 		$number  = sanitize_text_field( wp_unslash( $_POST['number'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
 		$res     = WC_Frenet_Labels_Api::tracking( $service, $number );
@@ -514,7 +561,7 @@ class WC_Frenet_Labels_Admin {
 	 * @return void
 	 */
 	public static function ajax_wallet() {
-		self::guard();
+		self::guard( false );
 		$w = WC_Frenet_Labels_Service::wallet( true );
 		if ( is_wp_error( $w ) ) {
 			wp_send_json_error( array( 'message' => $w->get_error_message() ) );
@@ -661,6 +708,9 @@ class WC_Frenet_Labels_Admin {
 		}
 		echo '<div class="frenet-box">';
 		self::view( 'order-tracking', array( 'order' => $order ) );
+		// Basic mode: say why there is no "create label" here and where to buy it.
+		echo '<p class="frenet-muted frenet-box__basic">' . esc_html__( 'Creating the label here needs the partner token. Buy it in the Frenet panel and paste the tracking code above.', 'woo-shipping-gateway' )
+			. ' <a href="' . esc_url( self::PANEL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open the Frenet panel', 'woo-shipping-gateway' ) . '</a></p>';
 		echo '</div>';
 	}
 }
