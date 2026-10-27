@@ -191,6 +191,9 @@ class WC_Frenet_Labels_Admin {
 			/* translators: %s: minimum amount, e.g. R$ 5,00 */
 			'refillMin'     => __( 'Type at least %s.', 'woo-shipping-gateway' ),
 			'refillOpening' => __( 'Opening Mercado Pago…', 'woo-shipping-gateway' ),
+			/* translators: %s: maximum amount, e.g. R$ 11.800,00 */
+			'refillMax'     => __( 'Your Frenet wallet takes up to %s more right now.', 'woo-shipping-gateway' ),
+			'refillAfter'   => __( 'Balance after', 'woo-shipping-gateway' ),
 			'selectOrders'  => __( 'Select at least one order.', 'woo-shipping-gateway' ),
 			'bestPrice'     => __( 'Best price', 'woo-shipping-gateway' ),
 			'bestTime'      => __( 'Fastest', 'woo-shipping-gateway' ),

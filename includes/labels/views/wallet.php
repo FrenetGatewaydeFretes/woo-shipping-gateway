@@ -36,11 +36,9 @@ $frenet_min   = WC_Frenet_Labels_Service::money( WC_Frenet_Labels_Service::DEPOS
 		<details class="frenet-refill" data-frenet-refill>
 			<summary class="frenet-header__cta"><?php esc_html_e( 'Add balance', 'woo-shipping-gateway' ); ?></summary>
 			<div class="frenet-refill__panel">
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate data-frenet-refill-form data-min="<?php echo esc_attr( (string) WC_Frenet_Labels_Service::DEPOSIT_MIN ); ?>">
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate data-frenet-refill-form data-min="<?php echo esc_attr( (string) WC_Frenet_Labels_Service::DEPOSIT_MIN ); ?>" data-max="<?php echo esc_attr( (string) ( $frenet_wallet['room'] ?? 0 ) ); ?>">
 					<input type="hidden" name="action" value="frenet_labels_deposit">
 					<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
-					<p class="frenet-refill__title"><?php esc_html_e( 'Add balance', 'woo-shipping-gateway' ); ?></p>
-					<p class="frenet-refill__lead"><?php esc_html_e( 'The amount goes to your Frenet wallet and pays the next labels.', 'woo-shipping-gateway' ); ?></p>
 					<label class="frenet-field" for="frenet-deposit-value"><?php esc_html_e( 'Amount', 'woo-shipping-gateway' ); ?></label>
 					<span class="frenet-refill__money">
 						<span aria-hidden="true">R$</span>
@@ -51,14 +49,15 @@ $frenet_min   = WC_Frenet_Labels_Service::money( WC_Frenet_Labels_Service::DEPOS
 							<button type="button" class="frenet-refill__pick" data-frenet-refill-pick="<?php echo esc_attr( (string) $frenet_pick ); ?>"><?php echo esc_html( WC_Frenet_Labels_Service::money( $frenet_pick ) ); ?></button>
 						<?php endforeach; ?>
 					</span>
+					<span class="frenet-refill__after" data-frenet-refill-after hidden></span>
 					<span id="frenet-deposit-help" class="frenet-refill__help" aria-live="polite" data-frenet-refill-help>
 						<?php
 						/* translators: %s: minimum amount, e.g. R$ 5,00 */
-						echo esc_html( sprintf( __( 'From %s. Pix, card or boleto at Mercado Pago; you come back here when you finish.', 'woo-shipping-gateway' ), $frenet_min ) );
+						echo esc_html( sprintf( __( 'Minimum %s · Pix, card or boleto', 'woo-shipping-gateway' ), $frenet_min ) );
 						?>
 					</span>
 					<?php if ( ! $frenet_https ) : ?>
-						<span class="frenet-refill__warn"><?php esc_html_e( 'This store has no HTTPS, so after paying Mercado Pago takes you to the Frenet panel. Come back here and update the balance.', 'woo-shipping-gateway' ); ?></span>
+						<span class="frenet-refill__warn"><?php esc_html_e( 'Without HTTPS, after paying you land on the Frenet panel.', 'woo-shipping-gateway' ); ?></span>
 					<?php endif; ?>
 					<span class="frenet-refill__actions">
 						<button type="submit" class="button button-primary" data-frenet-refill-submit><?php esc_html_e( 'Continue to Mercado Pago', 'woo-shipping-gateway' ); ?></button>

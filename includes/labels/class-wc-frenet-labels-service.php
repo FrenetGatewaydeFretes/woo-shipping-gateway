@@ -604,6 +604,12 @@ class WC_Frenet_Labels_Service {
 			/* translators: %s: minimum amount, e.g. R$ 5,00 */
 			return new WP_Error( 'frenet_labels_deposit_value', sprintf( __( 'Type an amount of at least %s.', 'woo-shipping-gateway' ), self::money( self::DEPOSIT_MIN ) ) );
 		}
+		// The wallet has a limit: Frenet tells how much more it takes (availableBalanceForDeposit).
+		$wallet = self::wallet();
+		if ( ! is_wp_error( $wallet ) && ( $wallet['room'] ?? 0 ) > 0 && $value > $wallet['room'] ) {
+			/* translators: %s: maximum amount, e.g. R$ 11.800,00 */
+			return new WP_Error( 'frenet_labels_deposit_value', sprintf( __( 'Your Frenet wallet takes up to %s more right now.', 'woo-shipping-gateway' ), self::money( $wallet['room'] ) ) );
+		}
 		// Mercado Pago only returns to https pages ("back_url.success must be defined" otherwise, validated live 2026-10-27):
 		// an admin on http comes back through the Frenet panel, which shows the same wallet.
 		$https = 'https' === wp_parse_url( (string) $back, PHP_URL_SCHEME );
@@ -666,7 +672,7 @@ class WC_Frenet_Labels_Service {
 	 * Wallet (GET /wallet), cached five minutes.
 	 *
 	 * @param bool $fresh Skip the cache.
-	 * @return array{balance: float, labels: int}|WP_Error
+	 * @return array{balance: float, labels: int, room: float}|WP_Error
 	 */
 	public static function wallet( $fresh = false ) {
 		$cached = get_transient( self::WALLET );
@@ -687,6 +693,8 @@ class WC_Frenet_Labels_Service {
 		$wallet = array(
 			'balance' => (float) ( WC_Frenet_Labels_Api::field( $res, 'balance' ) ?? 0 ),
 			'labels'  => (int) ( WC_Frenet_Labels_Api::field( $res, 'labelLimit' ) ?? 0 ),
+			// What the wallet still takes before its limit (walletLimit - balance): the most one deposit can add.
+			'room'    => (float) ( WC_Frenet_Labels_Api::field( $res, 'availableBalanceForDeposit' ) ?? 0 ),
 		);
 		set_transient( self::WALLET, $wallet, 5 * MINUTE_IN_SECONDS );
 		return $wallet;

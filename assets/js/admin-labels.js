@@ -169,6 +169,8 @@
 		var submit = box.querySelector( '[data-frenet-refill-submit]' );
 		var picks = box.querySelectorAll( '[data-frenet-refill-pick]' );
 		var min = parseFloat( form.getAttribute( 'data-min' ) ) || 0;
+		var max = parseFloat( form.getAttribute( 'data-max' ) ) || 0;
+		var after = box.querySelector( '[data-frenet-refill-after]' );
 		var helpText = help.textContent.trim();
 		var submitText = submit ? submit.textContent : '';
 
@@ -176,14 +178,32 @@
 			var v = parseFloat( input.value.replace( /[^\d,.]/g, '' ).replace( /\./g, '' ).replace( ',', '.' ) );
 			return isNaN( v ) ? 0 : v;
 		}
+		function valid( v ) {
+			return v >= min && ( ! max || v <= max );
+		}
 		function sync() {
 			var v = amount();
+			var now = balanceNow();
 			picks.forEach( function ( p ) {
 				p.setAttribute( 'aria-pressed', String( parseFloat( p.getAttribute( 'data-frenet-refill-pick' ) ) === v ) );
 			} );
 			if ( submit ) {
-				submit.textContent = v >= min ? fmt( t.refillPay, money( v ) ) : submitText;
+				submit.textContent = valid( v ) ? fmt( t.refillPay, money( v ) ) : submitText;
 			}
+			// "Saldo depois": what the wallet will show once Mercado Pago confirms.
+			after.hidden = null === now || ! valid( v );
+			if ( ! after.hidden ) {
+				after.innerHTML = '';
+				after.appendChild( el( 'span', '', t.refillAfter ) );
+				after.appendChild( el( 'strong', '', money( now + v ) ) );
+			}
+		}
+		function problem( message ) {
+			input.parentNode.classList.add( 'is-invalid' );
+			input.setAttribute( 'aria-invalid', 'true' );
+			help.classList.add( 'is-error' );
+			help.textContent = message;
+			input.focus();
 		}
 		function close() {
 			box.open = false;
@@ -204,6 +224,11 @@
 				input.focus();
 			} );
 		} );
+		input.addEventListener( 'blur', function () {
+			if ( amount() > 0 ) {
+				input.value = amount().toLocaleString( 'pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 } );
+			}
+		} );
 		input.addEventListener( 'input', function () {
 			input.parentNode.classList.remove( 'is-invalid' );
 			input.removeAttribute( 'aria-invalid' );
@@ -214,11 +239,12 @@
 		form.addEventListener( 'submit', function ( e ) {
 			if ( amount() < min ) {
 				e.preventDefault();
-				input.parentNode.classList.add( 'is-invalid' );
-				input.setAttribute( 'aria-invalid', 'true' );
-				help.classList.add( 'is-error' );
-				help.textContent = fmt( t.refillMin, money( min ) );
-				input.focus();
+				problem( fmt( t.refillMin, money( min ) ) );
+				return;
+			}
+			if ( max && amount() > max ) {
+				e.preventDefault();
+				problem( fmt( t.refillMax, money( max ) ) );
 				return;
 			}
 			if ( submit ) {
@@ -238,6 +264,15 @@
 			}
 		} );
 	} );
+
+	// Back from Mercado Pago: read the balance again (Pix is credited in minutes) and drop the flag, so a reload
+	// does not repeat the notice.
+	if ( /[?&]deposit=(success|pending)\b/.test( window.location.search ) ) {
+		refreshWallet();
+	}
+	if ( /[?&]deposit=/.test( window.location.search ) && window.history.replaceState ) {
+		window.history.replaceState( null, '', window.location.href.replace( /([?&])deposit=[^&#]*&?/, '$1' ).replace( /[?&]$/, '' ) );
+	}
 
 	/* ---------------------------------------------------------------- Primeiros passos: remetente */
 

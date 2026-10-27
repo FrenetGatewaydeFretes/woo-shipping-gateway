@@ -1849,12 +1849,7 @@ msgstr "Valor"
 msgid "Quick amounts"
 msgstr "Valores rápidos"
 
-msgid "The amount goes to your Frenet wallet and pays the next labels."
-msgstr "O valor entra na sua carteira Frenet e paga as próximas etiquetas."
 
-#, php-format
-msgid "From %s. Pix, card or boleto at Mercado Pago; you come back here when you finish."
-msgstr "A partir de %s. Pix, cartão ou boleto no Mercado Pago; você volta para cá ao terminar."
 
 
 msgid "Continue to Mercado Pago"
@@ -1871,5 +1866,14 @@ msgstr "Digite pelo menos %s."
 msgid "Opening Mercado Pago…"
 msgstr "Abrindo o Mercado Pago…"
 
-msgid "This store has no HTTPS, so after paying Mercado Pago takes you to the Frenet panel. Come back here and update the balance."
-msgstr "Esta loja não tem HTTPS, então depois de pagar o Mercado Pago leva você ao painel Frenet. Volte aqui e atualize o saldo."
+
+#, php-format
+msgid "Your Frenet wallet takes up to %s more right now."
+msgstr "Sua carteira Frenet aceita até %s a mais agora."
+
+#, php-format
+msgid "Minimum %s · Pix, card or boleto"
+msgstr "Mínimo %s · Pix, cartão ou boleto"
+
+msgid "Without HTTPS, after paying you land on the Frenet panel."
+msgstr "Sem HTTPS, depois de pagar você vai para o painel Frenet."
