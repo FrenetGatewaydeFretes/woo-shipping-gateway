@@ -321,8 +321,8 @@ msgstr "Não criado"
 msgid "Balance after"
 msgstr "Saldo depois"
 
-msgid "Your balance does not cover this total. Add balance in the Frenet panel or select fewer orders."
-msgstr "Seu saldo não cobre este total. Adicione saldo no painel Frenet ou selecione menos pedidos."
+msgid "Your balance does not cover this total. Add balance at the top of this screen or select fewer orders."
+msgstr "Seu saldo não cobre este total. Adicione saldo no topo desta tela ou selecione menos pedidos."
 
 msgid "Cancel this Frenet label? If it was paid, Frenet returns the amount to the wallet (usually overnight)."
 msgstr "Cancelar esta etiqueta Frenet? Se foi paga, a Frenet devolve o valor à carteira (normalmente durante a madrugada)."
@@ -692,8 +692,6 @@ msgstr "Saldo agora"
 msgid "Back"
 msgstr "Voltar"
 
-msgid "Connect your Frenet account to create labels"
-msgstr "Conecte sua conta Frenet para criar etiquetas"
 
 
 msgid "Open settings"
@@ -1193,14 +1191,11 @@ msgstr "%1$d pedido não tem chave da NF-e e vai com %2$s, que exige: a Frenet v
 msgid "%1$d orders have no NF-e key and go with %2$s, which requires one: Frenet will refuse them. Go back, add the keys or choose another carrier."
 msgstr "%1$d pedidos não têm chave da NF-e e vão com %2$s, que exige: a Frenet vai recusá-los. Volte, adicione as chaves ou escolha outra transportadora."
 
-msgid "Add balance in the Frenet panel"
-msgstr "Adicionar saldo no painel Frenet"
-
 msgid "Update balance"
 msgstr "Atualizar saldo"
 
-msgid "After paying in the panel, update the balance here."
-msgstr "Depois de pagar no painel, atualize o saldo aqui."
+msgid "After paying, update the balance here."
+msgstr "Depois de pagar, atualize o saldo aqui."
 
 msgid "Updating…"
 msgstr "Atualizando…"
@@ -1208,11 +1203,7 @@ msgstr "Atualizando…"
 msgid "Balance updated"
 msgstr "Saldo atualizado"
 
-msgid "Creating labels from the store is exclusive to Frenet customers with the whitelabel service active. Each of them has its own partner token (x-partner-token): turn on Frenet labels and paste it in the settings. The store token comes from the Frenet shipping method."
-msgstr "Gerar etiquetas pela loja é exclusivo para clientes Frenet com o serviço whitelabel ativo. Cada um tem o seu próprio token de parceiro (x-partner-token): ative as etiquetas Frenet e cole o token nas configurações. O token da loja vem do método de envio Frenet."
 
-msgid "Do not have the whitelabel service? Talk to Frenet to activate it. Quotes and tracking keep working without it."
-msgstr "Não tem o serviço whitelabel? Fale com a Frenet para ativá-lo. A cotação e o rastreio continuam funcionando sem ele."
 
 msgid "Exclusive to Frenet customers with the whitelabel service: each store has its own (x-partner-token). Ask Frenet for it. Required to create, list, pay and cancel labels. Keep it secret like a password."
 msgstr "Exclusivo para clientes Frenet com o serviço whitelabel: cada loja tem o seu (x-partner-token). Peça à Frenet. Necessário para criar, listar, pagar e cancelar etiquetas. Guarde-o em segredo, como uma senha."
@@ -1496,3 +1487,376 @@ msgstr[1] "%d produtos"
 
 msgid "Search"
 msgstr "Buscar"
+
+msgid "Add balance"
+msgstr "Adicionar saldo"
+
+
+msgid "Frenet did not start the payment. Nothing was charged; try again or add balance in the Frenet panel."
+msgstr "A Frenet não iniciou o pagamento. Nada foi cobrado; tente de novo ou adicione saldo no painel Frenet."
+
+msgid "Payment sent. The balance shows up as soon as Mercado Pago confirms it (Pix in a few minutes)."
+msgstr "Pagamento enviado. O saldo aparece assim que o Mercado Pago confirmar (Pix em poucos minutos)."
+
+msgid "Payment pending at Mercado Pago. The balance shows up when it is confirmed."
+msgstr "Pagamento pendente no Mercado Pago. O saldo aparece quando for confirmado."
+
+msgid "The payment was not completed. Nothing was added to the wallet."
+msgstr "O pagamento não foi concluído. Nada foi adicionado à carteira."
+
+msgid "Amount to add (R$)"
+msgstr "Valor a adicionar (R$)"
+
+msgid "Sender"
+msgstr "Remetente"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "CPF/CNPJ"
+msgstr "CPF/CNPJ"
+
+msgid "E-mail"
+msgstr "E-mail"
+
+msgid "CEP"
+msgstr "CEP"
+
+msgid "Street"
+msgstr "Rua"
+
+msgid "Number"
+msgstr "Número"
+
+msgid "Complement"
+msgstr "Complemento"
+
+msgid "Neighborhood"
+msgstr "Bairro"
+
+msgid "City"
+msgstr "Cidade"
+
+msgid "State (UF)"
+msgstr "Estado (UF)"
+
+msgid "Filled in from the store settings (WooCommerce > Settings > General and the Frenet shipping method). Change only what is different on the labels; empty a field to use the store value again."
+msgstr "Preenchido com as configurações da loja (WooCommerce > Configurações > Geral e o método de envio Frenet). Altere só o que for diferente nas etiquetas; esvazie um campo para voltar a usar o valor da loja."
+
+msgid "Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender before creating shipments: Frenet requires it."
+msgstr "Preencha o endereço do remetente (rua, cidade e CEP) em Frenet > Configurações > Remetente antes de criar envios: a Frenet exige."
+
+msgid "Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender: Frenet requires it. Nothing was charged."
+msgstr "Preencha o endereço do remetente (rua, cidade e CEP) em Frenet > Configurações > Remetente: a Frenet exige. Nada foi cobrado."
+
+msgid "First steps"
+msgstr "Primeiros passos"
+
+msgid "Address filled from the CEP. Check it."
+msgstr "Endereço preenchido pelo CEP. Confira."
+
+msgid "Type the sender name."
+msgstr "Digite o nome do remetente."
+
+msgid "Type the CPF or CNPJ of the Frenet account."
+msgstr "Digite o CPF ou CNPJ da conta Frenet."
+
+msgid "This CPF/CNPJ is not valid. Check the digits."
+msgstr "Este CPF/CNPJ não é válido. Confira os números."
+
+msgid "Type a valid e-mail."
+msgstr "Digite um e-mail válido."
+
+msgid "Type the street."
+msgstr "Digite a rua."
+
+msgid "Type the number (or S/N)."
+msgstr "Digite o número (ou S/N)."
+
+msgid "Type the neighborhood."
+msgstr "Digite o bairro."
+
+msgid "Type the city."
+msgstr "Digite a cidade."
+
+msgid "Choose the state (UF)."
+msgstr "Escolha o estado (UF)."
+
+msgid "Paste the store token (Frenet panel > Integrations)."
+msgstr "Cole o token da loja (painel Frenet > Integrações)."
+
+
+msgid "Fill in the highlighted fields."
+msgstr "Preencha os campos destacados."
+
+
+
+msgid "Account connected. Wallet balance: %s."
+msgstr "Conta conectada. Saldo da carteira: %s."
+
+msgid "Check the highlighted fields."
+msgstr "Confira os campos destacados."
+
+msgid "Sender confirmed. It goes on every label."
+msgstr "Remetente confirmado. Ele vai em todas as etiquetas."
+
+
+msgid "Continue setup"
+msgstr "Continuar configuração"
+
+
+msgid "Connect your account"
+msgstr "Conecte sua conta"
+
+
+msgid "Confirm the sender"
+msgstr "Confirme o remetente"
+
+msgid "Who sends the parcels"
+msgstr "Quem envia os pacotes"
+
+msgid "Balance and payment"
+msgstr "Saldo e pagamento"
+
+msgid "How labels are paid"
+msgstr "Como as etiquetas são pagas"
+
+msgid "Setup steps"
+msgstr "Passos da configuração"
+
+msgid "Step 1 of 3"
+msgstr "Passo 1 de 3"
+
+msgid "Connect your Frenet account"
+msgstr "Conecte sua conta Frenet"
+
+
+msgid "Store token"
+msgstr "Token da loja"
+
+msgid "Using the token of the Frenet shipping method"
+msgstr "Usando o token do método de envio Frenet"
+
+msgid "Found in the Frenet shipping method: leave it empty to use that one."
+msgstr "Encontrado no método de envio Frenet: deixe vazio para usar esse."
+
+msgid "The same token you use to quote freight. It is in the Frenet panel, in Integrations."
+msgstr "O mesmo token que você usa para cotar o frete. Fica no painel Frenet, em Integrações."
+
+
+msgid "Check and continue"
+msgstr "Conferir e continuar"
+
+
+msgid "Name or company name"
+msgstr "Nome ou razão social"
+
+msgid "Complement (optional)"
+msgstr "Complemento (opcional)"
+
+msgid "Step 2 of 3"
+msgstr "Passo 2 de 3"
+
+msgid "This goes on every label as the sender. We filled it with your store data (WooCommerce > Settings > General); check each field and complete what is missing."
+msgstr "Isto vai em todas as etiquetas como remetente. Preenchemos com os dados da sua loja (WooCommerce > Configurações > Geral); confira cada campo e complete o que faltar."
+
+msgid "WooCommerce has no neighborhood field, so we looked it up by the CEP. Check that it is right."
+msgstr "O WooCommerce não tem campo de bairro, então buscamos pelo CEP. Confira se está certo."
+
+msgid "The one of the Frenet account that pays the labels."
+msgstr "O da conta Frenet que paga as etiquetas."
+
+msgid "Choose…"
+msgstr "Escolha…"
+
+msgid "Confirm sender"
+msgstr "Confirmar remetente"
+
+msgid "Connect your account in step 1 to see the balance."
+msgstr "Conecte sua conta no passo 1 para ver o saldo."
+
+msgid "Step 3 of 3"
+msgstr "Passo 3 de 3"
+
+msgid "Each label is paid with the wallet balance at the moment it is created. Add balance now or later; without balance, labels are not bought."
+msgstr "Cada etiqueta é paga com o saldo da carteira no momento em que é criada. Adicione saldo agora ou depois; sem saldo, as etiquetas não são compradas."
+
+msgid "Go to step 1"
+msgstr "Ir para o passo 1"
+
+msgid "Add balance with Mercado Pago"
+msgstr "Adicionar saldo com Mercado Pago"
+
+
+msgid "On (recommended): the label is paid and ready to print right away. Off: labels are created unpaid and wait in Labels until you pay them."
+msgstr "Ligado (recomendado): a etiqueta é paga e fica pronta para imprimir na hora. Desligado: as etiquetas são criadas sem pagar e esperam em Etiquetas até você pagar."
+
+msgid "Finish setup"
+msgstr "Concluir configuração"
+
+msgid "Almost there"
+msgstr "Quase lá"
+
+msgid "Continue"
+msgstr "Continuar"
+
+msgid "All set"
+msgstr "Tudo pronto"
+
+msgid "The store can buy Frenet labels. This is what was configured:"
+msgstr "A loja já pode comprar etiquetas Frenet. Isto foi o que ficou configurado:"
+
+msgid "Account"
+msgstr "Conta"
+
+msgid "Connected"
+msgstr "Conectada"
+
+msgid "With the wallet, when creating"
+msgstr "Com a carteira, ao criar"
+
+msgid "Later, in Labels"
+msgstr "Depois, em Etiquetas"
+
+msgid "Automatic shipments, tracking e-mails and the address by CEP stay off until you turn them on in Settings."
+msgstr "Envio automático, e-mails de rastreio e endereço pelo CEP ficam desligados até você ligar em Configurações."
+
+msgid "Create my first shipment"
+msgstr "Criar meu primeiro envio"
+
+msgid "Review all settings"
+msgstr "Ver todas as configurações"
+
+
+msgid "%d step is still missing. Labels cannot be bought until it is done."
+msgid_plural "%d steps are still missing. Labels cannot be bought until they are done."
+msgstr[0] "Ainda falta %d passo. Não é possível comprar etiquetas até concluí-lo."
+msgstr[1] "Ainda faltam %d passos. Não é possível comprar etiquetas até concluí-los."
+
+msgid "Frenet did not return the wallet balance."
+msgstr "A Frenet não devolveu o saldo da carteira."
+
+msgid "Frenet did not recognise this token. Copy it again from the Frenet panel > Integrations."
+msgstr "A Frenet não reconheceu este token. Copie de novo no painel Frenet > Integrações."
+
+msgid "Frenet did not accept this partner token. Paste it again or check it with Frenet."
+msgstr "A Frenet não aceitou este token de parceiro. Cole de novo ou confira com a Frenet."
+
+msgid "Frenet did not accept the tokens. Nothing was saved as connected."
+msgstr "A Frenet não aceitou os tokens. A conta não foi marcada como conectada."
+
+msgid "Could not check the account with Frenet: %s Try again in a minute."
+msgstr "Não foi possível conferir a conta com a Frenet: %s Tente de novo em um minuto."
+
+msgid "Still to do: %s."
+msgstr "Falta: %s."
+
+msgid "Account connected in basic mode"
+msgstr "Conta conectada no modo básico"
+
+msgid "Account connected in basic mode. Wallet balance: %s."
+msgstr "Conta conectada no modo básico. Saldo da carteira: %s."
+
+msgid "Add balance in the Frenet panel"
+msgstr "Adicionar saldo no painel Frenet"
+
+msgid "Add the partner token"
+msgstr "Adicionar o token de parceiro"
+
+msgid "Address by CEP"
+msgstr "Endereço pelo CEP"
+
+msgid "At the top of the Frenet screens."
+msgstr "No topo das telas da Frenet."
+
+msgid "Basic mode: no partner token"
+msgstr "Modo básico: sem token de parceiro"
+
+msgid "Buy labels in the Frenet panel"
+msgstr "Comprar etiquetas no painel Frenet"
+
+msgid "Buying labels from the store needs the partner token"
+msgstr "Para comprar etiquetas pela loja, falta o token de parceiro"
+
+msgid "Buying, printing and cancelling labels from the store needs the partner token (Frenet whitelabel service). Until then, buy them in the Frenet panel."
+msgstr "Comprar, imprimir e cancelar etiquetas pela loja exige o token de parceiro (serviço whitelabel da Frenet). Até lá, compre-as no painel Frenet."
+
+msgid "Connect the account"
+msgstr "Conectar a conta"
+
+msgid "Creating the label here needs the partner token. Buy it in the Frenet panel and paste the tracking code above."
+msgstr "Para criar a etiqueta aqui, falta o token de parceiro. Compre-a no painel Frenet e cole o código de rastreio acima."
+
+msgid "Creating, paying, printing and cancelling labels here needs the partner token, exclusive to the Frenet whitelabel service. Until you have it, buy the labels in the Frenet panel and paste the tracking code in the order: the store follows the tracking and tells the customer."
+msgstr "Criar, pagar, imprimir e cancelar etiquetas aqui exige o token de parceiro, exclusivo do serviço whitelabel da Frenet. Enquanto não tiver, compre as etiquetas no painel Frenet e cole o código de rastreio no pedido: a loja acompanha o rastreio e avisa o cliente."
+
+msgid "Exclusive to Frenet customers with the whitelabel service; each store has its own. Without it, leave it empty: everything else works and the labels are bought in the Frenet panel. Keep it secret like a password."
+msgstr "Exclusivo de clientes Frenet com o serviço whitelabel; cada loja tem o seu. Sem ele, deixe em branco: todo o resto funciona e as etiquetas são compradas no painel Frenet. Guarde-o como uma senha."
+
+msgid "Finish the first steps"
+msgstr "Conclua os primeiros passos"
+
+msgid "Freight at checkout"
+msgstr "Frete no checkout"
+
+msgid "Frenet labels are turned off"
+msgstr "As etiquetas Frenet estão desligadas"
+
+msgid "Only with the partner token"
+msgstr "Só com o token de parceiro"
+
+msgid "Open Settings"
+msgstr "Abrir Configurações"
+
+msgid "Partner token (optional, for labels)"
+msgstr "Token de parceiro (opcional, para etiquetas)"
+
+msgid "Paste the tracking code in the order: the store follows it and can e-mail the customer."
+msgstr "Cole o código de rastreio no pedido: a loja acompanha e pode avisar o cliente por e-mail."
+
+msgid "Quotes of the carriers of your Frenet account, and the simulator on the product page."
+msgstr "Cotação das transportadoras da sua conta Frenet e o simulador na página do produto."
+
+msgid "Quotes, simulator, tracking, address by CEP and the balance work. Buying labels from the store needs the partner token; until then, buy them in the Frenet panel."
+msgstr "Cotação, simulador, rastreio, endereço pelo CEP e saldo funcionam. Comprar etiquetas pela loja exige o token de parceiro; até lá, compre-as no painel Frenet."
+
+msgid "Store token, and partner token for labels"
+msgstr "Token da loja e, para etiquetas, o de parceiro"
+
+msgid "Street, neighborhood, city and state filled at checkout."
+msgstr "Rua, bairro, cidade e estado preenchidos no checkout."
+
+msgid "The partner token is saved, but the label screens are off. Turn on \"Enable Frenet labels\" in Settings to create labels from the store."
+msgstr "O token de parceiro está salvo, mas as telas de etiquetas estão desligadas. Ative \"Ativar etiquetas Frenet\" em Configurações para criar etiquetas pela loja."
+
+msgid "Tracking e-mails and the address by CEP stay off until you turn them on in Settings."
+msgstr "Os e-mails de rastreio e o endereço pelo CEP ficam desligados até você ativá-los em Configurações."
+
+msgid "With the store token, the store quotes freight, tracks parcels and fills the address by CEP. With the partner token too (Frenet whitelabel service), it also buys and prints labels."
+msgstr "Com o token da loja, a loja cota o frete, rastreia os envios e preenche o endereço pelo CEP. Com o token de parceiro também (serviço whitelabel da Frenet), ela ainda compra e imprime etiquetas."
+
+msgid "With the store token, the store quotes freight, tracks parcels, fills the address by CEP and shows your wallet balance. To also buy and print labels here, add the partner token. We check both with Frenet before going on."
+msgstr "Com o token da loja, a loja cota o frete, rastreia os envios, preenche o endereço pelo CEP e mostra o saldo da carteira. Para também comprar e imprimir etiquetas aqui, adicione o token de parceiro. Conferimos os dois com a Frenet antes de seguir."
+
+msgid "With the store token, this already works:"
+msgstr "Com o token da loja, isto já funciona:"
+
+msgid "Your Frenet account is connected in basic mode. Already working: freight quotes at checkout, the simulator on the product page, tracking, the address by CEP and the wallet balance."
+msgstr "Sua conta Frenet está conectada no modo básico. Já funcionam: cotação de frete no checkout, simulador na página do produto, rastreio, endereço pelo CEP e saldo da carteira."
+
+msgid "This needs the Frenet partner token. Add it in Frenet > First steps, or buy the label in the Frenet panel. Nothing was charged."
+msgstr "Isto exige o token de parceiro da Frenet. Adicione-o em Frenet > Primeiros passos ou compre a etiqueta no painel Frenet. Nada foi cobrado."
+
+msgid "Frenet did not accept this partner token, so it was not saved. The store token works: quotes, tracking and the balance keep working."
+msgstr "A Frenet não aceitou este token de parceiro, então ele não foi salvo. O token da loja funciona: cotação, rastreio e saldo continuam funcionando."
+
+#, php-format
+msgid "Type an amount of at least %s."
+msgstr "Digite um valor de pelo menos %s."
+
+msgid "Mercado Pago only returns to stores with HTTPS, and this admin is on HTTP. Add the balance in the Frenet panel. Nothing was charged."
+msgstr "O Mercado Pago só volta para lojas com HTTPS, e este painel está em HTTP. Adicione o saldo no painel Frenet. Nada foi cobrado."
+
+#, php-format
+msgid "Pix or card, from %s. You come back here when you finish paying."
+msgstr "Pix ou cartão, a partir de %s. Você volta para cá quando terminar de pagar."
