@@ -2,10 +2,11 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * First steps (Frenet > Primeiros passos): connect the account, confirm the sender, choose how labels are paid.
+ * First steps (Frenet > Primeiros passos): connect the account and confirm the sender. Adding balance lives in
+ * the wallet of the brand strip, on every screen, and how labels are paid stays in Settings.
  * Each step is saved on its own and marked done only after it is checked (tokens against the live wallet,
  * sender against what Frenet requires), so the merchant never reaches "Criar envio" with a setup that fails.
- * Without a partner token only the first step applies (basic mode): the sender and the payment are for labels.
+ * Without a partner token only the first step applies (basic mode): the sender is for labels.
  * Stores that were configured before this screen existed keep working: nothing here blocks the label screens.
  */
 class WC_Frenet_Labels_Setup {
@@ -13,7 +14,7 @@ class WC_Frenet_Labels_Setup {
 	const PAGE   = 'frenet-setup';
 	const ACTION = 'frenet_labels_setup';
 	const FLASH  = 'frenet_labels_setup_flash_';
-	const STEPS  = array( 'account', 'sender', 'payment' );
+	const STEPS  = array( 'account', 'sender' );
 
 	/** Brazilian states, for the sender UF. */
 	const UFS = array( 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO' );
@@ -44,8 +45,6 @@ class WC_Frenet_Labels_Setup {
 				return WC_Frenet_Labels_Settings::on( 'setup_account' ) && 'none' !== WC_Frenet_Labels_Settings::mode();
 			case 'sender':
 				return WC_Frenet_Labels_Settings::on( 'setup_sender' ) && ! self::sender_errors( WC_Frenet_Labels_Payload::sender() );
-			case 'payment':
-				return WC_Frenet_Labels_Settings::on( 'setup_payment' );
 		}
 		return false;
 	}
@@ -82,7 +81,6 @@ class WC_Frenet_Labels_Setup {
 		return array(
 			'account' => array( __( 'Connect your account', 'woo-shipping-gateway' ), __( 'Store token, and partner token for labels', 'woo-shipping-gateway' ) ),
 			'sender'  => array( __( 'Confirm the sender', 'woo-shipping-gateway' ), __( 'Who sends the parcels', 'woo-shipping-gateway' ) ),
-			'payment' => array( __( 'Balance and payment', 'woo-shipping-gateway' ), __( 'How labels are paid', 'woo-shipping-gateway' ) ),
 		);
 	}
 
@@ -288,15 +286,6 @@ class WC_Frenet_Labels_Setup {
 				break;
 			case 'sender':
 				$next = self::save_sender( $input );
-				break;
-			case 'payment':
-				WC_Frenet_Labels_Settings::update(
-					array(
-						'wallet_payment' => ! empty( $input['wallet_payment'] ) ? 'yes' : 'no',
-						'setup_payment'  => 'yes',
-					)
-				);
-				$next = self::complete() ? 'done' : self::current_after( 'payment' );
 				break;
 			default:
 				$next = '';

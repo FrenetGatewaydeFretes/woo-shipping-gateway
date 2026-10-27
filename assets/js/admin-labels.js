@@ -159,6 +159,86 @@
 		} );
 	} );
 
+	/* ---------------------------------------------------------------- Adicionar saldo */
+
+	// "Adicionar saldo" opens the amount; the button then goes to Mercado Pago with it. Escape or a click outside closes.
+	document.querySelectorAll( '[data-frenet-refill]' ).forEach( function ( box ) {
+		var form = box.querySelector( '[data-frenet-refill-form]' );
+		var input = box.querySelector( '[data-frenet-refill-value]' );
+		var help = box.querySelector( '[data-frenet-refill-help]' );
+		var submit = box.querySelector( '[data-frenet-refill-submit]' );
+		var picks = box.querySelectorAll( '[data-frenet-refill-pick]' );
+		var min = parseFloat( form.getAttribute( 'data-min' ) ) || 0;
+		var helpText = help.textContent.trim();
+		var submitText = submit ? submit.textContent : '';
+
+		function amount() {
+			var v = parseFloat( input.value.replace( /[^\d,.]/g, '' ).replace( /\./g, '' ).replace( ',', '.' ) );
+			return isNaN( v ) ? 0 : v;
+		}
+		function sync() {
+			var v = amount();
+			picks.forEach( function ( p ) {
+				p.setAttribute( 'aria-pressed', String( parseFloat( p.getAttribute( 'data-frenet-refill-pick' ) ) === v ) );
+			} );
+			if ( submit ) {
+				submit.textContent = v >= min ? fmt( t.refillPay, money( v ) ) : submitText;
+			}
+		}
+		function close() {
+			box.open = false;
+			box.querySelector( 'summary' ).focus();
+		}
+
+		box.addEventListener( 'toggle', function () {
+			if ( box.open ) {
+				sync();
+				input.focus();
+				input.select();
+			}
+		} );
+		picks.forEach( function ( p ) {
+			p.addEventListener( 'click', function () {
+				input.value = Number( p.getAttribute( 'data-frenet-refill-pick' ) ).toLocaleString( 'pt-BR', { minimumFractionDigits: 2 } );
+				sync();
+				input.focus();
+			} );
+		} );
+		input.addEventListener( 'input', function () {
+			input.parentNode.classList.remove( 'is-invalid' );
+			input.removeAttribute( 'aria-invalid' );
+			help.classList.remove( 'is-error' );
+			help.textContent = helpText;
+			sync();
+		} );
+		form.addEventListener( 'submit', function ( e ) {
+			if ( amount() < min ) {
+				e.preventDefault();
+				input.parentNode.classList.add( 'is-invalid' );
+				input.setAttribute( 'aria-invalid', 'true' );
+				help.classList.add( 'is-error' );
+				help.textContent = fmt( t.refillMin, money( min ) );
+				input.focus();
+				return;
+			}
+			if ( submit ) {
+				submit.disabled = true;
+				submit.textContent = t.refillOpening;
+			}
+		} );
+		box.querySelector( '[data-frenet-refill-close]' ).addEventListener( 'click', close );
+		box.addEventListener( 'keydown', function ( e ) {
+			if ( 'Escape' === e.key && box.open ) {
+				close();
+			}
+		} );
+		document.addEventListener( 'click', function ( e ) {
+			if ( box.open && ! box.contains( e.target ) ) {
+				box.open = false;
+			}
+		} );
+	} );
+
 	/* ---------------------------------------------------------------- Primeiros passos: remetente */
 
 	// A new CEP fills street, neighborhood, city and state; number and complement are never touched.

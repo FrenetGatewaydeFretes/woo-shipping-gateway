@@ -52,7 +52,6 @@ class WC_Frenet_Labels_Settings {
 			// First steps (WC_Frenet_Labels_Setup): each one is "yes" once the merchant confirmed it.
 			'setup_account'         => 'no',
 			'setup_sender'          => 'no',
-			'setup_payment'         => 'no',
 		);
 	}
 

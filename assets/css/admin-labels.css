@@ -92,9 +92,34 @@
 .frenet-header__cta:hover,
 .frenet-header__cta:focus { background: var(--fl-violet-soft); color: var(--fl-navy); }
 .frenet-header__cta:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.frenet-header__deposit { display: flex; align-items: center; gap: 6px; margin: 0; }
-.frenet-header__deposit input { width: 6.5em; min-height: 34px; margin: 0; border: 0; border-radius: 8px; text-align: right; font-variant-numeric: tabular-nums; }
-.frenet-header__deposit input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+/* "Adicionar saldo": a button that opens a small white panel under it (amount, quick picks, Mercado Pago). */
+.frenet-header__wallet { position: relative; }
+.frenet-refill { position: relative; }
+.frenet-refill > summary { list-style: none; }
+.frenet-refill > summary::-webkit-details-marker { display: none; }
+.frenet-refill > summary::after { content: ""; width: 6px; height: 6px; margin: -3px 0 0 8px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); transition: transform .15s ease; }
+.frenet-refill[open] > summary::after { margin-top: 3px; transform: rotate(-135deg); }
+.frenet-refill__panel { position: absolute; z-index: 30; top: calc(100% + 10px); right: 0; width: 320px; max-width: calc(100vw - 32px); padding: 18px; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; box-shadow: 0 12px 32px rgba(12, 0, 90, .18); color: var(--fl-ink); }
+.frenet-refill__panel form { margin: 0; }
+.frenet-refill__title { margin: 0 0 2px; color: var(--fl-navy); font-family: var(--fl-display); font-size: 16px; font-weight: 700; }
+.frenet-refill__lead { margin: 0 0 12px; color: var(--fl-muted); font-size: 13px; line-height: 1.5; }
+.frenet-refill__money { display: flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid #c9cdd6; border-radius: 8px; background: #fff; }
+.frenet-refill__money:focus-within { border-color: var(--fl-violet); box-shadow: 0 0 0 1px var(--fl-violet); }
+.frenet-refill__money > span { color: var(--fl-muted); font-weight: 500; }
+.frenet-labels .frenet-refill__money input { flex: 1; min-width: 0; min-height: 44px; margin: 0; padding: 0; border: 0; box-shadow: none; background: transparent; color: var(--fl-navy); font-family: var(--fl-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; outline: none; }
+.frenet-labels .frenet-refill__money input:focus { border: 0; box-shadow: none; outline: none; }
+.frenet-refill__money.is-invalid { border-color: var(--fl-bad); box-shadow: 0 0 0 1px var(--fl-bad); }
+.frenet-refill__picks { display: flex; gap: 6px; margin: 10px 0 8px; }
+.frenet-refill__pick { flex: 1; min-height: 32px; border: 1px solid var(--fl-lavender); border-radius: 999px; background: var(--fl-violet-tint); color: var(--fl-navy); font: inherit; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; cursor: pointer; }
+.frenet-refill__pick:hover,
+.frenet-refill__pick[aria-pressed="true"] { border-color: var(--fl-violet); background: var(--fl-violet); color: #fff; }
+.frenet-refill__pick:focus-visible { outline: 2px solid var(--fl-violet); outline-offset: 2px; }
+.frenet-refill__help { display: block; color: var(--fl-muted); font-size: 12px; line-height: 1.5; }
+.frenet-refill__help.is-error { color: var(--fl-bad); font-weight: 500; }
+.frenet-refill__warn { display: block; margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: var(--fl-wait-bg); color: var(--fl-wait); font-size: 12px; line-height: 1.5; }
+.frenet-refill__actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+.frenet-labels .frenet-refill__actions .button-primary { flex: 1; justify-content: center; min-height: 40px; text-align: center; }
+.frenet-refill__actions .button-link { color: var(--fl-muted); }
 .frenet-header__link { margin: 0; padding: 0; border: 0; background: none; color: #f9f5ff; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .frenet-header__link:hover,
 .frenet-header__link:focus-visible { color: #fff; outline: none; text-decoration-thickness: 2px; }
@@ -390,6 +415,7 @@
 	.frenet-header { flex-wrap: wrap; }
 	.frenet-brand { border-right: 0; }
 	.frenet-header__wallet { flex-basis: 100%; margin-left: 0; }
+	.frenet-refill__panel { right: auto; left: 0; }
 	.frenet-bar { border-radius: 0; margin-left: -10px; margin-right: -10px; }
 	.frenet-bar__actions { margin-left: 0; }
 }
@@ -465,14 +491,6 @@
 .frenet-setup__form .frenet-actions { margin-top: 24px; }
 .frenet-setup .frenet-field-msg.is-error { color: var(--fl-bad); font-weight: 500; }
 .frenet-setup [aria-invalid="true"] { border-color: var(--fl-bad); box-shadow: 0 0 0 1px var(--fl-bad); }
-.frenet-setup__wallet { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; margin: 0 0 20px; padding: 18px 20px; border-radius: 12px; background: var(--fl-page); box-shadow: inset 0 0 0 1px var(--fl-line); }
-.frenet-setup__wallet > div { display: flex; flex-direction: column; gap: 4px; }
-.frenet-setup__wallet .frenet-note { flex-basis: 100%; margin: 0; }
-.frenet-setup__balance { color: var(--fl-navy); font-family: var(--fl-display); font-size: 28px; font-variant-numeric: tabular-nums; line-height: 1.1; }
-.frenet-setup__wallet .button-link { align-self: flex-start; }
-.frenet-setup__deposit .frenet-field { margin-top: 0; }
-.frenet-setup__deposit-row { display: flex; gap: 8px; }
-.frenet-setup__deposit-row input { width: 7.5em; text-align: right; font-variant-numeric: tabular-nums; }
 .frenet-setup__summary { margin: 16px 0; padding: 0; list-style: none; }
 .frenet-setup__summary li { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin: 0; padding: 12px 0; border-bottom: 1px solid var(--fl-line); }
 .frenet-setup__summary strong { flex: 0 0 90px; color: var(--fl-navy); }
@@ -482,10 +500,9 @@
 .frenet-setup-banner strong { display: block; }
 @media (max-width: 960px) {
 	.frenet-setup { grid-template-columns: minmax(0, 1fr); }
-	.frenet-steps { position: static; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+	.frenet-steps { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
 	.frenet-steps__text span { display: none; }
 }
 @media (max-width: 600px) {
 	.frenet-steps__text strong { font-size: 12px; }
-	.frenet-setup__deposit-row { flex-wrap: wrap; }
 }

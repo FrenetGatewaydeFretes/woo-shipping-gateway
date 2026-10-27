@@ -108,8 +108,8 @@ class WC_Frenet_Labels_Admin {
 		echo '<header class="frenet-header">';
 		echo '<span class="frenet-brand"><img src="' . esc_url( $mark ) . '" alt="" width="28" height="28"> <span class="frenet-brand__word">frenet</span></span>';
 		echo '<h1 class="frenet-title">' . esc_html( $page[1] ) . '</h1>';
-		// The balance needs only the store token; the first steps show it inside their own steps.
-		if ( 'none' !== WC_Frenet_Labels_Settings::mode() && 'setup' !== $page[2] ) {
+		// The balance needs only the store token, so it shows on every screen once a token is there.
+		if ( 'none' !== WC_Frenet_Labels_Settings::mode() ) {
 			self::view( 'wallet' );
 		}
 		echo '</header>';
@@ -186,6 +186,11 @@ class WC_Frenet_Labels_Admin {
 			'calculating'   => __( 'Calculating freight…', 'woo-shipping-gateway' ),
 			'cepLoading'    => __( 'Looking up the CEP…', 'woo-shipping-gateway' ),
 			'cepFilled'     => __( 'Address filled from the CEP. Check it.', 'woo-shipping-gateway' ),
+			/* translators: %s: amount, e.g. R$ 50,00 */
+			'refillPay'     => __( 'Pay %s at Mercado Pago', 'woo-shipping-gateway' ),
+			/* translators: %s: minimum amount, e.g. R$ 5,00 */
+			'refillMin'     => __( 'Type at least %s.', 'woo-shipping-gateway' ),
+			'refillOpening' => __( 'Opening Mercado Pago…', 'woo-shipping-gateway' ),
 			'selectOrders'  => __( 'Select at least one order.', 'woo-shipping-gateway' ),
 			'bestPrice'     => __( 'Best price', 'woo-shipping-gateway' ),
 			'bestTime'      => __( 'Fastest', 'woo-shipping-gateway' ),

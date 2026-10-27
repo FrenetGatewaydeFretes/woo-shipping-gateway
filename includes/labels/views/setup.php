@@ -1,6 +1,6 @@
 <?php
 /**
- * First steps: a stepper (account, sender, payment) and one step at a time.
+ * First steps: a stepper (account, sender) and one step at a time.
  *
  * @package woo-shipping-gateway
  */
@@ -39,7 +39,6 @@ $frenet_invalid = static function ( array $errors, $key ) {
 	return isset( $errors[ $key ] ) ? ' aria-invalid="true" aria-describedby="frenet-err-' . esc_attr( $key ) . '"' : '';
 };
 
-WC_Frenet_Labels_Admin::view( 'deposit-notice' );
 ?>
 <?php if ( '' !== $frenet_flash['message'] ) : ?>
 	<div class="notice notice-<?php echo 'error' === $frenet_flash['type'] ? 'error' : 'success'; ?> is-dismissible" <?php echo 'error' === $frenet_flash['type'] ? 'role="alert"' : 'role="status"'; ?>><p><?php echo esc_html( $frenet_flash['message'] ); ?></p></div>
@@ -78,7 +77,7 @@ WC_Frenet_Labels_Admin::view( 'deposit-notice' );
 		$frenet_token_value  = $frenet_typed['token'] ?? $frenet_s['token'];
 		$frenet_has_partner  = '' !== $frenet_s['partner_token'];
 		?>
-		<p class="frenet-setup__kicker"><?php esc_html_e( 'Step 1 of 3', 'woo-shipping-gateway' ); ?></p>
+		<p class="frenet-setup__kicker"><?php esc_html_e( 'Step 1 of 2', 'woo-shipping-gateway' ); ?></p>
 		<h2><?php esc_html_e( 'Connect your Frenet account', 'woo-shipping-gateway' ); ?></h2>
 		<p class="frenet-lead"><?php esc_html_e( 'With the store token, the store quotes freight, tracks parcels, fills the address by CEP and shows your wallet balance. To also buy and print labels here, add the partner token. We check both with Frenet before going on.', 'woo-shipping-gateway' ); ?></p>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-setup__form" novalidate>
@@ -128,7 +127,7 @@ WC_Frenet_Labels_Admin::view( 'deposit-notice' );
 			'city'         => array( __( 'City', 'woo-shipping-gateway' ), 'text', 'address-level2', '' ),
 		);
 		?>
-		<p class="frenet-setup__kicker"><?php esc_html_e( 'Step 2 of 3', 'woo-shipping-gateway' ); ?></p>
+		<p class="frenet-setup__kicker"><?php esc_html_e( 'Step 2 of 2', 'woo-shipping-gateway' ); ?></p>
 		<h2><?php esc_html_e( 'Confirm the sender', 'woo-shipping-gateway' ); ?></h2>
 		<p class="frenet-lead"><?php esc_html_e( 'This goes on every label as the sender. We filled it with your store data (WooCommerce > Settings > General); check each field and complete what is missing.', 'woo-shipping-gateway' ); ?></p>
 		<?php if ( $frenet_draft['from_cep'] && ! $frenet_typed ) : ?>
@@ -171,51 +170,6 @@ WC_Frenet_Labels_Admin::view( 'deposit-notice' );
 			</div>
 		</form>
 
-	<?php elseif ( 'payment' === $frenet_current ) : ?>
-		<?php $frenet_wallet = WC_Frenet_Labels_Settings::ready() ? WC_Frenet_Labels_Service::wallet() : new WP_Error( 'frenet_setup_account', __( 'Connect your account in step 1 to see the balance.', 'woo-shipping-gateway' ) ); ?>
-		<p class="frenet-setup__kicker"><?php esc_html_e( 'Step 3 of 3', 'woo-shipping-gateway' ); ?></p>
-		<h2><?php esc_html_e( 'Balance and payment', 'woo-shipping-gateway' ); ?></h2>
-		<p class="frenet-lead"><?php esc_html_e( 'Each label is paid with the wallet balance at the moment it is created. Add balance now or later; without balance, labels are not bought.', 'woo-shipping-gateway' ); ?></p>
-
-		<div class="frenet-setup__wallet" data-frenet-wallet>
-			<?php if ( is_wp_error( $frenet_wallet ) ) : ?>
-				<div class="frenet-note frenet-note--warn"><?php echo esc_html( $frenet_wallet->get_error_message() ); ?> <a href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'account' ) ); ?>"><?php esc_html_e( 'Go to step 1', 'woo-shipping-gateway' ); ?></a></div>
-			<?php else : ?>
-				<div>
-					<span class="frenet-muted"><?php esc_html_e( 'Wallet balance', 'woo-shipping-gateway' ); ?></span>
-					<strong class="frenet-setup__balance" data-balance="<?php echo esc_attr( (string) $frenet_wallet['balance'] ); ?>"><?php echo esc_html( WC_Frenet_Labels_Service::money( $frenet_wallet['balance'] ) ); ?></strong>
-					<button type="button" class="button-link" data-frenet-wallet-refresh><?php esc_html_e( 'Update balance', 'woo-shipping-gateway' ); ?></button>
-				</div>
-				<form class="frenet-setup__deposit" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-					<input type="hidden" name="action" value="frenet_labels_deposit">
-					<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
-					<label class="frenet-field" for="frenet-setup-deposit"><?php esc_html_e( 'Amount to add (R$)', 'woo-shipping-gateway' ); ?></label>
-					<span class="frenet-setup__deposit-row">
-						<input id="frenet-setup-deposit" type="text" inputmode="decimal" name="value" value="50,00" required>
-						<button type="submit" class="button"><?php esc_html_e( 'Add balance with Mercado Pago', 'woo-shipping-gateway' ); ?></button>
-					</span>
-					<span class="frenet-field-msg frenet-muted">
-						<?php
-						/* translators: %s: minimum amount, e.g. R$ 5,00 */
-						echo esc_html( sprintf( __( 'Pix or card, from %s. You come back here when you finish paying.', 'woo-shipping-gateway' ), WC_Frenet_Labels_Service::money( WC_Frenet_Labels_Service::DEPOSIT_MIN ) ) );
-						?>
-					</span>
-				</form>
-			<?php endif; ?>
-		</div>
-
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-setup__form">
-			<input type="hidden" name="action" value="<?php echo esc_attr( WC_Frenet_Labels_Setup::ACTION ); ?>">
-			<input type="hidden" name="step" value="payment">
-			<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
-			<label class="frenet-switch"><input type="checkbox" name="frenet_labels[wallet_payment]" value="1" <?php checked( 'yes', $frenet_s['wallet_payment'] ); ?>> <span><?php esc_html_e( 'Pay with the wallet when creating', 'woo-shipping-gateway' ); ?></span></label>
-			<p class="description"><?php esc_html_e( 'On (recommended): the label is paid and ready to print right away. Off: labels are created unpaid and wait in Labels until you pay them.', 'woo-shipping-gateway' ); ?></p>
-			<div class="frenet-actions">
-				<button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Finish setup', 'woo-shipping-gateway' ); ?></button>
-				<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'sender' ) ); ?>"><?php esc_html_e( 'Back', 'woo-shipping-gateway' ); ?></a>
-			</div>
-		</form>
-
 	<?php else : ?>
 		<?php
 		$frenet_sender = WC_Frenet_Labels_Payload::sender();
@@ -252,7 +206,8 @@ WC_Frenet_Labels_Admin::view( 'deposit-notice' );
 			<ul class="frenet-setup__summary">
 				<li><strong><?php esc_html_e( 'Account', 'woo-shipping-gateway' ); ?></strong> <?php esc_html_e( 'Connected', 'woo-shipping-gateway' ); ?> <a href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'account' ) ); ?>"><?php esc_html_e( 'Change', 'woo-shipping-gateway' ); ?></a></li>
 				<li><strong><?php esc_html_e( 'Sender', 'woo-shipping-gateway' ); ?></strong> <?php echo esc_html( $frenet_sender['name'] . ' · ' . $frenet_sender['address_1'] . ', ' . $frenet_sender['number'] . ' · ' . $frenet_sender['city'] . '/' . $frenet_sender['state'] ); ?> <a href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'sender' ) ); ?>"><?php esc_html_e( 'Change', 'woo-shipping-gateway' ); ?></a></li>
-				<li><strong><?php esc_html_e( 'Payment', 'woo-shipping-gateway' ); ?></strong> <?php echo esc_html( WC_Frenet_Labels_Settings::on( 'wallet_payment' ) ? __( 'With the wallet, when creating', 'woo-shipping-gateway' ) : __( 'Later, in Labels', 'woo-shipping-gateway' ) ); ?> <a href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'payment' ) ); ?>"><?php esc_html_e( 'Change', 'woo-shipping-gateway' ); ?></a></li>
+				<li><strong><?php esc_html_e( 'Payment', 'woo-shipping-gateway' ); ?></strong> <?php echo esc_html( WC_Frenet_Labels_Settings::on( 'wallet_payment' ) ? __( 'With the wallet, when creating', 'woo-shipping-gateway' ) : __( 'Later, in Labels', 'woo-shipping-gateway' ) ); ?> <a href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG, array( 'full' => 1 ) ) ); ?>"><?php esc_html_e( 'Change', 'woo-shipping-gateway' ); ?></a></li>
+				<li><strong><?php esc_html_e( 'Balance', 'woo-shipping-gateway' ); ?></strong> <?php esc_html_e( 'Labels are paid with the wallet. Add balance with "Add balance", at the top.', 'woo-shipping-gateway' ); ?></li>
 			</ul>
 			<p class="description"><?php esc_html_e( 'Automatic shipments, tracking e-mails and the address by CEP stay off until you turn them on in Settings.', 'woo-shipping-gateway' ); ?></p>
 			<div class="frenet-actions">

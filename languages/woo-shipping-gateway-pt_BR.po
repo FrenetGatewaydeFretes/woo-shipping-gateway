@@ -1504,8 +1504,6 @@ msgstr "Pagamento pendente no Mercado Pago. O saldo aparece quando for confirmad
 msgid "The payment was not completed. Nothing was added to the wallet."
 msgstr "O pagamento não foi concluído. Nada foi adicionado à carteira."
 
-msgid "Amount to add (R$)"
-msgstr "Valor a adicionar (R$)"
 
 msgid "Sender"
 msgstr "Remetente"
@@ -1615,17 +1613,11 @@ msgstr "Confirme o remetente"
 msgid "Who sends the parcels"
 msgstr "Quem envia os pacotes"
 
-msgid "Balance and payment"
-msgstr "Saldo e pagamento"
 
-msgid "How labels are paid"
-msgstr "Como as etiquetas são pagas"
 
 msgid "Setup steps"
 msgstr "Passos da configuração"
 
-msgid "Step 1 of 3"
-msgstr "Passo 1 de 3"
 
 msgid "Connect your Frenet account"
 msgstr "Conecte sua conta Frenet"
@@ -1654,8 +1646,6 @@ msgstr "Nome ou razão social"
 msgid "Complement (optional)"
 msgstr "Complemento (opcional)"
 
-msgid "Step 2 of 3"
-msgstr "Passo 2 de 3"
 
 msgid "This goes on every label as the sender. We filled it with your store data (WooCommerce > Settings > General); check each field and complete what is missing."
 msgstr "Isto vai em todas as etiquetas como remetente. Preenchemos com os dados da sua loja (WooCommerce > Configurações > Geral); confira cada campo e complete o que faltar."
@@ -1672,27 +1662,13 @@ msgstr "Escolha…"
 msgid "Confirm sender"
 msgstr "Confirmar remetente"
 
-msgid "Connect your account in step 1 to see the balance."
-msgstr "Conecte sua conta no passo 1 para ver o saldo."
-
-msgid "Step 3 of 3"
-msgstr "Passo 3 de 3"
-
-msgid "Each label is paid with the wallet balance at the moment it is created. Add balance now or later; without balance, labels are not bought."
-msgstr "Cada etiqueta é paga com o saldo da carteira no momento em que é criada. Adicione saldo agora ou depois; sem saldo, as etiquetas não são compradas."
-
-msgid "Go to step 1"
-msgstr "Ir para o passo 1"
-
-msgid "Add balance with Mercado Pago"
-msgstr "Adicionar saldo com Mercado Pago"
 
 
-msgid "On (recommended): the label is paid and ready to print right away. Off: labels are created unpaid and wait in Labels until you pay them."
-msgstr "Ligado (recomendado): a etiqueta é paga e fica pronta para imprimir na hora. Desligado: as etiquetas são criadas sem pagar e esperam em Etiquetas até você pagar."
 
-msgid "Finish setup"
-msgstr "Concluir configuração"
+
+
+
+
 
 msgid "Almost there"
 msgstr "Quase lá"
@@ -1854,9 +1830,46 @@ msgstr "A Frenet não aceitou este token de parceiro, então ele não foi salvo.
 msgid "Type an amount of at least %s."
 msgstr "Digite um valor de pelo menos %s."
 
-msgid "Mercado Pago only returns to stores with HTTPS, and this admin is on HTTP. Add the balance in the Frenet panel. Nothing was charged."
-msgstr "O Mercado Pago só volta para lojas com HTTPS, e este painel está em HTTP. Adicione o saldo no painel Frenet. Nada foi cobrado."
+
+msgid "Step 1 of 2"
+msgstr "Passo 1 de 2"
+
+msgid "Step 2 of 2"
+msgstr "Passo 2 de 2"
+
+msgid "Balance"
+msgstr "Saldo"
+
+msgid "Labels are paid with the wallet. Add balance with \"Add balance\", at the top."
+msgstr "As etiquetas são pagas com a carteira. Adicione saldo em \"Adicionar saldo\", no topo."
+
+msgid "Amount"
+msgstr "Valor"
+
+msgid "Quick amounts"
+msgstr "Valores rápidos"
+
+msgid "The amount goes to your Frenet wallet and pays the next labels."
+msgstr "O valor entra na sua carteira Frenet e paga as próximas etiquetas."
 
 #, php-format
-msgid "Pix or card, from %s. You come back here when you finish paying."
-msgstr "Pix ou cartão, a partir de %s. Você volta para cá quando terminar de pagar."
+msgid "From %s. Pix, card or boleto at Mercado Pago; you come back here when you finish."
+msgstr "A partir de %s. Pix, cartão ou boleto no Mercado Pago; você volta para cá ao terminar."
+
+
+msgid "Continue to Mercado Pago"
+msgstr "Continuar no Mercado Pago"
+
+#, php-format
+msgid "Pay %s at Mercado Pago"
+msgstr "Pagar %s no Mercado Pago"
+
+#, php-format
+msgid "Type at least %s."
+msgstr "Digite pelo menos %s."
+
+msgid "Opening Mercado Pago…"
+msgstr "Abrindo o Mercado Pago…"
+
+msgid "This store has no HTTPS, so after paying Mercado Pago takes you to the Frenet panel. Come back here and update the balance."
+msgstr "Esta loja não tem HTTPS, então depois de pagar o Mercado Pago leva você ao painel Frenet. Volte aqui e atualize o saldo."

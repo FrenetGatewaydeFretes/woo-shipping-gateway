@@ -604,10 +604,12 @@ class WC_Frenet_Labels_Service {
 			/* translators: %s: minimum amount, e.g. R$ 5,00 */
 			return new WP_Error( 'frenet_labels_deposit_value', sprintf( __( 'Type an amount of at least %s.', 'woo-shipping-gateway' ), self::money( self::DEPOSIT_MIN ) ) );
 		}
-		// Mercado Pago only returns to https pages ("back_url.success must be defined" otherwise, validated live 2026-10-27).
-		if ( 'https' !== wp_parse_url( (string) $back, PHP_URL_SCHEME ) ) {
-			return new WP_Error( 'frenet_labels_deposit_https', __( 'Mercado Pago only returns to stores with HTTPS, and this admin is on HTTP. Add the balance in the Frenet panel. Nothing was charged.', 'woo-shipping-gateway' ) );
-		}
+		// Mercado Pago only returns to https pages ("back_url.success must be defined" otherwise, validated live 2026-10-27):
+		// an admin on http comes back through the Frenet panel, which shows the same wallet.
+		$https = 'https' === wp_parse_url( (string) $back, PHP_URL_SCHEME );
+		$to    = static function ( $result ) use ( $https, $back ) {
+			return $https ? add_query_arg( 'deposit', $result, $back ) : WC_Frenet_Labels_Admin::PANEL;
+		};
 		$res = WC_Frenet_Labels_Api::whitelabel(
 			'POST',
 			'/wallet/deposit',
@@ -615,9 +617,9 @@ class WC_Frenet_Labels_Service {
 				'Value'           => $value,
 				'NotificationUrl' => $notify,
 				'CallbackUrls'    => array(
-					'SuccessUrl' => add_query_arg( 'deposit', 'success', $back ),
-					'FailureUrl' => add_query_arg( 'deposit', 'failure', $back ),
-					'PendingUrl' => add_query_arg( 'deposit', 'pending', $back ),
+					'SuccessUrl' => $to( 'success' ),
+					'FailureUrl' => $to( 'failure' ),
+					'PendingUrl' => $to( 'pending' ),
 				),
 			)
 		);
