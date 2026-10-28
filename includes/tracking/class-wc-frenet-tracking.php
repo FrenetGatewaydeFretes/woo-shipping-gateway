@@ -281,8 +281,9 @@ class WC_Frenet_Tracking {
 			return 'frenet-returning';
 		}
 		$text = function_exists( 'mb_strtolower' ) ? mb_strtolower( (string) ( $event['description'] ?? '' ) ) : strtolower( (string) ( $event['description'] ?? '' ) );
-		// Correios events before posting ("Etiqueta emitida - Aguardando postagem", "Etiqueta expirada"): no change.
-		foreach ( array( 'etiqueta emitida', 'etiqueta expirada', 'aguardando postagem', 'prazo para postagem' ) as $needle ) {
+		// Correios events before posting ("Etiqueta emitida - Aguardando postagem", "Etiqueta expirada") and of a cancelled
+		// label ("Etiqueta cancelada pelo emissor", EventType 1 like a moving package, validated live 2026-10-28): no change.
+		foreach ( array( 'etiqueta emitida', 'etiqueta expirada', 'etiqueta cancelada', 'aguardando postagem', 'prazo para postagem' ) as $needle ) {
 			if ( false !== strpos( $text, $needle ) ) {
 				return '';
 			}
