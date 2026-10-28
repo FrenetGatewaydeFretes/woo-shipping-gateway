@@ -13,6 +13,8 @@ class WC_Frenet_Labels_Admin {
 	const SLUG  = 'frenet';
 	const PANEL = 'https://painel.frenet.com.br';
 
+	const DEPOSIT_ERROR = 'frenet_labels_deposit_error_';
+
 	/**
 	 * Hooks.
 	 *
@@ -321,14 +323,10 @@ class WC_Frenet_Labels_Admin {
 		$back  = remove_query_arg( array( 'deposit', 'saved' ), $back );
 		$url   = WC_Frenet_Labels_Service::deposit( $value, $back, rest_url( WC_Frenet_Labels_Service::DEPOSIT_ROUTE ) );
 		if ( is_wp_error( $url ) ) {
-			wp_die(
-				esc_html( $url->get_error_message() ),
-				esc_html__( 'Add balance', 'woo-shipping-gateway' ),
-				array(
-					'back_link' => true,
-					'response'  => 502,
-				)
-			);
+			// Back to the same screen with the reason: an error page (5xx) is replaced by proxies such as Cloudflare.
+			set_transient( self::DEPOSIT_ERROR . get_current_user_id(), $url->get_error_message(), MINUTE_IN_SECONDS );
+			wp_safe_redirect( add_query_arg( 'deposit', 'error', $back ) );
+			exit;
 		}
 		wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Mercado Pago checkout (checked in the service).
 		exit;
