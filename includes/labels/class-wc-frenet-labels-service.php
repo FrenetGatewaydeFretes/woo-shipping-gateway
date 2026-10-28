@@ -20,6 +20,12 @@ class WC_Frenet_Labels_Service {
 	const POLL_MAX  = 10;
 	const WALLET    = 'woocommerce_frenet_labels_wallet';
 
+	// Frenet did not answer a creation: Frenet order id still looked for ("156-3"), and [service, journey] of that attempt.
+	const RECOVER         = '_frenet_create_unanswered';
+	const RECOVER_SERVICE = '_frenet_create_unanswered_service';
+	const RECOVER_HOOK    = 'woocommerce_frenet_labels_recover';
+	const RECOVER_MAX     = 5;
+
 	/** Smallest deposit Mercado Pago takes through Frenet: R$ 3 is refused, R$ 4 passes (validated live 2026-10-27). */
 	const DEPOSIT_MIN = 5;
 
@@ -148,7 +154,17 @@ class WC_Frenet_Labels_Service {
 			}
 			return $res;
 		}
-		// Created but not paid (no balance, payment without answer): the order keeps the reason.
+		return self::create_result( $order, $res );
+	}
+
+	/**
+	 * Keeps on the order why a created shipment was not paid (no balance, payment without answer), else clears it.
+	 *
+	 * @param WC_Order             $order Order.
+	 * @param array<string, mixed> $res   Result of the creation.
+	 * @return array<string, mixed> The same result.
+	 */
+	private static function create_result( WC_Order $order, array $res ) {
 		if ( 'here' === $res['journey'] && WC_Frenet_Labels_Settings::on( 'wallet_payment' ) && ! $res['paid'] && '' !== (string) ( $res['message'] ?? '' ) ) {
 			self::set_issue( $order, (string) $res['message'] );
 		} else {
@@ -229,6 +245,9 @@ class WC_Frenet_Labels_Service {
 		if ( self::has_shipment( $order ) ) {
 			return new WP_Error( 'frenet_labels_exists', __( 'This order already has a Frenet shipment. Cancel it first.', 'woo-shipping-gateway' ) );
 		}
+		if ( '' !== (string) $order->get_meta( self::RECOVER ) ) {
+			return new WP_Error( 'frenet_labels_exists', __( 'Frenet did not answer the last attempt of this order and the store is still checking whether it created the shipment. Wait a few minutes before creating it again.', 'woo-shipping-gateway' ) );
+		}
 		if ( ! WC_Frenet_Labels_Payload::sender_ready() ) {
 			return new WP_Error( 'frenet_labels_sender', __( 'Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender: Frenet requires it. Nothing was charged.', 'woo-shipping-gateway' ) );
 		}
@@ -252,10 +271,28 @@ class WC_Frenet_Labels_Service {
 			$order->update_meta_data( '_frenet_order_attempt', (string) ( max( 1, (int) $order->get_meta( '_frenet_order_attempt' ) ) + 1 ) );
 			$order->save();
 		}
+		$problem = self::recipient_problem( WC_Frenet_Labels_Payload::recipient( $order ) );
+		if ( '' !== $problem ) {
+			return new WP_Error( 'frenet_labels_recipient', $problem );
+		}
 		// 1) Create WITHOUT charging; store the id at once so a later failure never loses a shipment.
-		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', 'panel' === $journey ? '/orders' : '/shipments', array( WC_Frenet_Labels_Payload::build( $order, $service ) ) );
+		$frenet_id = WC_Frenet_Labels_Payload::frenet_order_id( $order->get_id(), (int) $order->get_meta( '_frenet_order_attempt' ) );
+		$res       = WC_Frenet_Labels_Api::whitelabel( 'POST', 'panel' === $journey ? '/orders' : '/shipments', array( WC_Frenet_Labels_Payload::build( $order, $service ) ) );
 		if ( is_wp_error( $res ) ) {
-			return $res;
+			if ( ! self::unknown_outcome( $res ) ) {
+				return $res;
+			}
+			// No answer is not "not created": Frenet answered 504 after 60 s and still created the shipment (J&T, validated
+			// live 2026-10-28). Look for it now and again from the cron, so it never stays unknown to the store.
+			$id = self::find_created( $frenet_id );
+			if ( '' === $id ) {
+				$order->update_meta_data( self::RECOVER, $frenet_id );
+				$order->update_meta_data( self::RECOVER_SERVICE, wp_json_encode( array( $service, $journey ) ) );
+				$order->save();
+				self::schedule_recover( $order->get_id(), 1 );
+				return new WP_Error( 'frenet_labels_no_answer', __( 'Frenet did not answer in time and nothing has been charged yet. If Frenet created the shipment anyway, the store finds it within a few minutes and goes on as usual: do not create it again.', 'woo-shipping-gateway' ) );
+			}
+			return self::remember_created( $order, $id, $service, $journey );
 		}
 		$item   = (array) ( WC_Frenet_Labels_Api::field( (array) ( WC_Frenet_Labels_Api::field( $res, 'items' ) ?? array() ), 0 ) ?? array() );
 		$errors = (array) ( WC_Frenet_Labels_Api::field( $item, 'errors' ) ?? array() );
@@ -277,6 +314,21 @@ class WC_Frenet_Labels_Service {
 		if ( '' === $id ) {
 			return new WP_Error( 'frenet_labels_no_id', __( 'Frenet did not return a shipment. Nothing was charged.', 'woo-shipping-gateway' ) );
 		}
+		return self::remember_created( $order, $id, $service, $journey );
+	}
+
+	/**
+	 * Stores a shipment Frenet created on the order, then pays it with the wallet (journey "here", wallet payment on).
+	 *
+	 * @param WC_Order             $order   Order.
+	 * @param string               $id      Frenet shipment id.
+	 * @param array<string, mixed> $service Compared service.
+	 * @param string               $journey "here" or "panel".
+	 * @return array<string, mixed>
+	 */
+	private static function remember_created( WC_Order $order, $id, array $service, $journey ) {
+		$order->delete_meta_data( self::RECOVER );
+		$order->delete_meta_data( self::RECOVER_SERVICE );
 		$order->update_meta_data( '_frenet_shipment_id', $id );
 		$order->update_meta_data( '_frenet_shipment_status', (string) self::STATUS_PENDING_PAYMENT );
 		$order->update_meta_data( '_frenet_label_journey', $journey );
@@ -522,6 +574,100 @@ class WC_Frenet_Labels_Service {
 			return;
 		}
 		self::schedule_poll( $order_id, $attempt + 1 );
+	}
+
+	/**
+	 * Whether a failed call may still have reached Frenet: no answer (timeout) or a gateway error. Pure: unit tested.
+	 *
+	 * @param WP_Error $error Error of WC_Frenet_Labels_Api.
+	 * @return bool
+	 */
+	public static function unknown_outcome( WP_Error $error ) {
+		return in_array( $error->get_error_code(), array( 'http_request_failed', 'frenet_labels_http_502', 'frenet_labels_http_503', 'frenet_labels_http_504' ), true );
+	}
+
+	/**
+	 * Id of a live shipment Frenet created for a Frenet order id ("156-3"), among the newest ones; '' when there is none.
+	 *
+	 * @param string $frenet_id Order.Id sent to Frenet.
+	 * @return string
+	 */
+	public static function find_created( $frenet_id ) {
+		$list = self::shipments( 0, 50 );
+		if ( is_wp_error( $list ) ) {
+			return '';
+		}
+		foreach ( $list['shipments'] as $s ) {
+			$s = (array) $s;
+			if ( (string) ( WC_Frenet_Labels_Api::field( $s, 'orderId' ) ?? '' ) === (string) $frenet_id
+				&& ! in_array( (int) ( WC_Frenet_Labels_Api::field( $s, 'shipmentStatus' ) ?? 0 ), self::GONE_STATUSES, true ) ) {
+				return (string) ( WC_Frenet_Labels_Api::field( $s, 'shipmentId' ) ?? '' );
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Schedules the search of an unanswered creation in two minutes.
+	 *
+	 * @param int $order_id Order id.
+	 * @param int $attempt  1-based attempt.
+	 * @return void
+	 */
+	public static function schedule_recover( $order_id, $attempt ) {
+		$args = array( (int) $order_id, (int) $attempt );
+		if ( ! wp_next_scheduled( self::RECOVER_HOOK, $args ) ) {
+			wp_schedule_single_event( time() + 2 * MINUTE_IN_SECONDS, self::RECOVER_HOOK, $args );
+		}
+	}
+
+	/**
+	 * Cron: looks for the shipment of an unanswered creation. Found → stored on the order and paid like any other;
+	 * not found after RECOVER_MAX tries → the order can be created again.
+	 *
+	 * @param int $order_id Order id.
+	 * @param int $attempt  Attempt.
+	 * @return void
+	 */
+	public static function recover( $order_id, $attempt ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof WC_Order || '' === (string) $order->get_meta( self::RECOVER ) ) {
+			return;
+		}
+		$id = self::find_created( (string) $order->get_meta( self::RECOVER ) );
+		if ( '' !== $id ) {
+			list( $service, $journey ) = array_pad( (array) json_decode( (string) $order->get_meta( self::RECOVER_SERVICE ), true ), 2, '' );
+			/* translators: %s: shipment id */
+			$order->add_order_note( sprintf( __( 'Frenet created shipment %s although it did not answer at the time.', 'woo-shipping-gateway' ), $id ) );
+			self::create_result( $order, self::remember_created( $order, $id, (array) $service, (string) $journey ) );
+			return;
+		}
+		if ( $attempt >= self::RECOVER_MAX ) {
+			$order->delete_meta_data( self::RECOVER );
+			$order->delete_meta_data( self::RECOVER_SERVICE );
+			$order->add_order_note( __( 'Frenet did not create the shipment that went unanswered. Nothing was charged; the label can be created again.', 'woo-shipping-gateway' ) );
+			$order->save();
+			return;
+		}
+		self::schedule_recover( $order_id, $attempt + 1 );
+	}
+
+	/**
+	 * Why Frenet will refuse this recipient, said before calling it ('' when nothing is missing). Pure: unit tested.
+	 *
+	 * @param array<string, string> $to WC_Frenet_Labels_Payload::recipient().
+	 * @return string
+	 */
+	public static function recipient_problem( array $to ) {
+		$document = (string) preg_replace( '/\D/', '', (string) ( $to['document'] ?? '' ) );
+		if ( 11 !== strlen( $document ) && 14 !== strlen( $document ) ) {
+			return __( 'The customer did not give a CPF or CNPJ, and Frenet requires it on the label. Add a CPF field to the checkout (for example with the Brazilian Market plugin) so new orders bring it; for this order, add the custom field _billing_cpf with the CPF. Nothing was charged.', 'woo-shipping-gateway' );
+		}
+		list( , $number ) = WC_Frenet_Labels_Payload::street_parts( (string) ( $to['address_1'] ?? '' ), (string) ( $to['number'] ?? '' ), (string) ( $to['neighborhood'] ?? '' ) );
+		if ( '' === $number ) {
+			return __( 'The shipping address has no house number, and Frenet requires it. Edit the address of the order and put the number after the street (for example "Rua Augusta, 100"), or "S/N" when there is none. Nothing was charged.', 'woo-shipping-gateway' );
+		}
+		return '';
 	}
 
 	/**

@@ -168,6 +168,25 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
+	 * Street, number and neighborhood. Without a neighborhood field the address autofill writes "Street - Neighborhood"
+	 * in address line 1, and the number may come before or after it ("Rua X, 10 - Centro", "Rua X - Centro, 10"). Pure.
+	 *
+	 * @param string $street       Address line 1.
+	 * @param string $number       Number field ('' when absent).
+	 * @param string $neighborhood Neighborhood field ('' when absent).
+	 * @return array{0: string, 1: string, 2: string}
+	 */
+	public static function street_parts( $street, $number, $neighborhood ) {
+		list( $street, $number ) = self::street_number( $street, $number );
+		$neighborhood            = trim( (string) $neighborhood );
+		if ( '' === $neighborhood && preg_match( '/^(.+?)\s+-\s+([^-]+)$/u', $street, $m ) ) {
+			list( $street, $neighborhood ) = array( trim( $m[1] ), trim( $m[2] ) );
+			list( $street, $number )       = self::street_number( $street, $number );
+		}
+		return array( $street, $number, $neighborhood );
+	}
+
+	/**
 	 * A positive number, or the default. Pure: unit tested.
 	 *
 	 * @param mixed $value    Value.
@@ -305,14 +324,14 @@ class WC_Frenet_Labels_Payload {
 			);
 		}
 		$address  = static function ( array $a ) {
-			list( $street, $number ) = self::street_number( $a['address_1'], $a['number'] );
+			list( $street, $number, $quarter ) = self::street_parts( $a['address_1'], $a['number'], $a['neighborhood'] );
 			return array(
 				'ZipCode'           => preg_replace( '/\D/', '', $a['postcode'] ),
 				'City'              => $a['city'],
 				'Street'            => $street,
 				'AddressNumber'     => $number,
 				'AddressComplement' => trim( $a['address_2'] ),
-				'AddressQuarter'    => '' !== trim( $a['neighborhood'] ) ? trim( $a['neighborhood'] ) : '-',
+				'AddressQuarter'    => '' !== $quarter ? $quarter : '-',
 				'AddressState'      => $a['state'],
 				'Country'           => 'BR',
 			);

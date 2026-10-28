@@ -1877,3 +1877,22 @@ msgstr "Mínimo %s · Pix, cartão ou boleto"
 
 msgid "Without HTTPS, after paying you land on the Frenet panel."
 msgstr "Sem HTTPS, depois de pagar você vai para o painel Frenet."
+
+msgid "Frenet did not answer the last attempt of this order and the store is still checking whether it created the shipment. Wait a few minutes before creating it again."
+msgstr "A Frenet não respondeu à última tentativa deste pedido e a loja ainda está conferindo se o envio foi criado. Aguarde alguns minutos antes de criar de novo."
+
+msgid "Frenet did not answer in time and nothing has been charged yet. If Frenet created the shipment anyway, the store finds it within a few minutes and goes on as usual: do not create it again."
+msgstr "A Frenet não respondeu a tempo e nada foi cobrado até agora. Se a Frenet criou o envio mesmo assim, a loja o encontra em poucos minutos e segue normalmente: não crie de novo."
+
+#. translators: %s: shipment id
+msgid "Frenet created shipment %s although it did not answer at the time."
+msgstr "A Frenet criou o envio %s, embora não tenha respondido na hora."
+
+msgid "Frenet did not create the shipment that went unanswered. Nothing was charged; the label can be created again."
+msgstr "A Frenet não criou o envio que ficou sem resposta. Nada foi cobrado; a etiqueta pode ser criada de novo."
+
+msgid "The customer did not give a CPF or CNPJ, and Frenet requires it on the label. Add a CPF field to the checkout (for example with the Brazilian Market plugin) so new orders bring it; for this order, add the custom field _billing_cpf with the CPF. Nothing was charged."
+msgstr "O cliente não informou CPF ou CNPJ, e a Frenet exige na etiqueta. Adicione um campo de CPF ao checkout (por exemplo com o plugin Brazilian Market) para os próximos pedidos; neste pedido, adicione o campo personalizado _billing_cpf com o CPF. Nada foi cobrado."
+
+msgid "The shipping address has no house number, and Frenet requires it. Edit the address of the order and put the number after the street (for example \"Rua Augusta, 100\"), or \"S/N\" when there is none. Nothing was charged."
+msgstr "O endereço de entrega não tem número, e a Frenet exige. Edite o endereço do pedido e coloque o número depois da rua (por exemplo \"Rua Augusta, 100\"), ou \"S/N\" quando não houver. Nada foi cobrado."
