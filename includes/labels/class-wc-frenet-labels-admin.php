@@ -320,7 +320,7 @@ class WC_Frenet_Labels_Admin {
 		}
 		$value = (float) str_replace( ',', '.', preg_replace( '/[^\d,.]/', '', sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) ) );
 		$back  = wp_get_referer() ? wp_get_referer() : self::url( self::SLUG );
-		$back  = remove_query_arg( array( 'deposit', 'saved' ), $back );
+		$back  = self::absolute( remove_query_arg( array( 'deposit', 'saved' ), $back ) );
 		$url   = WC_Frenet_Labels_Service::deposit( $value, $back, rest_url( WC_Frenet_Labels_Service::DEPOSIT_ROUTE ) );
 		if ( is_wp_error( $url ) ) {
 			// Back to the same screen with the reason: an error page (5xx) is replaced by proxies such as Cloudflare.
@@ -330,6 +330,24 @@ class WC_Frenet_Labels_Admin {
 		}
 		wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Mercado Pago checkout (checked in the service).
 		exit;
+	}
+
+	/**
+	 * Full URL of an admin address. The referer WordPress gives back is often only the path ("/wp-admin/admin.php?…",
+	 * from the nonce field), and Mercado Pago needs a full https address to come back to the screen where the
+	 * deposit started; without it, it went to the Frenet panel every time.
+	 *
+	 * @param string $url Absolute URL or path of this site.
+	 * @return string
+	 */
+	public static function absolute( $url ) {
+		$url = (string) $url;
+		if ( '' === $url || preg_match( '#^https?://#i', $url ) ) {
+			return $url;
+		}
+		$site = wp_parse_url( admin_url() );
+		$host = ( $site['scheme'] ?? 'https' ) . '://' . ( $site['host'] ?? '' ) . ( isset( $site['port'] ) ? ':' . $site['port'] : '' );
+		return $host . '/' . ltrim( $url, '/' );
 	}
 
 	/* ------------------------------------------------------------------ AJAX */
