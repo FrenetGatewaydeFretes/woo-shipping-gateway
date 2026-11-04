@@ -1244,8 +1244,35 @@
 				lTotal.textContent = money( sum );
 			}
 		};
+		// Header checkbox: selects or clears every label shown that can be paid or printed.
+		var lAll = labels.querySelector( '[data-frenet-all]' );
+		var picks = function () {
+			return Array.prototype.slice.call( labels.querySelectorAll( '[data-frenet-label] [data-frenet-pick]' ) );
+		};
+		var syncAll = function () {
+			var list = picks();
+			var on = list.filter( function ( c ) {
+				return c.checked;
+			} ).length;
+			if ( lAll ) {
+				lAll.disabled = ! list.length;
+				lAll.checked = list.length > 0 && on === list.length;
+				lAll.indeterminate = on > 0 && on < list.length;
+			}
+		};
+		if ( lAll ) {
+			lAll.addEventListener( 'change', function () {
+				picks().forEach( function ( c ) {
+					c.checked = lAll.checked;
+				} );
+			} );
+		}
 		btnPay.setAttribute( 'data-label', btnPay.textContent );
-		labels.addEventListener( 'change', update );
+		labels.addEventListener( 'change', function () {
+			syncAll();
+			update();
+		} );
+		syncAll();
 		btnPay.addEventListener( 'click', function () {
 			var unpaid = checked( 'data-unpaid' );
 			var sum = unpaid.reduce( function ( a, r ) {

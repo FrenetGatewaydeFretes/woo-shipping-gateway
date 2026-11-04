@@ -291,6 +291,7 @@
 .frenet-table .is-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .frenet-table .is-nowrap { white-space: nowrap; }
 .frenet-table .check-column { width: 32px; }
+.frenet-table thead .check-column input { margin: 0; }
 .frenet-table .frenet-code { font-size: 12px; }
 .frenet-cell-sub { display: block; margin-top: 2px; color: var(--fl-muted); font-size: 12px; }
 .frenet-row-actions { width: 1%; white-space: nowrap; text-align: right; }
@@ -356,6 +357,7 @@
 .frenet-toolbar > p { margin: 0; }
 .frenet-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
 .frenet-toolbar .frenet-filters { margin: 0; }
+.frenet-filters__label { align-self: center; color: var(--fl-muted); font-size: 13px; }
 .frenet-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 14px; border: 1px solid var(--fl-line); border-radius: 999px; background: #fff; color: var(--fl-ink); font-weight: 500; text-decoration: none; transition: border-color .15s ease, color .15s ease; }
 .frenet-chip span { color: var(--fl-faint); font-variant-numeric: tabular-nums; }
 .frenet-chip:hover { border-color: var(--fl-violet); color: var(--fl-violet-dark); }

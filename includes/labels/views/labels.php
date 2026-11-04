@@ -39,6 +39,7 @@ $frenet_pages = max( 1, (int) ceil( $frenet_list['total'] / $frenet_per ) );
 ?>
 <div class="frenet-toolbar">
 <nav class="frenet-filters" aria-label="<?php esc_attr_e( 'Filter by status', 'woo-shipping-gateway' ); ?>">
+	<span class="frenet-filters__label"><?php esc_html_e( 'Show:', 'woo-shipping-gateway' ); ?></span>
 	<a class="frenet-chip<?php echo $frenet_filter ? '' : ' is-active'; ?>" href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( $frenet_slug, array( 'p' => $frenet_p ) ) ); ?>">
 		<?php esc_html_e( 'All', 'woo-shipping-gateway' ); ?> <span>(<?php echo (int) count( $frenet_list['shipments'] ); ?>)</span></a>
 	<?php foreach ( $frenet_counts as $frenet_code => $frenet_n ) : ?>
@@ -89,7 +90,7 @@ $frenet_pages = max( 1, (int) ceil( $frenet_list['total'] / $frenet_per ) );
 	<div class="frenet-table-wrap">
 		<table class="frenet-table">
 			<thead><tr>
-				<th scope="col" class="check-column"><span class="screen-reader-text"><?php esc_html_e( 'Select', 'woo-shipping-gateway' ); ?></span></th>
+				<th scope="col" class="check-column"><input type="checkbox" data-frenet-all aria-label="<?php esc_attr_e( 'Select or clear every label shown', 'woo-shipping-gateway' ); ?>" title="<?php esc_attr_e( 'Select or clear every label shown', 'woo-shipping-gateway' ); ?>"></th>
 				<th scope="col"><?php esc_html_e( 'Order', 'woo-shipping-gateway' ); ?> <span class="frenet-muted">/ <?php esc_html_e( 'Shipment', 'woo-shipping-gateway' ); ?></span></th>
 				<th scope="col"><?php esc_html_e( 'Service', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col" class="is-num"><?php esc_html_e( 'Price', 'woo-shipping-gateway' ); ?></th>
