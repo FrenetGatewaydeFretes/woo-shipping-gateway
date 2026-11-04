@@ -519,8 +519,12 @@
 			} );
 			renderSummary();
 		} );
+		// Wrapped: renderSummary is assigned further down, so passing it here directly registered "undefined" and
+		// ticking or unticking an order never refreshed the summary.
 		rows.forEach( function ( r ) {
-			r.querySelector( '[data-frenet-pick]' ).addEventListener( 'change', renderSummary );
+			r.querySelector( '[data-frenet-pick]' ).addEventListener( 'change', function () {
+				renderSummary();
+			} );
 		} );
 
 		var hasNfe = function ( row ) {
@@ -610,7 +614,9 @@
 			setActive( list, list.querySelector( '[aria-selected="true"]' ) || list.firstElementChild );
 			list.focus( { preventScroll: true } );
 		};
-		var choose = function ( box, code ) {
+		// Not "choose": that name is the summary's (below), and the second var replaced this one, so picking a service
+		// in one order applied the summary choice to every selected order and left the list open.
+		var pickService = function ( box, code ) {
 			var row = box.closest( '[data-frenet-row]' );
 			var select = row.querySelector( '[data-frenet-choice]' );
 			closeBoxes();
@@ -650,7 +656,7 @@
 				tx.appendChild( el( 'span', 'frenet-cell-sub', o.sub ) );
 				li.appendChild( tx );
 				li.addEventListener( 'click', function () {
-					choose( box, s.code );
+					pickService( box, s.code );
 				} );
 				li.addEventListener( 'mousemove', function () {
 					if ( ! li.classList.contains( 'is-active' ) ) {
@@ -688,7 +694,7 @@
 				} else if ( 'Enter' === e.key || ' ' === e.key ) {
 					e.preventDefault();
 					if ( items[ i ] ) {
-						choose( box, items[ i ].getAttribute( 'data-code' ) );
+						pickService( box, items[ i ].getAttribute( 'data-code' ) );
 					}
 				} else if ( 'Escape' === e.key ) {
 					e.preventDefault();
