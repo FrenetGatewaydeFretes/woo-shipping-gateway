@@ -1896,3 +1896,43 @@ msgstr "O cliente não informou CPF ou CNPJ, e a Frenet exige na etiqueta. Adici
 
 msgid "The shipping address has no house number, and Frenet requires it. Edit the address of the order and put the number after the street (for example \"Rua Augusta, 100\"), or \"S/N\" when there is none. Nothing was charged."
 msgstr "O endereço de entrega não tem número, e a Frenet exige. Edite o endereço do pedido e coloque o número depois da rua (por exemplo \"Rua Augusta, 100\"), ou \"S/N\" quando não houver. Nada foi cobrado."
+
+msgid "Statement"
+msgstr "Extrato"
+
+msgid "Wallet statement"
+msgstr "Extrato da carteira"
+
+msgid "Frenet did not return the wallet statement."
+msgstr "A Frenet não devolveu o extrato da carteira."
+
+msgid "Every movement of your Frenet wallet: deposits, label payments, refunds of cancelled labels and adjustments. Refunds usually arrive overnight."
+msgstr "Todas as movimentações da sua carteira Frenet: depósitos, pagamentos de etiquetas, estornos de etiquetas canceladas e ajustes. Os estornos costumam chegar de madrugada."
+
+msgid "No movements in the wallet yet."
+msgstr "Ainda não há movimentações na carteira."
+
+#. translators: 1: page, 2: pages, 3: total movements
+msgid "Page %1$d of %2$d · %3$s movements in the account."
+msgstr "Página %1$d de %2$d · %3$s movimentações na conta."
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Movement"
+msgstr "Movimentação"
+
+msgid "Amounts without a sign did not change the balance: they only record a step (a refund being processed, a payment on hold or a deposit that failed)."
+msgstr "Valores sem sinal não mudaram o saldo: só registram uma etapa (um estorno em processamento, um pagamento retido ou um depósito que falhou)."
+
+msgid "Select or clear every label shown"
+msgstr "Selecionar ou limpar todas as etiquetas exibidas"
+
+msgid "Show:"
+msgstr "Mostrar:"
+
+msgid "Correios Automático already shows its shipping calculator on the product page, with the Frenet rates, so the Frenet simulator stays hidden. To use the Frenet one, turn off the calculator in Correios Automático settings."
+msgstr "O Correios Automático já mostra a calculadora de frete dele na página do produto, com os fretes da Frenet, por isso o simulador da Frenet fica oculto. Para usar o da Frenet, desative a calculadora nas configurações do Correios Automático."
+
+msgid "Frenet refused the store token. Check the client token in Frenet > Settings. Nothing was charged."
+msgstr "A Frenet recusou o token da loja. Confira o token do cliente em Frenet > Configurações. Nada foi cobrado."
