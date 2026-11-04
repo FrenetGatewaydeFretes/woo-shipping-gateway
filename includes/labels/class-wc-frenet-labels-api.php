@@ -33,9 +33,10 @@ class WC_Frenet_Labels_Api {
 	public static function whitelabel( $method, $path, $body = null ) {
 		$token   = WC_Frenet_Labels_Settings::store_token();
 		$partner = WC_Frenet_Labels_Settings::get( 'partner_token' );
-		// Reading the wallet is the one WhiteLabel call that needs no partner token: Frenet accepts the store token in both
-		// headers there (validated live 2026-10-27). Creating, listing, paying, cancelling and deposits refuse it.
-		if ( '' === $partner && 'GET' === $method && '/wallet' === $path ) {
+		// Reading the wallet and its statement are the WhiteLabel calls that need no partner token: Frenet accepts the store
+		// token in both headers there (validated live 2026-10-27 and 2026-11-04). Creating, listing, paying, cancelling and
+		// deposits refuse it.
+		if ( '' === $partner && 'GET' === $method && ( '/wallet' === $path || 0 === strpos( $path, '/wallet/demonstrative?' ) ) ) {
 			$partner = $token;
 		}
 		if ( '' === $token || '' === $partner ) {

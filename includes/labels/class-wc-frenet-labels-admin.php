@@ -46,6 +46,7 @@ class WC_Frenet_Labels_Admin {
 			self::SLUG               => array( _x( 'Settings', 'Frenet admin menu', 'woo-shipping-gateway' ), __( 'Frenet settings', 'woo-shipping-gateway' ), 'settings' ),
 			self::SLUG . '-create'   => array( __( 'Create shipment', 'woo-shipping-gateway' ), __( 'Create shipment', 'woo-shipping-gateway' ), 'create' ),
 			self::SLUG . '-labels'   => array( __( 'Labels', 'woo-shipping-gateway' ), __( 'Manage your labels', 'woo-shipping-gateway' ), 'labels' ),
+			self::SLUG . '-statement' => array( __( 'Statement', 'woo-shipping-gateway' ), __( 'Wallet statement', 'woo-shipping-gateway' ), 'statement' ),
 			self::SLUG . '-print'    => array( __( 'Printing', 'woo-shipping-gateway' ), __( 'Label printing', 'woo-shipping-gateway' ), 'printing' ),
 			self::SLUG . '-tracking' => array( __( 'Tracking', 'woo-shipping-gateway' ), __( 'Tracking', 'woo-shipping-gateway' ), 'tracking' ),
 			self::SLUG . '-dropoff'  => array( __( 'Drop-off point', 'woo-shipping-gateway' ), __( 'Drop-off point', 'woo-shipping-gateway' ), 'dropoff' ),
@@ -116,8 +117,9 @@ class WC_Frenet_Labels_Admin {
 		}
 		echo '</header>';
 		echo '<hr class="wp-header-end">';
-		// Tracking only needs the store token; the label screens need the partner token too.
-		if ( ! in_array( $page[2], array( 'settings', 'tracking', 'setup' ), true ) && ! WC_Frenet_Labels_Settings::ready() ) {
+		// Tracking and the statement only need the store token; the label screens need the partner token too.
+		$no_account = 'statement' === $page[2] && 'none' === WC_Frenet_Labels_Settings::mode();
+		if ( $no_account || ( ! in_array( $page[2], array( 'settings', 'tracking', 'statement', 'setup' ), true ) && ! WC_Frenet_Labels_Settings::ready() ) ) {
 			self::view( 'not-ready' );
 			echo '</div>';
 			return;

@@ -868,6 +868,68 @@ class WC_Frenet_Labels_Service {
 	}
 
 	/**
+	 * One page of the wallet statement (GET /wallet/demonstrative, page starts at 0), newest first.
+	 *
+	 * Frenet sends every value as a positive number and the balance after the operation (validated live 2026-11-04),
+	 * so the sign comes from how the balance moved: up is money in, down is money out, equal is only informative.
+	 *
+	 * @param int $page     Page.
+	 * @param int $per_page Rows.
+	 * @return array{total: int, operations: array<int, array{date: string, type: string, description: string, value: float, balance: float, sign: int}>}|WP_Error
+	 */
+	public static function statement( $page, $per_page ) {
+		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/wallet/demonstrative?page=' . max( 0, (int) $page ) . '&perPage=' . max( 1, (int) $per_page ) );
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		$rows = WC_Frenet_Labels_Api::field( $res, 'operations' );
+		if ( ! is_array( $rows ) ) {
+			$raw = (string) ( WC_Frenet_Labels_Api::field( $res, 'message' ) ?? '' );
+			$msg = WC_Frenet_Labels_Api::clean_error( $raw );
+			return new WP_Error( 'frenet_labels_statement', '' !== $msg ? $msg : __( 'Frenet did not return the wallet statement.', 'woo-shipping-gateway' ) );
+		}
+		return array(
+			'total'      => (int) ( WC_Frenet_Labels_Api::field( $res, 'total' ) ?? count( $rows ) ),
+			'operations' => self::statement_rows( $rows ),
+		);
+	}
+
+	/**
+	 * Normalised statement rows with the sign of each operation. Pure.
+	 *
+	 * @param array<int, mixed> $rows Operations as Frenet sends them, newest first.
+	 * @return array<int, array{date: string, type: string, description: string, value: float, balance: float, sign: int}>
+	 */
+	public static function statement_rows( array $rows ) {
+		$out  = array();
+		$rows = array_values( $rows );
+		foreach ( $rows as $i => $row ) {
+			$row     = (array) $row;
+			$type    = (string) ( $row['operationType'] ?? ( $row['OperationType'] ?? '' ) );
+			$text    = (string) ( $row['description'] ?? ( $row['Description'] ?? '' ) );
+			$value   = WC_Frenet_Labels_Compare::to_float( $row['operationValue'] ?? ( $row['OperationValue'] ?? 0 ) );
+			$balance = WC_Frenet_Labels_Compare::to_float( $row['balance'] ?? ( $row['Balance'] ?? 0 ) );
+			$older   = isset( $rows[ $i + 1 ] ) ? (array) $rows[ $i + 1 ] : null;
+			if ( null !== $older ) {
+				$delta = round( $balance - WC_Frenet_Labels_Compare::to_float( $older['balance'] ?? ( $older['Balance'] ?? 0 ) ), 2 );
+				$sign  = $delta > 0 ? 1 : ( $delta < 0 ? -1 : 0 );
+			} else {
+				// The oldest row of the page has nothing to compare with: go by the kind of operation.
+				$sign = in_array( $type, array( 'Aprovado', 'Credito ao cliente' ), true ) ? 1 : ( in_array( $type, array( 'Liberado', 'Bloqueado' ), true ) && false !== stripos( $text, 'pagamento' ) ? -1 : 0 );
+			}
+			$out[] = array(
+				'date'        => (string) ( $row['eventDateTime'] ?? ( $row['EventDateTime'] ?? '' ) ),
+				'type'        => $type,
+				'description' => $text,
+				'value'       => $value,
+				'balance'     => $balance,
+				'sign'        => 0.0 === $value ? 0 : $sign,
+			);
+		}
+		return $out;
+	}
+
+	/**
 	 * One page of the account's shipments (page starts at 0).
 	 *
 	 * @param int $page     Page.

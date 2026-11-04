@@ -292,6 +292,13 @@
 .frenet-table .is-nowrap { white-space: nowrap; }
 .frenet-table .check-column { width: 32px; }
 .frenet-table thead .check-column input { margin: 0; }
+
+/* Extrato */
+.frenet-statement__what { max-width: 420px; }
+.frenet-statement__value { font-weight: 600; white-space: nowrap; }
+.frenet-statement__value.is-in { color: var(--fl-ok); }
+.frenet-statement__value.is-out { color: var(--fl-bad); }
+.frenet-statement__value.is-info { color: var(--fl-muted); font-weight: 400; }
 .frenet-table .frenet-code { font-size: 12px; }
 .frenet-cell-sub { display: block; margin-top: 2px; color: var(--fl-muted); font-size: 12px; }
 .frenet-row-actions { width: 1%; white-space: nowrap; text-align: right; }
