@@ -193,7 +193,10 @@ class WC_Frenet_Labels_Api {
 			return __( 'Frenet refused the partner token. Check it in the Frenet settings. Nothing was charged.', 'woo-shipping-gateway' );
 		}
 		if ( false !== stripos( $message, 'acesso negado para o cliente' ) ) {
-			return __( 'Frenet refused the store token. Check the token of the Frenet shipping method. Nothing was charged.', 'woo-shipping-gateway' );
+			// Name the token actually in use: the one in Frenet > Settings, or else the one of the shipping method.
+			return '' !== WC_Frenet_Labels_Settings::get( 'token' )
+				? __( 'Frenet refused the store token. Check the client token in Frenet > Settings. Nothing was charged.', 'woo-shipping-gateway' )
+				: __( 'Frenet refused the store token. Check the token of the Frenet shipping method. Nothing was charged.', 'woo-shipping-gateway' );
 		}
 		$message = (string) preg_replace( '/\s*-->.*$/s', '', $message );
 		$message = (string) preg_replace( '/(Detalhes\s+)?identificador:\s*[0-9a-f-]{36}\s*/i', '', $message );

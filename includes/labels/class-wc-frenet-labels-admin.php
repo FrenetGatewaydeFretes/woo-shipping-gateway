@@ -304,7 +304,7 @@ class WC_Frenet_Labels_Admin {
 		}
 		$input = isset( $_POST['frenet_labels'] ) && is_array( $_POST['frenet_labels'] ) ? wp_unslash( $_POST['frenet_labels'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized key by key in save().
 		WC_Frenet_Labels_Settings::save( $input );
-		delete_transient( WC_Frenet_Labels_Service::WALLET );
+		WC_Frenet_Labels_Service::forget_wallet();
 		wp_safe_redirect( self::url( self::SLUG, array( 'saved' => 1 ) ) );
 		exit;
 	}

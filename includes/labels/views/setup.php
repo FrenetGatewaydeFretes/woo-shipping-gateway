@@ -86,7 +86,7 @@ $frenet_invalid = static function ( array $errors, $key ) {
 			<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
 
 			<label class="frenet-field" for="frenet-setup-token"><?php esc_html_e( 'Store token', 'woo-shipping-gateway' ); ?></label>
-			<input id="frenet-setup-token" class="regular-text" type="text" name="frenet_labels[token]" value="<?php echo esc_attr( $frenet_token_value ); ?>" autocomplete="off" spellcheck="false"
+			<input id="frenet-setup-token" class="regular-text" type="password" name="frenet_labels[token]" value="<?php echo esc_attr( $frenet_token_value ); ?>" autocomplete="new-password" spellcheck="false"
 				placeholder="<?php echo esc_attr( '' !== $frenet_method_token ? __( 'Using the token of the Frenet shipping method', 'woo-shipping-gateway' ) : '' ); ?>"<?php echo $frenet_invalid( $frenet_errors, 'token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the closure. ?>>
 			<?php $frenet_error( $frenet_errors, 'token' ); ?>
 			<p class="description">

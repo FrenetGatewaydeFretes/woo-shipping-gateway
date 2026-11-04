@@ -322,7 +322,7 @@ class WC_Frenet_Labels_Setup {
 			self::flash( 'error', __( 'Fill in the highlighted fields.', 'woo-shipping-gateway' ), $errors, array( 'token' => $token ) );
 			return 'account';
 		}
-		delete_transient( WC_Frenet_Labels_Service::WALLET );
+		WC_Frenet_Labels_Service::forget_wallet();
 		$wallet = WC_Frenet_Labels_Service::wallet( true );
 		$labels = '' !== WC_Frenet_Labels_Settings::get( 'partner_token' );
 		// The wallet only checks the store token: the label list checks the partner token too, without buying anything.

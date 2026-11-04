@@ -55,7 +55,7 @@ if ( $frenet_left ) :
 		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[enabled]" value="1" <?php checked( 'yes', $frenet_s['enabled'] ); ?>> <span><?php esc_html_e( 'Enable Frenet labels', 'woo-shipping-gateway' ); ?></span></label>
 
 		<label class="frenet-field" for="frenet-token"><?php esc_html_e( 'Client token', 'woo-shipping-gateway' ); ?></label>
-		<input id="frenet-token" class="regular-text" type="text" name="frenet_labels[token]" value="<?php echo esc_attr( $frenet_s['token'] ); ?>" autocomplete="off" spellcheck="false" aria-describedby="frenet-token-help">
+		<input id="frenet-token" class="regular-text" type="password" name="frenet_labels[token]" value="<?php echo esc_attr( $frenet_s['token'] ); ?>" autocomplete="new-password" spellcheck="false" aria-describedby="frenet-token-help">
 		<p id="frenet-token-help" class="description">
 			<?php
 			echo esc_html(

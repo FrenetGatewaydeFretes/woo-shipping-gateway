@@ -33,7 +33,7 @@ add_action(
 				'methods'             => array( 'GET', 'POST' ),
 				'permission_callback' => '__return_true',
 				'callback'            => static function () {
-					delete_transient( WC_Frenet_Labels_Service::WALLET );
+					WC_Frenet_Labels_Service::forget_wallet();
 					return new WP_REST_Response( array( 'ok' => true ), 200 );
 				},
 			)

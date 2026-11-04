@@ -371,7 +371,7 @@ class WC_Frenet_Labels_Service {
 	public static function pay( array $ids ) {
 		$ids = array_values( array_unique( array_filter( array_map( 'strval', $ids ), 'ctype_digit' ) ) );
 		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', '/shipments/checkout', array_map( 'intval', $ids ) );
-		delete_transient( self::WALLET );
+		self::forget_wallet();
 		$unknown  = is_wp_error( $res );
 		$message  = '';
 		$statuses = array();
@@ -712,7 +712,7 @@ class WC_Frenet_Labels_Service {
 			}
 			$status = null !== $after ? $after : ( $paid ? self::STATUS_CANCEL_SCHEDULED : self::STATUS_DELETED );
 		}
-		delete_transient( self::WALLET );
+		self::forget_wallet();
 		if ( $order ) {
 			$order->update_meta_data( '_frenet_shipment_status', (string) $status );
 			$order->delete_meta_data( '_frenet_label_ready' );
@@ -784,7 +784,7 @@ class WC_Frenet_Labels_Service {
 			$raw = (string) ( WC_Frenet_Labels_Api::field( $res, 'message' ) ?? '' );
 			return new WP_Error( 'frenet_labels_deposit', '' !== WC_Frenet_Labels_Api::refused( $raw ) ? WC_Frenet_Labels_Api::clean_error( $raw ) : __( 'Frenet did not start the payment. Nothing was charged; try again or add balance in the Frenet panel.', 'woo-shipping-gateway' ) );
 		}
-		delete_transient( self::WALLET );
+		self::forget_wallet();
 		$init_point = (string) ( WC_Frenet_Labels_Api::field( $res, 'initPoint' ) ?? '' );
 		return self::allowed_checkout( $init_point ) ? $init_point : self::checkout_url( $preference );
 	}
@@ -821,7 +821,7 @@ class WC_Frenet_Labels_Service {
 	 * @return array{balance: float, labels: int, room: float}|WP_Error
 	 */
 	public static function wallet( $fresh = false ) {
-		$cached = get_transient( self::WALLET );
+		$cached = get_transient( self::wallet_key() );
 		if ( ! $fresh && is_array( $cached ) ) {
 			return $cached;
 		}
@@ -842,8 +842,29 @@ class WC_Frenet_Labels_Service {
 			// What the wallet still takes before its limit (walletLimit - balance): the most one deposit can add.
 			'room'    => (float) ( WC_Frenet_Labels_Api::field( $res, 'availableBalanceForDeposit' ) ?? 0 ),
 		);
-		set_transient( self::WALLET, $wallet, 5 * MINUTE_IN_SECONDS );
+		set_transient( self::wallet_key(), $wallet, 5 * MINUTE_IN_SECONDS );
 		return $wallet;
+	}
+
+	/**
+	 * Cache key of the wallet of the tokens in use: changing or removing a token never shows the old account's balance.
+	 *
+	 * @return string
+	 */
+	public static function wallet_key() {
+		$account = WC_Frenet_Labels_Settings::store_token() . '|' . WC_Frenet_Labels_Settings::get( 'partner_token' ) . '|' . WC_Frenet_Labels_Settings::get( 'api_url' );
+		return self::WALLET . '_' . substr( md5( $account ), 0, 12 );
+	}
+
+	/**
+	 * Forgets the cached balance (after buying, cancelling, depositing or saving the settings).
+	 *
+	 * @return void
+	 */
+	public static function forget_wallet() {
+		delete_transient( self::wallet_key() );
+		// Key used up to 2.1.25: dropped so it never comes back.
+		delete_transient( self::WALLET );
 	}
 
 	/**
