@@ -210,7 +210,9 @@ class WC_Frenet extends WC_Shipping_Method {
                 'title' => __('Shipping Simulator', 'woo-shipping-gateway'),
                 'type' => 'checkbox',
                 'label' => __('Enable', 'woo-shipping-gateway'),
-                'description' => __('Display shipping simulator in single product', 'woo-shipping-gateway'),
+                'description' => WC_Frenet_Helper::other_product_calculator()
+                    ? __('Correios Automático already shows its shipping calculator on the product page, with the Frenet rates, so the Frenet simulator stays hidden. To use the Frenet one, turn off the calculator in Correios Automático settings.', 'woo-shipping-gateway')
+                    : __('Display shipping simulator in single product', 'woo-shipping-gateway'),
                 'desc_tip' => true,
                 'default' => 'yes'
             ),

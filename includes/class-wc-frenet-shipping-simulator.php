@@ -126,7 +126,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         }
 
         $helper = new WC_Frenet_Helper;
-        if (!$helper->is_simulator_enabled()) {
+        if (!$helper->is_simulator_enabled() || WC_Frenet_Helper::other_product_calculator()) {
             return;
         }
 
@@ -162,7 +162,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
         }
 
         $helper = new WC_Frenet_Helper;
-        if (!$helper->is_simulator_enabled()) {
+        if (!$helper->is_simulator_enabled() || WC_Frenet_Helper::other_product_calculator()) {
             return;
         }
 
