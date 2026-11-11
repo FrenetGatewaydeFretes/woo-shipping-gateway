@@ -183,11 +183,17 @@ class WC_Frenet_Labels_Admin {
 	}
 
 	/**
-	 * Strings used by admin-labels.js.
+	 * Strings used by admin-labels.js; counted ones as array{one: string, other: string}.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|array{one: string, other: string}>
 	 */
 	private static function js_strings() {
+		$plural = static function ( array $noop ) {
+			return array(
+				'one'   => translate_nooped_plural( $noop, 1, 'woo-shipping-gateway' ),
+				'other' => translate_nooped_plural( $noop, 2, 'woo-shipping-gateway' ),
+			);
+		};
 		return array(
 			'calculating'   => __( 'Calculating freight…', 'woo-shipping-gateway' ),
 			'cepLoading'    => __( 'Looking up the CEP…', 'woo-shipping-gateway' ),
@@ -212,61 +218,47 @@ class WC_Frenet_Labels_Admin {
 			'bestPriceAll'  => __( 'Best price (any carrier)', 'woo-shipping-gateway' ),
 			'bestTimeAll'   => __( 'Fastest (any carrier)', 'woo-shipping-gateway' ),
 			/* translators: 1: carrier name or option, 2: number of orders */
-			'applied'       => __( '%1$s selected in %2$d orders.', 'woo-shipping-gateway' ),
-			/* translators: 1: carrier name or option, 2: number of orders (always 1) */
-			'appliedOne'    => __( '%1$s selected in %2$d order.', 'woo-shipping-gateway' ),
-			/* translators: 1: carrier name, 2: orders where it was selected, 3: orders where it is not available */
-			'appliedPartly' => __( '%1$s selected in %2$d orders; not available in %3$d, which kept their carrier.', 'woo-shipping-gateway' ),
+			'applied'       => $plural( _n_noop( '%1$s selected in %2$d order.', '%1$s selected in %2$d orders.', 'woo-shipping-gateway' ) ),
+			/* translators: %d: number of orders where the carrier is not available */
+			'notAvailable'  => $plural( _n_noop( 'Not available in %d order, which kept its carrier.', 'Not available in %d orders, which kept their carrier.', 'woo-shipping-gateway' ) ),
 			/* translators: %d: business days */
-			'upToDays'      => __( 'up to %d business days', 'woo-shipping-gateway' ),
-			/* translators: %d: business days (always 1) */
-			'upToDay'       => __( 'up to %d business day', 'woo-shipping-gateway' ),
+			'upToDays'      => $plural( _n_noop( 'up to %d business day', 'up to %d business days', 'woo-shipping-gateway' ) ),
 			/* translators: %d: business days */
-			'days'          => __( '%d business days', 'woo-shipping-gateway' ),
-			/* translators: %d: business days (always 1) */
-			'day'           => __( '%d business day', 'woo-shipping-gateway' ),
+			'days'          => $plural( _n_noop( '%d business day', '%d business days', 'woo-shipping-gateway' ) ),
 			/* translators: 1: number of labels, 2: total amount */
-			'buyHere'       => __( 'Buy %1$d labels · %2$s', 'woo-shipping-gateway' ),
-			/* translators: %s: amount */
-			'buyHereOne'    => __( 'Buy 1 label · %s', 'woo-shipping-gateway' ),
+			'buyHere'       => $plural( _n_noop( 'Buy %1$d label · %2$s', 'Buy %1$d labels · %2$s', 'woo-shipping-gateway' ) ),
 			/* translators: %d: number of shipments */
-			'createOnly'    => __( 'Create %d shipments (pay later in Labels)', 'woo-shipping-gateway' ),
+			'createOnly'    => $plural( _n_noop( 'Create %d shipment (pay later in Labels)', 'Create %d shipments (pay later in Labels)', 'woo-shipping-gateway' ) ),
 			// Review: orders without an NF-e key get a DC-e from Frenet.
 			'optional'      => __( 'optional', 'woo-shipping-gateway' ),
 			'dceOne'        => __( 'This order has no NF-e key: Frenet will generate a DC-e for it.', 'woo-shipping-gateway' ),
 			/* translators: %d: number of orders */
 			'dceAll'        => __( 'None of the %d orders has an NF-e key: Frenet will generate a DC-e for each one.', 'woo-shipping-gateway' ),
-			/* translators: 1: orders without NF-e key (always 1), 2: selected orders */
-			'dceSomeOne'    => __( '%1$d of the %2$d orders has no NF-e key: Frenet will generate a DC-e for it.', 'woo-shipping-gateway' ),
 			/* translators: 1: orders without NF-e key, 2: selected orders */
-			'dceSome'       => __( '%1$d of the %2$d orders have no NF-e key: Frenet will generate a DC-e for them.', 'woo-shipping-gateway' ),
+			'dceSome'       => $plural( _n_noop( '%1$d of the %2$d orders has no NF-e key: Frenet will generate a DC-e for it.', '%1$d of the %2$d orders have no NF-e key: Frenet will generate a DC-e for them.', 'woo-shipping-gateway' ) ),
 			// Carriers that require an NF-e key (learned from Frenet's refusals).
 			'needsNfe'      => __( 'requires NF-e', 'woo-shipping-gateway' ),
-			/* translators: %d: number of orders (always 1) */
-			'needsNfeOne'   => __( '%d order has no NF-e key and this carrier requires one: add the key or choose another carrier.', 'woo-shipping-gateway' ),
 			/* translators: %d: number of orders */
-			'needsNfeSome'  => __( '%d orders have no NF-e key and this carrier requires one: add the keys or choose another carrier.', 'woo-shipping-gateway' ),
-			/* translators: 1: number of orders (always 1), 2: carrier names */
-			'refusedOne'    => __( '%1$d order has no NF-e key and goes with %2$s, which requires one: Frenet will refuse it. Go back, add the key or choose another carrier.', 'woo-shipping-gateway' ),
+			'nfeMissing'    => $plural( _n_noop( '%d order has no NF-e key and this carrier requires one: add the key or choose another carrier.', '%d orders have no NF-e key and this carrier requires one: add the keys or choose another carrier.', 'woo-shipping-gateway' ) ),
 			/* translators: 1: number of orders, 2: carrier names */
-			'refusedSome'   => __( '%1$d orders have no NF-e key and go with %2$s, which requires one: Frenet will refuse them. Go back, add the keys or choose another carrier.', 'woo-shipping-gateway' ),
+			'refused'       => $plural( _n_noop( '%1$d order has no NF-e key and goes with %2$s, which requires one: Frenet will refuse it. Go back, add the key or choose another carrier.', '%1$d orders have no NF-e key and go with %2$s, which requires one: Frenet will refuse them. Go back, add the keys or choose another carrier.', 'woo-shipping-gateway' ) ),
 			'working'       => __( 'Working… do not close this page.', 'woo-shipping-gateway' ),
 			'done'          => __( 'Done', 'woo-shipping-gateway' ),
 			'failed'        => __( 'Not created', 'woo-shipping-gateway' ),
 			// Outcome of the run: the Notes column keeps why a label failed.
-			/* translators: %d: number of orders */
-			'doneAll'       => __( 'Done: %d shipments created.', 'woo-shipping-gateway' ),
-			/* translators: %d: number of orders (always 1) */
-			'doneAllOne'    => __( 'Done: %d shipment created.', 'woo-shipping-gateway' ),
-			/* translators: 1: orders that went through, 2: orders with an error */
-			'doneFailed'    => __( 'Done: %1$d went through, %2$d with an error. See the Notes column of the red rows.', 'woo-shipping-gateway' ),
+			/* translators: %d: number of shipments created */
+			'doneAll'       => $plural( _n_noop( 'Done: %d shipment created.', 'Done: %d shipments created.', 'woo-shipping-gateway' ) ),
+			/* translators: %d: number of orders with an error */
+			'doneFailed'    => $plural( _n_noop( '%d order with an error: see the Notes column of the red row.', '%d orders with an error: see the Notes column of the red rows.', 'woo-shipping-gateway' ) ),
 			'notEnough'     => __( 'Your balance does not cover this total. Add balance at the top of this screen or select fewer orders.', 'woo-shipping-gateway' ),
 			'noBalance'     => __( 'Not enough balance', 'woo-shipping-gateway' ),
 			/* translators: %s: amount */
 			'missing'       => __( 'Missing %s', 'woo-shipping-gateway' ),
 			'confirmCancel' => __( 'Cancel this Frenet label? If it was paid, Frenet returns the amount to the wallet (usually overnight).', 'woo-shipping-gateway' ),
 			/* translators: 1: number of labels, 2: total amount */
-			'confirmPay'    => __( 'Pay %1$d labels with the Frenet wallet (%2$s)?', 'woo-shipping-gateway' ),
+			'confirmPay'    => $plural( _n_noop( 'Pay %1$d label with the Frenet wallet (%2$s)?', 'Pay %1$d labels with the Frenet wallet (%2$s)?', 'woo-shipping-gateway' ) ),
+			/* translators: 1: number of labels, 2: total amount */
+			'payButton'     => $plural( _n_noop( 'Pay %1$d label · %2$s', 'Pay %1$d labels · %2$s', 'woo-shipping-gateway' ) ),
 			'saved'         => __( 'Saved', 'woo-shipping-gateway' ),
 			// Ponto de postagem.
 			'noDefault'     => __( 'No default point', 'woo-shipping-gateway' ),
@@ -278,11 +270,9 @@ class WC_Frenet_Labels_Admin {
 			'loadingPoints' => __( 'Searching drop-off points…', 'woo-shipping-gateway' ),
 			'noPoints'      => __( 'This carrier has no drop-off points to choose near this CEP.', 'woo-shipping-gateway' ),
 			/* translators: %d: number of drop-off points */
-			'pointsFound'   => __( '%d points found. Type to filter.', 'woo-shipping-gateway' ),
-			/* translators: %d: number of drop-off points (always 1) */
-			'pointFound'    => __( '%d point found.', 'woo-shipping-gateway' ),
+			'pointsFound'   => $plural( _n_noop( '%d point found.', '%d points found. Type to filter.', 'woo-shipping-gateway' ) ),
 			/* translators: 1: points shown, 2: points found */
-			'pointsShown'   => __( '%1$d of %2$d points', 'woo-shipping-gateway' ),
+			'pointsShown'   => $plural( _n_noop( '%1$d of %2$d point', '%1$d of %2$d points', 'woo-shipping-gateway' ) ),
 			'openPanel'     => __( 'Open the Frenet panel', 'woo-shipping-gateway' ),
 			'updating'      => __( 'Updating…', 'woo-shipping-gateway' ),
 			'balanceOk'     => __( 'Balance updated', 'woo-shipping-gateway' ),

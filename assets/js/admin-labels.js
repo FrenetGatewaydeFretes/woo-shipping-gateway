@@ -20,6 +20,10 @@
 		} );
 	}
 
+	function plural( forms, n ) {
+		return 1 === Number( n ) ? forms.one : forms.other;
+	}
+
 	function money( v ) {
 		return 'R$ ' + Number( v || 0 ).toLocaleString( 'pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 } );
 	}
@@ -564,7 +568,7 @@
 			}
 			return {
 				name: s.carrier + ' · ' + s.name,
-				sub: money( s.price ) + ' · ' + fmt( 1 === Number( s.days ) ? t.day : t.days, s.days ) + ( tags.length ? ' · ' + tags.join( ' · ' ) : '' )
+				sub: money( s.price ) + ' · ' + fmt( plural( t.days, s.days ), s.days ) + ( tags.length ? ' · ' + tags.join( ' · ' ) : '' )
 			};
 		};
 
@@ -781,7 +785,7 @@
 				if ( s.needs_nfe && ! hasNfe( row ) ) {
 					tags.push( t.needsNfe );
 				}
-				var o = el( 'option', '', s.carrier + ' · ' + s.name + ' — ' + money( s.price ) + ' · ' + fmt( 1 === Number( s.days ) ? t.day : t.days, s.days ) + ( tags.length ? ' (' + tags.join( ', ' ) + ')' : '' ) );
+				var o = el( 'option', '', s.carrier + ' · ' + s.name + ' — ' + money( s.price ) + ' · ' + fmt( plural( t.days, s.days ), s.days ) + ( tags.length ? ' (' + tags.join( ', ' ) + ')' : '' ) );
 				o.value = s.code;
 				o.selected = s.code === ( keep || data[ 'default' ] );
 				select.appendChild( o );
@@ -850,12 +854,10 @@
 			var missing = applyChoice();
 			renderSummary();
 			var n = quoted().length;
-			status.textContent = missing
-				? fmt( t.appliedPartly, label, n - missing, missing )
-				: fmt( 1 === n ? t.appliedOne : t.applied, label, n );
+			status.textContent = fmt( plural( t.applied, n - missing ), label, n - missing ) + ( missing ? ' ' + fmt( plural( t.notAvailable, missing ), missing ) : '' );
 			var blocked = blockedBy( selection() ).length;
 			if ( blocked ) {
-				status.textContent += ' ' + fmt( 1 === blocked ? t.needsNfeOne : t.needsNfeSome, blocked );
+				status.textContent += ' ' + fmt( plural( t.nfeMissing, blocked ), blocked );
 			}
 		};
 
@@ -896,7 +898,7 @@
 			}
 			td.appendChild( el( 'span', 'frenet-block', money( price ) ) );
 			if ( days > 0 ) {
-				td.appendChild( el( 'span', 'frenet-muted frenet-small', fmt( 1 === days ? t.upToDay : t.upToDays, days ) ) );
+				td.appendChild( el( 'span', 'frenet-muted frenet-small', fmt( plural( t.upToDays, days ), days ) ) );
 			}
 			return td;
 		};
@@ -1096,15 +1098,15 @@
 				}
 			}
 			if ( pays ) {
-				confirm.textContent = 1 === sel.length ? fmt( t.buyHereOne, money( total ) ) : fmt( t.buyHere, sel.length, money( total ) );
+				confirm.textContent = fmt( plural( t.buyHere, sel.length ), sel.length, money( total ) );
 			} else {
-				confirm.textContent = fmt( t.createOnly, sel.length );
+				confirm.textContent = fmt( plural( t.createOnly, sel.length ), sel.length );
 			}
 			// Carriers that require an NF-e key refuse orders without one: say it before anything is sent.
 			var blocked = blockedBy( sel );
 			var nfeWarn = dialog.querySelector( '[data-frenet-review-nfe]' );
 			nfeWarn.hidden = ! blocked.length;
-			nfeWarn.textContent = blocked.length ? fmt( 1 === blocked.length ? t.refusedOne : t.refusedSome, blocked.length, blocked.map( function ( x ) {
+			nfeWarn.textContent = blocked.length ? fmt( plural( t.refused, blocked.length ), blocked.length, blocked.map( function ( x ) {
 				return carrierOf( x.service );
 			} ).filter( function ( v, k, a ) {
 				return a.indexOf( v ) === k;
@@ -1117,7 +1119,7 @@
 			dce.hidden = ! noNfe;
 			dialog.querySelector( '[data-frenet-review-dce-title]' ).textContent = noNfe === sel.length
 				? ( 1 === noNfe ? t.dceOne : fmt( t.dceAll, noNfe ) )
-				: fmt( 1 === noNfe ? t.dceSomeOne : t.dceSome, noNfe, sel.length );
+				: fmt( plural( t.dceSome, noNfe ), noNfe, sel.length );
 			dialog.querySelector( '[data-frenet-review-note]' ).textContent = '';
 			dialog.returnValue = '';
 			dialog.showModal();
@@ -1136,7 +1138,7 @@
 			var next = function () {
 				if ( i >= sel.length ) {
 					renderSummary();
-					status.textContent = failed ? fmt( t.doneFailed, sel.length - failed, failed ) : fmt( 1 === sel.length ? t.doneAllOne : t.doneAll, sel.length );
+					status.textContent = fmt( plural( t.doneAll, sel.length - failed ), sel.length - failed ) + ( failed ? ' ' + fmt( plural( t.doneFailed, failed ), failed ) : '' );
 					if ( failed ) {
 						var first = create.querySelector( 'tr.is-failed' );
 						if ( first ) {
@@ -1238,7 +1240,7 @@
 				return a + parseFloat( r.getAttribute( 'data-price' ) || 0 );
 			}, 0 );
 			btnPay.disabled = ! unpaid.length;
-			btnPay.textContent = unpaid.length ? fmt( t.confirmPay, unpaid.length, money( sum ) ).replace( /\?$/, '' ) : btnPay.getAttribute( 'data-label' );
+			btnPay.textContent = unpaid.length ? fmt( plural( t.payButton, unpaid.length ), unpaid.length, money( sum ) ) : btnPay.getAttribute( 'data-label' );
 			if ( btnPrint ) {
 				btnPrint.disabled = ! paid.length;
 			}
@@ -1282,7 +1284,7 @@
 			var sum = unpaid.reduce( function ( a, r ) {
 				return a + parseFloat( r.getAttribute( 'data-price' ) || 0 );
 			}, 0 );
-			if ( ! unpaid.length || ! window.confirm( fmt( t.confirmPay, unpaid.length, money( sum ) ) ) ) {
+			if ( ! unpaid.length || ! window.confirm( fmt( plural( t.confirmPay, unpaid.length ), unpaid.length, money( sum ) ) ) ) {
 				return;
 			}
 			btnPay.disabled = true;
@@ -1427,7 +1429,7 @@
 				o.selected = b.id === keep;
 				dBranch.appendChild( o );
 			} );
-			dCount.textContent = q ? fmt( t.pointsShown, shown.length, points.length ) : fmt( 1 === points.length ? t.pointFound : t.pointsFound, points.length );
+			dCount.textContent = q ? fmt( plural( t.pointsShown, points.length ), shown.length, points.length ) : fmt( plural( t.pointsFound, points.length ), points.length );
 			syncSave();
 		};
 		var search = function () {
