@@ -53,7 +53,7 @@ $frenet_format = WC_Frenet_Labels_Settings::get( 'label_format' );
 			<?php foreach ( $frenet_paid as $frenet_s ) : ?>
 				<?php $frenet_q = (array) ( $frenet_s['quotation'] ?? array() ); ?>
 				<tr>
-					<th scope="row" class="check-column"><input type="checkbox" name="ids[]" value="<?php echo esc_attr( (string) $frenet_s['shipmentId'] ); ?>" data-frenet-pick checked></th>
+					<th scope="row" class="check-column"><input type="checkbox" name="ids[]" value="<?php echo esc_attr( (string) $frenet_s['shipmentId'] ); ?>" data-frenet-pick checked aria-label="<?php /* translators: %s: shipment */ echo esc_attr( sprintf( __( 'Select shipment %s', 'woo-shipping-gateway' ), (string) $frenet_s['shipmentId'] ) ); ?>"></th>
 					<td class="frenet-code"><?php echo esc_html( (string) $frenet_s['shipmentId'] ); ?></td>
 					<td><?php echo esc_html( mb_strimwidth( (string) ( $frenet_s['orderId'] ?? '' ), 0, 14, '…' ) ); ?></td>
 					<td><span class="frenet-service"><?php echo wp_kses( WC_Frenet_Labels_Carriers::html( (string) ( $frenet_q['carrierCode'] ?? '' ), (string) ( $frenet_q['carrier'] ?? '' ) ), WC_Frenet_Labels_Carriers::kses() ); ?><span><?php echo esc_html( trim( (string) ( $frenet_q['shippingServiceName'] ?? $frenet_q['shippingServiceCode'] ?? '' ) ) ); ?></span></span></td>
