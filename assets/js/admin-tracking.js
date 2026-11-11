@@ -35,6 +35,15 @@
 		}
 	}
 
+	function fmt( str ) {
+		var args = Array.prototype.slice.call( arguments, 1 );
+		var i = 0;
+		return String( str ).replace( /%(\d+\$)?[sd]/g, function ( m, pos ) {
+			var v = pos ? args[ parseInt( pos, 10 ) - 1 ] : args[ i++ ];
+			return v === undefined ? m : String( v );
+		} );
+	}
+
 	function node( tag, cls, text ) {
 		var n = document.createElement( tag );
 		if ( cls ) {
@@ -85,7 +94,7 @@
 			}
 			// No events is normal right after the label is created: say so in a calm tone, never as an error.
 			if ( s.note ) {
-				say( msg, t.checkedNote.replace( '%s', s.note ), 'warn' );
+				say( msg, fmt( t.checkedNote, s.note ), 'warn' );
 			} else if ( s.pending ) {
 				say( msg, t.checkedNone, 'ok' );
 			} else {
@@ -108,7 +117,7 @@
 		btn.disabled = true;
 		say( msg, t.updating, 'loading' );
 		post( 'sync_all', {} ).then( function ( r ) {
-			say( msg, t.syncedAll.replace( '%1$d', r.synced ).replace( '%2$d', r.changed ).replace( '%3$d', r.pending || 0 ).replace( '%4$d', r.errors ), r.errors ? 'warn' : 'ok' );
+			say( msg, fmt( t.syncedAll, r.synced, r.changed, r.pending || 0, r.errors ), r.errors ? 'warn' : 'ok' );
 			window.setTimeout( function () { window.location.reload(); }, 1500 );
 		} ).catch( function ( err ) {
 			say( msg, err.message, 'error' );
@@ -197,13 +206,13 @@
 			} );
 			var parts = [];
 			if ( p.invalid.length ) {
-				parts.push( t.invalid.replace( '%s', p.invalid.join( ', ' ) ) );
+				parts.push( fmt( t.invalid, p.invalid.join( ', ' ) ) );
 			}
 			if ( ! p.apply ) {
 				parts.unshift( t.nothing );
 			}
 			say( status, parts.join( ' ' ), p.invalid.length || ! p.apply ? 'warn' : '' );
-			apply.textContent = p.apply === 1 ? t.applyOne : t.applyN.replace( '%d', p.apply );
+			apply.textContent = p.apply === 1 ? t.applyOne : fmt( t.applyN, p.apply );
 			apply.disabled = ! p.apply;
 			box.hidden = false;
 			lines.readOnly = true;
@@ -226,7 +235,7 @@
 		apply.disabled = true;
 		say( status, t.saving, 'loading' );
 		post( 'import', { lines: lines.value, notify: notifyBox.checked ? '1' : '' } ).then( function ( r ) {
-			say( status, t.imported.replace( '%1$d', r.applied ).replace( '%2$d', r.skipped ), 'ok' );
+			say( status, fmt( t.imported, r.applied, r.skipped ), 'ok' );
 			lines.value = '';
 			editMode();
 		} ).catch( function ( err ) {
