@@ -114,9 +114,9 @@ class WC_Frenet_Tracking {
 		require_once __DIR__ . '/emails/class-wc-frenet-email-tracking.php';
 		require_once __DIR__ . '/emails/class-wc-frenet-email-status.php';
 		$emails['WC_Frenet_Email_Tracking']         = new WC_Frenet_Email_Tracking();
-		$emails['WC_Frenet_Email_Status_Transit']   = new WC_Frenet_Email_Status( 'frenet-transit', __( 'Order in transit (Frenet)', 'woo-shipping-gateway' ), __( 'Your order #{order_number} is on its way', 'woo-shipping-gateway' ), 'no' );
-		$emails['WC_Frenet_Email_Status_Pickup']    = new WC_Frenet_Email_Status( 'frenet-pickup', __( 'Order awaiting pickup (Frenet)', 'woo-shipping-gateway' ), __( 'Your order #{order_number} is waiting for pickup', 'woo-shipping-gateway' ), 'yes' );
-		$emails['WC_Frenet_Email_Status_Delivered'] = new WC_Frenet_Email_Status( 'frenet-delivered', __( 'Order delivered (Frenet)', 'woo-shipping-gateway' ), __( 'Your order #{order_number} was delivered', 'woo-shipping-gateway' ), 'yes' );
+		$emails['WC_Frenet_Email_Status_Transit']   = new WC_Frenet_Email_Status( 'frenet-transit', 'no' );
+		$emails['WC_Frenet_Email_Status_Pickup']    = new WC_Frenet_Email_Status( 'frenet-pickup', 'yes' );
+		$emails['WC_Frenet_Email_Status_Delivered'] = new WC_Frenet_Email_Status( 'frenet-delivered', 'yes' );
 		return $emails;
 	}
 

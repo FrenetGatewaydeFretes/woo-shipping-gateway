@@ -15,13 +15,6 @@ class WC_Frenet_Email_Status extends WC_Email {
 	private $status;
 
 	/**
-	 * Default subject.
-	 *
-	 * @var string
-	 */
-	private $default_subject;
-
-	/**
 	 * Default of the "enabled" field.
 	 *
 	 * @var string
@@ -32,17 +25,14 @@ class WC_Frenet_Email_Status extends WC_Email {
 	 * Constructor.
 	 *
 	 * @param string $status          Status without "wc-".
-	 * @param string $title           Title in the e-mail list.
-	 * @param string $subject         Default subject.
 	 * @param string $enabled_default "yes" or "no".
 	 */
-	public function __construct( $status, $title, $subject, $enabled_default ) {
+	public function __construct( $status, $enabled_default ) {
 		$this->status          = $status;
 		$this->id              = 'frenet_status_' . str_replace( '-', '_', $status );
 		$this->customer_email  = true;
-		$this->title           = $title;
+		$this->title           = $this->texts()['title'];
 		$this->description     = __( 'Sent to the customer when the Frenet tracking moves the order to this status.', 'woo-shipping-gateway' );
-		$this->default_subject = $subject;
 		$this->template_html   = 'emails/frenet-status.php';
 		$this->template_plain  = 'emails/plain/frenet-status.php';
 		$this->template_base   = WOO_FRENET_PATH . 'templates/';
@@ -63,12 +53,40 @@ class WC_Frenet_Email_Status extends WC_Email {
 	}
 
 	/**
+	 * Title in the e-mail list, default subject and default heading of the status, translated when asked (so in the
+	 * customer's language while the e-mail is sent).
+	 *
+	 * @return array{title: string, subject: string, heading: string}
+	 */
+	private function texts() {
+		switch ( $this->status ) {
+			case 'frenet-pickup':
+				return array(
+					'title'   => __( 'Order awaiting pickup (Frenet)', 'woo-shipping-gateway' ),
+					'subject' => __( 'Your order #{order_number} is waiting for pickup', 'woo-shipping-gateway' ),
+					'heading' => __( 'Your order is waiting for pickup', 'woo-shipping-gateway' ),
+				);
+			case 'frenet-delivered':
+				return array(
+					'title'   => __( 'Order delivered (Frenet)', 'woo-shipping-gateway' ),
+					'subject' => __( 'Your order #{order_number} was delivered', 'woo-shipping-gateway' ),
+					'heading' => __( 'Your order was delivered', 'woo-shipping-gateway' ),
+				);
+		}
+		return array(
+			'title'   => __( 'Order in transit (Frenet)', 'woo-shipping-gateway' ),
+			'subject' => __( 'Your order #{order_number} is on its way', 'woo-shipping-gateway' ),
+			'heading' => __( 'Your order is on its way', 'woo-shipping-gateway' ),
+		);
+	}
+
+	/**
 	 * Default subject.
 	 *
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return $this->default_subject;
+		return $this->texts()['subject'];
 	}
 
 	/**
@@ -77,7 +95,7 @@ class WC_Frenet_Email_Status extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return $this->title;
+		return $this->texts()['heading'];
 	}
 
 	/**
