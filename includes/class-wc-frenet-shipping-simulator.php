@@ -209,7 +209,7 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             return false;
         }
 
-        if (!isset($post['zipcode']) || !$post['zipcode']) {
+        if (!isset($post['zipcode']) || 8 !== strlen(preg_replace('/\D/', '', $post['zipcode']))) {
             return false;
         }
 
@@ -307,7 +307,8 @@ class WC_Frenet_Shipping_Simulator extends WC_Frenet
             wp_send_json(array(), 429);
         }
 
-        $post = wp_unslash($_POST);
+        $fields = array_intersect_key(wp_unslash($_POST), array_flip(array('instance_id', 'zipcode', 'variation_id', 'product_id', 'quantity'))); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public quote on product pages that are often served from a page cache, where a nonce would be stale; each field is sanitized here and validated in validateData() before use.
+        $post = array_map('sanitize_text_field', array_filter($fields, 'is_scalar'));
         $shippingValues = [];
         if (!self::validateData($post)) {
             wp_send_json($shippingValues);
