@@ -87,8 +87,8 @@ class WC_Frenet_Labels_Settings {
 	}
 
 	/**
-	 * Saves only the known keys, sanitized. An empty partner token field keeps the saved one
-	 * (the field is never printed back into the page).
+	 * Saves only the known keys, sanitized. An empty token field keeps the saved token
+	 * (the tokens are never printed back into the page).
 	 *
 	 * @param array<string, mixed> $input Raw form values.
 	 * @return void
@@ -99,7 +99,8 @@ class WC_Frenet_Labels_Settings {
 		foreach ( array( 'enabled', 'auto_best', 'batch_print', 'wallet_payment', 'auto_create', 'auto_create_consent', 'autofill', 'tracking_sync', 'tracking_status', 'tracking_email' ) as $flag ) {
 			$out[ $flag ] = ! empty( $input[ $flag ] ) ? 'yes' : 'no';
 		}
-		$out['token']           = sanitize_text_field( (string) ( $input['token'] ?? '' ) );
+		$token                  = sanitize_text_field( (string) ( $input['token'] ?? '' ) );
+		$out['token']           = '' !== $token ? $token : $current['token'];
 		$partner                = sanitize_text_field( (string) ( $input['partner_token'] ?? '' ) );
 		$out['partner_token']   = '' !== $partner ? $partner : $current['partner_token'];
 		$out['api_url']         = isset( $input['api_url'] ) ? self::clean_api_url( $input['api_url'] ) : $current['api_url'];
@@ -119,6 +120,9 @@ class WC_Frenet_Labels_Settings {
 			$out['auto_create'] = 'no';
 		}
 		$out = array_merge( $out, self::sender_input( $input ) );
+		if ( ! empty( $input['clear_token'] ) ) {
+			$out['token'] = '';
+		}
 		if ( ! empty( $input['clear_partner_token'] ) ) {
 			$out['partner_token'] = '';
 		}

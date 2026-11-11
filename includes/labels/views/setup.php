@@ -74,7 +74,7 @@ $frenet_invalid = static function ( array $errors, $key ) {
 	<?php if ( 'account' === $frenet_current ) : ?>
 		<?php
 		$frenet_method_token = trim( (string) ( WC_Frenet_Labels_Settings::shipping_options()['token'] ?? '' ) );
-		$frenet_token_value  = $frenet_typed['token'] ?? $frenet_s['token'];
+		$frenet_has_token    = '' !== $frenet_s['token'];
 		$frenet_has_partner  = '' !== $frenet_s['partner_token'];
 		?>
 		<p class="frenet-setup__kicker"><?php esc_html_e( 'Step 1 of 2', 'woo-shipping-gateway' ); ?></p>
@@ -86,19 +86,26 @@ $frenet_invalid = static function ( array $errors, $key ) {
 			<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
 
 			<label class="frenet-field" for="frenet-setup-token"><?php esc_html_e( 'Store token', 'woo-shipping-gateway' ); ?></label>
-			<input id="frenet-setup-token" class="regular-text" type="password" name="frenet_labels[token]" value="<?php echo esc_attr( $frenet_token_value ); ?>" autocomplete="new-password" spellcheck="false"
-				placeholder="<?php echo esc_attr( '' !== $frenet_method_token ? __( 'Using the token of the Frenet shipping method', 'woo-shipping-gateway' ) : '' ); ?>"<?php echo $frenet_invalid( $frenet_errors, 'token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the closure. ?>>
+			<input id="frenet-setup-token" class="regular-text" type="password" name="frenet_labels[token]" value="" autocomplete="new-password" spellcheck="false"
+				placeholder="<?php echo esc_attr( $frenet_has_token ? __( 'Saved. Type a new one to replace it.', 'woo-shipping-gateway' ) : ( '' !== $frenet_method_token ? __( 'Using the token of the Frenet shipping method', 'woo-shipping-gateway' ) : '' ) ); ?>"<?php echo $frenet_invalid( $frenet_errors, 'token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the closure. ?>>
 			<?php $frenet_error( $frenet_errors, 'token' ); ?>
 			<p class="description">
 				<?php
-				echo esc_html(
-					'' !== $frenet_method_token
-						? __( 'Found in the Frenet shipping method: leave it empty to use that one.', 'woo-shipping-gateway' )
-						: __( 'The same token you use to quote freight. It is in the Frenet panel, in Integrations.', 'woo-shipping-gateway' )
-				);
+				if ( $frenet_has_token ) {
+					esc_html_e( 'Leave empty to keep the saved token. Remove it to use the token of the Frenet shipping method.', 'woo-shipping-gateway' );
+				} else {
+					echo esc_html(
+						'' !== $frenet_method_token
+							? __( 'Found in the Frenet shipping method: leave it empty to use that one.', 'woo-shipping-gateway' )
+							: __( 'The same token you use to quote freight. It is in the Frenet panel, in Integrations.', 'woo-shipping-gateway' )
+					);
+				}
 				?>
 				<a href="<?php echo esc_url( WC_Frenet_Labels_Admin::PANEL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open the Frenet panel', 'woo-shipping-gateway' ); ?></a>
 			</p>
+			<?php if ( $frenet_has_token ) : ?>
+				<label class="frenet-inline"><input type="checkbox" name="frenet_labels[clear_token]" value="1"> <?php esc_html_e( 'Remove the saved store token', 'woo-shipping-gateway' ); ?></label>
+			<?php endif; ?>
 
 			<label class="frenet-field" for="frenet-setup-partner"><?php esc_html_e( 'Partner token (optional, for labels)', 'woo-shipping-gateway' ); ?></label>
 			<input id="frenet-setup-partner" class="regular-text" type="password" name="frenet_labels[partner_token]" value="" autocomplete="new-password" spellcheck="false"

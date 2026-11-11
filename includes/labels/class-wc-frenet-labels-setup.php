@@ -307,9 +307,13 @@ class WC_Frenet_Labels_Setup {
 		$before  = WC_Frenet_Labels_Settings::get( 'partner_token' );
 		$values  = array(
 			'enabled'       => 'yes',
-			'token'         => $token,
 			'setup_account' => 'no',
 		);
+		if ( ! empty( $input['clear_token'] ) ) {
+			$values['token'] = '';
+		} elseif ( '' !== $token ) {
+			$values['token'] = $token;
+		}
 		if ( '' !== $partner ) {
 			$values['partner_token'] = $partner;
 		}
@@ -319,7 +323,7 @@ class WC_Frenet_Labels_Setup {
 			$errors['token'] = __( 'Paste the store token (Frenet panel > Integrations).', 'woo-shipping-gateway' );
 		}
 		if ( $errors ) {
-			self::flash( 'error', __( 'Fill in the highlighted fields.', 'woo-shipping-gateway' ), $errors, array( 'token' => $token ) );
+			self::flash( 'error', __( 'Fill in the highlighted fields.', 'woo-shipping-gateway' ), $errors );
 			return 'account';
 		}
 		WC_Frenet_Labels_Service::forget_wallet();
@@ -350,14 +354,14 @@ class WC_Frenet_Labels_Setup {
 							)
 						);
 					}
-					self::flash( 'error', __( 'Frenet did not accept this partner token, so it was not saved. The store token works: quotes, tracking and the balance keep working.', 'woo-shipping-gateway' ), $errors, array( 'token' => $token ) );
+					self::flash( 'error', __( 'Frenet did not accept this partner token, so it was not saved. The store token works: quotes, tracking and the balance keep working.', 'woo-shipping-gateway' ), $errors );
 					return 'account';
 			}
 			$message = $errors
 				? __( 'Frenet did not accept the tokens. Nothing was saved as connected.', 'woo-shipping-gateway' )
 				/* translators: %s: Frenet answer */
 				: sprintf( __( 'Could not check the account with Frenet: %s Try again in a minute.', 'woo-shipping-gateway' ), $wallet->get_error_message() );
-			self::flash( 'error', $message, $errors, array( 'token' => $token ) );
+			self::flash( 'error', $message, $errors );
 			return 'account';
 		}
 		WC_Frenet_Labels_Settings::update( array( 'setup_account' => 'yes' ) );
