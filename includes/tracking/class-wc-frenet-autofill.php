@@ -6,7 +6,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Fills street, neighborhood, city and state from the CEP in the classic checkout, the checkout
  * and cart blocks and My Account > Addresses. Lookups go to the Frenet API (GET /CEP/Address) with
- * the store token, are cached for 30 days per CEP and throttled per visitor. The storefront asks the public
+ * the store token, are cached for 30 days per CEP and the lookups that reach Frenet are throttled per
+ * visitor and for the whole store. The storefront asks the public
  * read-only route GET /wp-json/frenet/v1/cep/{cep}, which works on cached pages (no nonce).
  */
 class WC_Frenet_Autofill {
@@ -15,6 +16,8 @@ class WC_Frenet_Autofill {
 	const ROUTE    = 'frenet/v1';
 	const CACHE    = 'wc_frenet_cep_';
 	const THROTTLE = 30; // Lookups per visitor per minute.
+	const GLOBAL   = 120;
+	const RATE     = 'wc_frenet_cep_rl_';
 
 	/**
 	 * Hooks (only when switched on in Frenet > Settings).
@@ -89,8 +92,8 @@ class WC_Frenet_Autofill {
 		if ( 8 !== strlen( $cep ) ) {
 			return new WP_Error( 'frenet_cep_invalid', __( 'A CEP has 8 digits.', 'woo-shipping-gateway' ) );
 		}
-		$hit = get_transient( self::CACHE . $cep );
-		if ( is_array( $hit ) ) {
+		$hit = self::cached( $cep );
+		if ( $hit ) {
 			return $hit;
 		}
 		$data = WC_Frenet_Labels_Api::address( $cep );
@@ -103,6 +106,35 @@ class WC_Frenet_Autofill {
 		}
 		set_transient( self::CACHE . $cep, $address, 30 * DAY_IN_SECONDS );
 		return $address;
+	}
+
+	/**
+	 * Address of a CEP already in the 30-day cache.
+	 *
+	 * @param string $cep Digits.
+	 * @return array{postcode: string, address_1: string, district: string, city: string, state: string}|null
+	 */
+	private static function cached( $cep ) {
+		$hit = get_transient( self::CACHE . $cep );
+		return is_array( $hit ) ? $hit : null;
+	}
+
+	/**
+	 * Lookup asked by a visitor: cached CEPs answer at once, the others count against the limits first.
+	 *
+	 * @param string $cep Postcode in any format.
+	 * @return array{postcode: string, address_1: string, district: string, city: string, state: string}|WP_Error
+	 */
+	private static function visitor_lookup( $cep ) {
+		$cep = (string) preg_replace( '/\D/', '', (string) $cep );
+		$hit = 8 === strlen( $cep ) ? self::cached( $cep ) : null;
+		if ( $hit ) {
+			return $hit;
+		}
+		if ( 8 === strlen( $cep ) && self::throttled() ) {
+			return new WP_Error( 'frenet_cep_throttled', __( 'Too many lookups. Wait a minute and try again.', 'woo-shipping-gateway' ) );
+		}
+		return self::lookup( $cep );
 	}
 
 	/**
@@ -157,14 +189,12 @@ class WC_Frenet_Autofill {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public static function rest( WP_REST_Request $request ) {
-		if ( self::throttled() ) {
-			return new WP_Error( 'frenet_cep_throttled', self::throttle_message(), array( 'status' => 429 ) );
-		}
-		$address = self::lookup( (string) $request['cep'] );
+		$address = self::visitor_lookup( (string) $request['cep'] );
 		if ( is_wp_error( $address ) ) {
 			$codes = array(
 				'frenet_cep_invalid'   => 400,
 				'frenet_cep_not_found' => 404,
+				'frenet_cep_throttled' => 429,
 			);
 			return new WP_Error( $address->get_error_code(), $address->get_error_message(), array( 'status' => $codes[ $address->get_error_code() ] ?? 502 ) );
 		}
@@ -172,28 +202,81 @@ class WC_Frenet_Autofill {
 	}
 
 	/**
-	 * Counts a lookup of the visitor; true when over the limit.
+	 * Counts a lookup that will reach Frenet; true when the visitor or the whole store is over its limit.
 	 *
 	 * @return bool
 	 */
 	private static function throttled() {
-		$ip   = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		$key  = 'wc_frenet_cep_rl_' . md5( $ip );
-		$hits = (int) get_transient( $key );
-		if ( $hits >= self::THROTTLE ) {
+		/**
+		 * CEP lookups that may reach Frenet per visitor IP per minute (0 = no limit).
+		 *
+		 * @since 2.1.26
+		 *
+		 * @param int $limit Lookups.
+		 */
+		$per_ip = (int) apply_filters( 'wc_frenet_cep_lookups_per_ip', self::THROTTLE );
+		/**
+		 * CEP lookups that may reach Frenet per minute for the whole store (0 = no limit).
+		 *
+		 * @since 2.1.26
+		 *
+		 * @param int $limit Lookups.
+		 */
+		$global = (int) apply_filters( 'wc_frenet_cep_lookups_per_minute', self::GLOBAL );
+		if ( $per_ip > 0 && self::hit( md5( self::client_ip() ) ) > $per_ip ) {
 			return true;
 		}
-		set_transient( $key, $hits + 1, MINUTE_IN_SECONDS );
-		return false;
+		return $global > 0 && self::hit( 'all' ) > $global;
 	}
 
 	/**
-	 * Message of a throttled lookup.
+	 * Adds one to a one-minute counter and returns it (object cache when there is one, transients otherwise).
+	 *
+	 * @param string $bucket Counter name.
+	 * @return int
+	 */
+	private static function hit( $bucket ) {
+		$key = self::RATE . $bucket;
+		if ( wp_using_ext_object_cache() ) {
+			wp_cache_add( $key, 0, 'wc_frenet', MINUTE_IN_SECONDS );
+			$hits = wp_cache_incr( $key, 1, 'wc_frenet' );
+			if ( false !== $hits ) {
+				return (int) $hits;
+			}
+		}
+		$hits = (int) get_transient( $key ) + 1;
+		set_transient( $key, $hits, MINUTE_IN_SECONDS );
+		return $hits;
+	}
+
+	/**
+	 * Visitor IP: REMOTE_ADDR, or the header named by the wc_frenet_cep_client_ip_header filter (e.g. CF-Connecting-IP).
 	 *
 	 * @return string
 	 */
-	private static function throttle_message() {
-		return __( 'Too many lookups. Wait a minute and try again.', 'woo-shipping-gateway' );
+	private static function client_ip() {
+		/**
+		 * Request header holding the visitor IP set by a trusted proxy (e.g. CF-Connecting-IP); empty uses REMOTE_ADDR.
+		 *
+		 * @since 2.1.26
+		 *
+		 * @param string $header Header name.
+		 */
+		$header = (string) apply_filters( 'wc_frenet_cep_client_ip_header', '' );
+		$key    = '' === $header ? '' : 'HTTP_' . strtoupper( str_replace( '-', '_', $header ) );
+		$values = array();
+		if ( '' !== $key && isset( $_SERVER[ $key ] ) ) {
+			$values[] = trim( explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) ) )[0] );
+		}
+		if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			$values[] = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+		}
+		foreach ( $values as $ip ) {
+			if ( false !== filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+				return $ip;
+			}
+		}
+		return '';
 	}
 
 	/**
@@ -203,11 +286,11 @@ class WC_Frenet_Autofill {
 	 * @return void
 	 */
 	public static function ajax() {
-		if ( self::throttled() ) {
-			wp_send_json_error( array( 'message' => self::throttle_message() ), 429 );
-		}
 		$cep     = isset( $_POST['cep'] ) ? sanitize_text_field( wp_unslash( $_POST['cep'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only lookup; a nonce cached with the page would only break it.
-		$address = self::lookup( $cep );
+		$address = self::visitor_lookup( $cep );
+		if ( is_wp_error( $address ) && 'frenet_cep_throttled' === $address->get_error_code() ) {
+			wp_send_json_error( array( 'message' => $address->get_error_message() ), 429 );
+		}
 		if ( is_wp_error( $address ) ) {
 			wp_send_json_error( array( 'message' => $address->get_error_message() ) ); // 200: an unknown CEP is an answer, not a server error.
 		}
