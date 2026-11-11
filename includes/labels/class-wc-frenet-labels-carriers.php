@@ -206,11 +206,6 @@ class WC_Frenet_Labels_Carriers {
 	}
 
 	/**
-	 * What the page script needs to draw the same thing: logo URLs, colours and name needles.
-	 *
-	 * @return array<string, array<string, string>>
-	 */
-	/**
 	 * Display name of a carrier code ("LOG" → "Loggi"); the code itself when unknown.
 	 *
 	 * @param string $code Carrier code.
@@ -221,6 +216,11 @@ class WC_Frenet_Labels_Carriers {
 		return self::LABELS[ $code ] ?? $code;
 	}
 
+	/**
+	 * What the page script needs to draw the same thing: logo URLs, colours and name needles.
+	 *
+	 * @return array<string, array<string, string>>
+	 */
 	public static function js() {
 		$logos = array();
 		foreach ( array_keys( self::FILES ) as $code ) {
