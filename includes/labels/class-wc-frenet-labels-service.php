@@ -26,6 +26,10 @@ class WC_Frenet_Labels_Service {
 	const RECOVER_HOOK    = 'woocommerce_frenet_labels_recover';
 	const RECOVER_MAX     = 5;
 
+	/** Option row that lets one wallet payment run at a time, and after how many seconds a lock left behind is dropped. */
+	const PAY_LOCK     = 'wc_frenet_labels_pay_lock';
+	const PAY_LOCK_TTL = 120;
+
 	/** Smallest deposit Mercado Pago takes through Frenet: R$ 3 is refused, R$ 4 passes (validated live 2026-10-27). */
 	const DEPOSIT_MIN = 5;
 
@@ -365,13 +369,31 @@ class WC_Frenet_Labels_Service {
 	/**
 	 * Pays shipments with the wallet (the "cart"). The real status of each one decides.
 	 *
-	 * Labels Frenet already paid or cancelled are never sent again; the price of each one is Frenet's own.
+	 * Labels Frenet already paid or cancelled are never sent again; the price of each one is Frenet's own. One payment
+	 * runs at a time, so the automatic shipments and "Pay selected" never pass the balance check together.
 	 *
 	 * @param array<int, string> $ids Shipment ids.
 	 * @return array{statuses: array<string, int>, total: float, message: string, unknown: bool}
 	 */
 	public static function pay( array $ids ) {
-		$ids      = array_values( array_unique( array_filter( array_map( 'strval', $ids ), array( __CLASS__, 'is_shipment_id' ) ) ) );
+		$ids = array_values( array_unique( array_filter( array_map( 'strval', $ids ), array( __CLASS__, 'is_shipment_id' ) ) ) );
+		if ( ! self::lock_payment() ) {
+			return self::pay_result( array(), 0.0, __( 'Another wallet payment is running right now, so this one was not sent. Nothing was charged: try again in a moment in Labels.', 'woo-shipping-gateway' ), false );
+		}
+		try {
+			return self::pay_now( $ids );
+		} finally {
+			self::unlock_payment();
+		}
+	}
+
+	/**
+	 * Pays shipments while holding the payment lock (see pay()).
+	 *
+	 * @param array<int, string> $ids Valid shipment ids.
+	 * @return array{statuses: array<string, int>, total: float, message: string, unknown: bool}
+	 */
+	private static function pay_now( array $ids ) {
 		$statuses = array();
 		$todo     = array();
 		$prices   = array();
@@ -456,6 +478,38 @@ class WC_Frenet_Labels_Service {
 			$message = trim( $message . ' ' . sprintf( _n( '%d label did not fit in the wallet balance and stays unpaid: add balance and pay it in Labels.', '%d labels did not fit in the wallet balance and stay unpaid: add balance and pay them in Labels.', count( $short ), 'woo-shipping-gateway' ), count( $short ) ) );
 		}
 		return self::pay_result( $statuses, $total, $message, $unknown );
+	}
+
+	/**
+	 * Takes the payment lock; a lock older than PAY_LOCK_TTL was left by a request that died and is taken over.
+	 *
+	 * @return bool Whether this request holds the lock.
+	 */
+	private static function lock_payment() {
+		global $wpdb;
+		$now = (string) time();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- atomic lock, like WP_Upgrader::create_lock().
+		if ( $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} ( option_name, option_value, autoload ) VALUES ( %s, %s, 'no' )", self::PAY_LOCK, $now ) ) ) {
+			return true;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
+		$since = (string) $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", self::PAY_LOCK ) );
+		if ( (int) $since > (int) $now - self::PAY_LOCK_TTL ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
+		return (bool) $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", $now, self::PAY_LOCK, $since ) );
+	}
+
+	/**
+	 * Releases the payment lock.
+	 *
+	 * @return void
+	 */
+	private static function unlock_payment() {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- see lock_payment().
+		$wpdb->delete( $wpdb->options, array( 'option_name' => self::PAY_LOCK ) );
 	}
 
 	/**
