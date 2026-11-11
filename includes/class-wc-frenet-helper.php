@@ -98,4 +98,20 @@ class WC_Frenet_Helper
         return (bool) apply_filters( 'wc_frenet_simulator_yields', $on );
     }
 
+    /**
+     * Whether Infixs Checkout Fields is set to fill the address from the CEP (on by default).
+     *
+     * @return bool
+     */
+    public static function other_cep_autofill() {
+        if ( ! defined( 'INFIXS_CHECKOUT_FIELDS_PLUGIN_NAME' ) ) {
+            return false;
+        }
+        $settings = get_option( 'infixs_checkout_fields_settings', array() );
+        $settings = is_array( $settings ) ? $settings : array();
+        $plugin   = $settings['enabled'] ?? 'yes';
+        $cep      = $settings['cep_autocomplete']['enabled'] ?? 'yes';
+        return wc_string_to_bool( $plugin ) && wc_string_to_bool( $cep );
+    }
+
 }

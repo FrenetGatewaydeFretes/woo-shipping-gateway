@@ -178,6 +178,9 @@ if ( $frenet_left ) :
 		<h2><?php esc_html_e( 'Checkout', 'woo-shipping-gateway' ); ?></h2>
 		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[autofill]" value="1" <?php checked( 'yes', $frenet_s['autofill'] ); ?>> <span><?php esc_html_e( 'Fill the address from the CEP', 'woo-shipping-gateway' ); ?></span></label>
 		<p class="description"><?php esc_html_e( 'Street, neighborhood, city and state appear when the customer types the CEP, in the classic checkout, the checkout block and My Account. Number and complement are never changed. Leave it off if another plugin already does this.', 'woo-shipping-gateway' ); ?></p>
+		<?php if ( WC_Frenet_Helper::other_cep_autofill() ) : ?>
+			<p class="description"><?php esc_html_e( 'Infixs Checkout Fields already fills the address from the CEP at checkout and in My Account, so the Frenet one stays off on those pages and works only in the cart.', 'woo-shipping-gateway' ); ?></p>
+		<?php endif; ?>
 	</section>
 
 	<section class="frenet-card" id="frenet-tracking-settings">

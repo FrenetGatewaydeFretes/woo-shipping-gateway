@@ -37,7 +37,7 @@ class WC_Frenet_Autofill {
 		add_action( 'rest_api_init', array( __CLASS__, 'routes' ) );
 		add_action( 'wp_ajax_' . self::AJAX, array( __CLASS__, 'ajax' ) );
 		add_action( 'wp_ajax_nopriv_' . self::AJAX, array( __CLASS__, 'ajax' ) );
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ), 20 );
 	}
 
 	/**
@@ -46,7 +46,7 @@ class WC_Frenet_Autofill {
 	 * @return void
 	 */
 	public static function enqueue() {
-		if ( ! ( is_checkout() || is_cart() || is_account_page() ) ) {
+		if ( ! ( is_checkout() || is_cart() || is_account_page() ) || self::yields() ) {
 			return;
 		}
 		$base = plugins_url( '/', WOO_FRENET_PATH . 'woo-shipping-gateway.php' );
@@ -64,6 +64,23 @@ class WC_Frenet_Autofill {
 				'notFound' => __( 'We could not find this CEP. Check the number or fill in the address by hand.', 'woo-shipping-gateway' ),
 			)
 		);
+	}
+
+	/**
+	 * Whether Infixs Checkout Fields already fills the address from the CEP on this page, so Frenet stays out.
+	 * Both on the same form would look the CEP up twice and overwrite each other. Filter "wc_frenet_autofill_yields"
+	 * to run both anyway.
+	 *
+	 * @return bool
+	 */
+	private static function yields() {
+		/**
+		 * Whether the Frenet address by CEP gives way to the CEP autocomplete of Infixs Checkout Fields on this page.
+		 *
+		 * @since 3.0.0
+		 * @param bool $on True while that autocomplete is loaded on the page.
+		 */
+		return (bool) apply_filters( 'wc_frenet_autofill_yields', wp_script_is( 'infixs-checkout-fields-cep', 'enqueued' ) );
 	}
 
 	/**
