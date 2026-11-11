@@ -25,6 +25,7 @@ class WC_Frenet_Labels_Service {
 	const RECOVER_SERVICE = '_frenet_create_unanswered_service';
 	const RECOVER_HOOK    = 'woocommerce_frenet_labels_recover';
 	const RECOVER_MAX     = 5;
+	const FIND_PAGES      = 3;
 
 	/** Option row that lets one wallet payment run at a time, and after how many seconds a lock left behind is dropped. */
 	const PAY_LOCK     = 'wc_frenet_labels_pay_lock';
@@ -823,21 +824,27 @@ class WC_Frenet_Labels_Service {
 	}
 
 	/**
-	 * Id of a live shipment Frenet created for a Frenet order id ("156-3"), among the newest ones; '' when there is none.
+	 * Id of a live shipment Frenet created for a Frenet order id ("156-3"), among the newest FIND_PAGES pages of 50;
+	 * '' when there is none.
 	 *
 	 * @param string $frenet_id Order.Id sent to Frenet.
 	 * @return string
 	 */
 	public static function find_created( $frenet_id ) {
-		$list = self::shipments( 0, 50 );
-		if ( is_wp_error( $list ) ) {
-			return '';
-		}
-		foreach ( $list['shipments'] as $s ) {
-			$s = (array) $s;
-			if ( (string) ( WC_Frenet_Labels_Api::field( $s, 'orderId' ) ?? '' ) === (string) $frenet_id
-				&& ! in_array( (int) ( WC_Frenet_Labels_Api::field( $s, 'shipmentStatus' ) ?? 0 ), self::GONE_STATUSES, true ) ) {
-				return (string) ( WC_Frenet_Labels_Api::field( $s, 'shipmentId' ) ?? '' );
+		for ( $page = 0; $page < self::FIND_PAGES; $page++ ) {
+			$list = self::shipments( $page, 50 );
+			if ( is_wp_error( $list ) ) {
+				return '';
+			}
+			foreach ( $list['shipments'] as $s ) {
+				$s = (array) $s;
+				if ( (string) ( WC_Frenet_Labels_Api::field( $s, 'orderId' ) ?? '' ) === (string) $frenet_id
+					&& ! in_array( (int) ( WC_Frenet_Labels_Api::field( $s, 'shipmentStatus' ) ?? 0 ), self::GONE_STATUSES, true ) ) {
+					return (string) ( WC_Frenet_Labels_Api::field( $s, 'shipmentId' ) ?? '' );
+				}
+			}
+			if ( count( $list['shipments'] ) < 50 ) {
+				return '';
 			}
 		}
 		return '';
