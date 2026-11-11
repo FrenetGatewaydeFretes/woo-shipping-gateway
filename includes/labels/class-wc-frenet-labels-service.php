@@ -338,7 +338,7 @@ class WC_Frenet_Labels_Service {
 		$order->delete_meta_data( self::RECOVER );
 		$order->delete_meta_data( self::RECOVER_SERVICE );
 		$order->update_meta_data( '_frenet_shipment_id', $id );
-		$order->update_meta_data( '_frenet_shipment_status', (string) self::STATUS_PENDING_PAYMENT );
+		$order->update_meta_data( '_frenet_shipment_status', (string) self::STATUS_CREATED );
 		$order->update_meta_data( '_frenet_label_journey', $journey );
 		$order->update_meta_data( '_frenet_service_code', $service['code'] );
 		$order->update_meta_data( '_frenet_shipment_price', (string) $service['price'] );
@@ -352,7 +352,7 @@ class WC_Frenet_Labels_Service {
 		$order->save();
 		$out = array(
 			'shipment_id' => $id,
-			'status'      => self::STATUS_PENDING_PAYMENT,
+			'status'      => self::STATUS_CREATED,
 			'price'       => $service['price'],
 			'service'     => $service['name'],
 			'journey'     => $journey,
@@ -363,7 +363,7 @@ class WC_Frenet_Labels_Service {
 		}
 		// 2) Pay with the wallet.
 		$pay              = self::pay( array( $id ) );
-		$out['status']    = $pay['statuses'][ $id ] ?? self::STATUS_PENDING_PAYMENT;
+		$out['status']    = $pay['statuses'][ $id ] ?? self::STATUS_CREATED;
 		$out['paid']      = in_array( $out['status'], self::PAID_STATUSES, true );
 		$out['message']   = $pay['message'];
 		$out['label_url'] = '';
@@ -410,7 +410,7 @@ class WC_Frenet_Labels_Service {
 			}
 			$todo[]        = $id;
 			$prices[ $id ] = self::price_of( $id, $state );
-			$known[ $id ]  = $state && null !== $state['status'] ? $state['status'] : self::STATUS_PENDING_PAYMENT;
+			$known[ $id ]  = $state && null !== $state['status'] ? $state['status'] : self::STATUS_CREATED;
 		}
 		if ( ! $todo ) {
 			return self::pay_result( $statuses, 0.0, $statuses ? __( 'These labels are already paid or cancelled at Frenet. Nothing was charged.', 'woo-shipping-gateway' ) : '', false );
@@ -660,7 +660,7 @@ class WC_Frenet_Labels_Service {
 	private static function keep_unpaid( array $ids, $message, array $known ) {
 		$statuses = array();
 		foreach ( $ids as $id ) {
-			$statuses[ $id ] = $known[ $id ] ?? self::STATUS_PENDING_PAYMENT;
+			$statuses[ $id ] = $known[ $id ] ?? self::STATUS_CREATED;
 			$order           = self::order_for( $id );
 			if ( $order ) {
 				self::set_issue( $order, $message );
