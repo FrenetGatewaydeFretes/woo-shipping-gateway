@@ -107,8 +107,33 @@ class WC_Frenet_Labels_Payload {
 			'state'        => $get( 'state' ),
 			'postcode'     => $get( 'postcode' ),
 			'phone'        => (string) $order->get_billing_phone(),
-			'document'     => (string) preg_replace( '/\D/', '', $first( $document, self::br_field( $meta, 'cnpj', array( 'billing', 'other', 'shipping' ) ) ) ),
+			'document'     => self::document( $first( $document, self::br_field( $meta, 'cnpj', array( 'billing', 'other', 'shipping' ) ) ) ),
 		);
+	}
+
+	/**
+	 * CPF or CNPJ as Frenet takes it: only digits, or upper-case letters and digits for an alphanumeric CNPJ. Pure.
+	 *
+	 * @param string $raw Typed document.
+	 * @return string
+	 */
+	public static function document( $raw ) {
+		$digits = (string) preg_replace( '/\D/', '', (string) $raw );
+		if ( 11 === strlen( $digits ) || 14 === strlen( $digits ) ) {
+			return $digits;
+		}
+		return (string) preg_replace( '/[^0-9A-Z]/', '', strtoupper( (string) $raw ) );
+	}
+
+	/**
+	 * Whether a document from document() is shaped like a CPF (11 digits) or a CNPJ (14 characters, the last two
+	 * digits, the first twelve letters or digits since July 2026). Pure.
+	 *
+	 * @param string $document Document.
+	 * @return bool
+	 */
+	public static function valid_document( $document ) {
+		return (bool) preg_match( '/^(\d{11}|[0-9A-Z]{12}\d{2})$/', (string) $document );
 	}
 
 	/**

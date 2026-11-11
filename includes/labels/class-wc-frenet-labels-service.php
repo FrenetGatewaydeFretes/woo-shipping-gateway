@@ -895,8 +895,7 @@ class WC_Frenet_Labels_Service {
 	 * @return string
 	 */
 	public static function recipient_problem( array $to ) {
-		$document = (string) preg_replace( '/\D/', '', (string) ( $to['document'] ?? '' ) );
-		if ( 11 !== strlen( $document ) && 14 !== strlen( $document ) ) {
+		if ( ! WC_Frenet_Labels_Payload::valid_document( WC_Frenet_Labels_Payload::document( (string) ( $to['document'] ?? '' ) ) ) ) {
 			return __( 'The customer did not give a CPF or CNPJ, and Frenet requires it on the label. Add a CPF field to the checkout (for example with the Brazilian Market plugin) so new orders bring it; for this order, add the custom field _billing_cpf with the CPF. Nothing was charged.', 'woo-shipping-gateway' );
 		}
 		list( , $number ) = WC_Frenet_Labels_Payload::street_parts( (string) ( $to['address_1'] ?? '' ), (string) ( $to['number'] ?? '' ), (string) ( $to['neighborhood'] ?? '' ) );
