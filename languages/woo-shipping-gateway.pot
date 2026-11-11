@@ -1,185 +1,2868 @@
-#, fuzzy
+# Copyright (C) 2026 Rafael Mancini
+# This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Shipping Gateway\n"
-"POT-Creation-Date: 2016-08-03 11:55-0300\n"
-"PO-Revision-Date: 2016-08-03 11:53-0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: pt_BR\n"
+"Project-Id-Version: Frenet Shipping Gateway for WooCommerce 2.1.25\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/p\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
-"X-Poedit-Basepath: ..\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Poedit-KeywordsList: __;_n\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: .idea\n"
-"X-Poedit-SearchPathExcluded-1: .git\n"
-"X-Poedit-SearchPathExcluded-2: .gitignore\n"
+"POT-Creation-Date: 2026-11-11T19:28:03+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: woo-shipping-gateway\n"
 
-#: includes/class-wc-frenet.php:14 includes/class-wc-frenet.php:91
-msgid "Frenet"
+#. Plugin Name of the plugin
+#: woo-shipping-gateway.php
+msgid "Frenet Shipping Gateway for WooCommerce"
 msgstr ""
 
-#: includes/class-wc-frenet.php:81
-msgid "Enable/Disable"
+#. Plugin URI of the plugin
+#: woo-shipping-gateway.php
+msgid "https://github.com/FrenetGatewaydeFretes/woo-shipping-gateway"
 msgstr ""
 
-#: includes/class-wc-frenet.php:83
-msgid "Enable this shipping method"
+#. Description of the plugin
+#: woo-shipping-gateway.php
+msgid "Frenet para WooCommerce"
 msgstr ""
 
-#: includes/class-wc-frenet.php:87
-msgid "Title"
+#. Author of the plugin
+#: woo-shipping-gateway.php
+msgid "Rafael Mancini"
 msgstr ""
 
-#: includes/class-wc-frenet.php:89
-msgid "This controls the title which the user sees during checkout."
-msgstr ""
-
-#: includes/class-wc-frenet.php:94
-msgid "Origin Zip Code"
-msgstr ""
-
-#: includes/class-wc-frenet.php:96
-msgid "Zip Code from where the requests are sent."
-msgstr ""
-
-#: includes/class-wc-frenet.php:100
-msgid "Estimated delivery"
-msgstr ""
-
-#: includes/class-wc-frenet.php:102
-msgid "Enable"
-msgstr ""
-
-#: includes/class-wc-frenet.php:103
-msgid "Display date of estimated delivery."
-msgstr ""
-
-#: includes/class-wc-frenet.php:108
-msgid "Additional days"
-msgstr ""
-
-#: includes/class-wc-frenet.php:110
-msgid "Additional days to the estimated delivery."
-msgstr ""
-
-#: includes/class-wc-frenet.php:128
-msgid "Package Standard"
-msgstr ""
-
-#: includes/class-wc-frenet.php:130
-msgid "Sets a minimum measure for the package."
-msgstr ""
-
-#: includes/class-wc-frenet.php:134
-msgid "Minimum Height"
-msgstr ""
-
-#: includes/class-wc-frenet.php:136
-msgid "Minimum height of the package. Frenet needs at least 2 cm."
-msgstr ""
-
-#: includes/class-wc-frenet.php:141
-msgid "Minimum Width"
-msgstr ""
-
-#: includes/class-wc-frenet.php:143
-msgid "Minimum width of the package. Frenet needs at least 11 cm."
-msgstr ""
-
-#: includes/class-wc-frenet.php:148
-msgid "Minimum Length"
-msgstr ""
-
-#: includes/class-wc-frenet.php:150
-msgid "Minimum length of the package. Frenet needs at least 16 cm."
-msgstr ""
-
-#: includes/class-wc-frenet.php:155
-msgid "Testing"
-msgstr ""
-
-#: includes/class-wc-frenet.php:159
-msgid "Debug Log"
-msgstr ""
-
-#: includes/class-wc-frenet.php:161
-msgid "Enable logging"
-msgstr ""
-
-#: includes/class-wc-frenet.php:304
-#, php-format
-msgid "Log Frenet events, such as WebServices requests, inside %s. Quote failures are always logged to the WooCommerce log regardless of this setting."
-msgstr ""
-
-#: includes/class-wc-frenet.php:175
-msgid "Frenet is a brazilian delivery method."
+#. Author URI of the plugin
+#: woo-shipping-gateway.php
+msgid "http://www.frenet.com.br"
 msgstr ""
 
 #. translators: %d: number of working days until delivery
-#: includes/class-wc-frenet.php:643 includes/class-wc-frenet-shipping-simulator.php:34
+#: includes/class-wc-frenet-shipping-simulator.php:38
+#: includes/class-wc-frenet.php:650
 #, php-format
 msgid "Delivery in %d working day"
 msgid_plural "Delivery in %d working days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-wc-frenet.php:245
+#: includes/class-wc-frenet-shipping-simulator.php:144
+msgid "Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:145
+msgid "Too many shipping simulations in a short time. Please wait a minute and try again."
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:146
+#: includes/labels/views/settings.php:96
+msgid "Shipping"
+msgstr ""
+
+#: includes/class-wc-frenet-shipping-simulator.php:147
+msgid "Cost"
+msgstr ""
+
+#: includes/class-wc-frenet.php:72
+#: includes/class-wc-frenet.php:198
+msgid "Frenet"
+msgstr ""
+
+#: includes/class-wc-frenet.php:188
+msgid "Enable/Disable"
+msgstr ""
+
+#: includes/class-wc-frenet.php:190
+msgid "Enable this shipping method"
+msgstr ""
+
+#: includes/class-wc-frenet.php:194
+msgid "Title"
+msgstr ""
+
+#: includes/class-wc-frenet.php:196
+msgid "This controls the title which the user sees during checkout."
+msgstr ""
+
+#: includes/class-wc-frenet.php:201
+msgid "Origin Zip Code"
+msgstr ""
+
+#: includes/class-wc-frenet.php:203
+msgid "Zip Code from where the requests are sent."
+msgstr ""
+
+#: includes/class-wc-frenet.php:207
+msgid "Shipping Class"
+msgstr ""
+
+#: includes/class-wc-frenet.php:209
+msgid "Select a shipping class to use with this method."
+msgstr ""
+
+#: includes/class-wc-frenet.php:215
+msgid "Shipping Simulator"
+msgstr ""
+
+#: includes/class-wc-frenet.php:217
+#: includes/class-wc-frenet.php:238
+#: includes/class-wc-frenet.php:289
+msgid "Enable"
+msgstr ""
+
+#: includes/class-wc-frenet.php:219
+msgid "Correios Automático already shows its shipping calculator on the product page, with the Frenet rates, so the Frenet simulator stays hidden. To use the Frenet one, turn off the calculator in Correios Automático settings."
+msgstr ""
+
+#: includes/class-wc-frenet.php:220
+msgid "Display shipping simulator in single product"
+msgstr ""
+
+#: includes/class-wc-frenet.php:225
+msgid "Simulator Quote Limit"
+msgstr ""
+
+#: includes/class-wc-frenet.php:227
+msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) per minute. Protects your Frenet API quota from abuse. Use 0 for no limit."
+msgstr ""
+
+#: includes/class-wc-frenet.php:236
+msgid "Estimated delivery"
+msgstr ""
+
+#: includes/class-wc-frenet.php:239
+msgid "Display date of estimated delivery."
+msgstr ""
+
+#: includes/class-wc-frenet.php:244
+msgid "Additional days"
+msgstr ""
+
+#: includes/class-wc-frenet.php:246
+msgid "Additional days to the estimated delivery."
+msgstr ""
+
+#: includes/class-wc-frenet.php:252
+msgid "Token"
+msgstr ""
+
+#: includes/class-wc-frenet.php:254
+msgid "Your Frenet token."
+msgstr ""
+
+#: includes/class-wc-frenet.php:258
 msgid "Request Timeout (seconds)"
 msgstr ""
 
-#: includes/class-wc-frenet.php:247
+#: includes/class-wc-frenet.php:260
 msgid "How long to wait for the Frenet API to respond before giving up and retrying. Recommended: between 2 and 10 seconds."
 msgstr ""
 
-#: includes/class-wc-frenet.php:257
+#: includes/class-wc-frenet.php:270
 msgid "Request Attempts"
 msgstr ""
 
-#: includes/class-wc-frenet.php:259
+#: includes/class-wc-frenet.php:272
 msgid "How many times to try the Frenet API before giving up (1 = no retry). Each attempt can take up to the Request Timeout above, so the worst case is Attempts × Timeout."
 msgstr ""
 
+#: includes/class-wc-frenet.php:282
+msgid "Virtual Products"
+msgstr ""
+
+#: includes/class-wc-frenet.php:284
+msgid "Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote."
+msgstr ""
+
+#: includes/class-wc-frenet.php:287
+msgid "Virtual Products Fee"
+msgstr ""
+
+#: includes/class-wc-frenet.php:290
+msgid "Charge a fixed fee as shipping when the cart has virtual products."
+msgstr ""
+
+#: includes/class-wc-frenet.php:295
+msgid "Virtual Products Fee Amount"
+msgstr ""
+
+#: includes/class-wc-frenet.php:297
+msgid "Fixed amount charged once per order. The fee is only charged when the amount is greater than zero."
+msgstr ""
+
+#: includes/class-wc-frenet.php:302
+msgid "Virtual Products Fee Name"
+msgstr ""
+
+#: includes/class-wc-frenet.php:304
+msgid "Name of the fee shown to the customer in the cart, checkout and order."
+msgstr ""
+
+#: includes/class-wc-frenet.php:306
+#: includes/class-wc-frenet.php:588
+msgid "Order processing fee"
+msgstr ""
+
+#: includes/class-wc-frenet.php:309
+msgid "Package Standard"
+msgstr ""
+
+#: includes/class-wc-frenet.php:311
+msgid "Sets a minimum measure for the package."
+msgstr ""
+
+#: includes/class-wc-frenet.php:315
+msgid "Minimum Height"
+msgstr ""
+
+#: includes/class-wc-frenet.php:317
+msgid "Minimum height of the package. Frenet needs at least 2 cm."
+msgstr ""
+
+#: includes/class-wc-frenet.php:322
+msgid "Minimum Width"
+msgstr ""
+
+#: includes/class-wc-frenet.php:324
+msgid "Minimum width of the package. Frenet needs at least 11 cm."
+msgstr ""
+
+#: includes/class-wc-frenet.php:329
+msgid "Minimum Length"
+msgstr ""
+
 #: includes/class-wc-frenet.php:331
+msgid "Minimum length of the package. Frenet needs at least 16 cm."
+msgstr ""
+
+#: includes/class-wc-frenet.php:336
+msgid "Testing"
+msgstr ""
+
+#: includes/class-wc-frenet.php:340
+msgid "Debug Log"
+msgstr ""
+
+#: includes/class-wc-frenet.php:342
+msgid "Enable logging"
+msgstr ""
+
+#. translators: %s: path of the Frenet log file
+#: includes/class-wc-frenet.php:345
+#, php-format
+msgid "Log Frenet events, such as WebServices requests, inside %s. Quote failures are always logged to the WooCommerce log regardless of this setting."
+msgstr ""
+
+#. translators: 1: submitted value, 2: minimum allowed, 3: maximum allowed, 4: value actually saved
+#: includes/class-wc-frenet.php:372
 #, php-format
 msgid "Frenet: Request Timeout must be between %2$d and %3$d seconds. %1$d was adjusted to %4$d."
 msgstr ""
 
-#: includes/class-wc-frenet.php:362
+#. translators: 1: submitted value, 2: minimum allowed, 3: maximum allowed, 4: value actually saved
+#: includes/class-wc-frenet.php:403
 #, php-format
 msgid "Frenet: Request Attempts must be between %2$d and %3$d. %1$d was adjusted to %4$d."
 msgstr ""
 
-#: includes/class-wc-frenet.php:1055
+#: includes/class-wc-frenet.php:422
+msgid "Frenet is a brazilian delivery method."
+msgstr ""
+
+#. translators: 1: shipping service, 2: virtual products fee name, 3: virtual products fee amount
+#: includes/class-wc-frenet.php:604
+#, php-format
+msgid "%1$s + %2$s (%3$s)"
+msgstr ""
+
+#: includes/class-wc-frenet.php:845
+msgid "Any Shipping Class"
+msgstr ""
+
+#: includes/class-wc-frenet.php:846
+msgid "No Shipping Class"
+msgstr ""
+
+#: includes/class-wc-frenet.php:1048
 msgid "Frenet shipping quote is currently unavailable. Refresh the page or re-enter the zip code to try again, or select another shipping method."
 msgstr ""
 
-#: woo-shipping-gateway.php:180
-msgid "Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order."
+#: includes/labels/class-wc-frenet-labels-admin.php:55
+#: includes/labels/viewsroducts.php:57
+msgctxt "Frenet admin menu"
+msgid "Settings"
 msgstr ""
 
-#: includes/class-wc-frenet.php:209
-msgid "Simulator Quote Limit"
+#: includes/labels/class-wc-frenet-labels-admin.php:55
+msgid "Frenet settings"
 msgstr ""
 
-#: includes/class-wc-frenet.php:211
-msgid "Maximum number of quotes the product page shipping simulator allows per visitor (IP address) per minute. Protects your Frenet API quota from abuse. Use 0 for no limit."
+#: includes/labels/class-wc-frenet-labels-admin.php:56
+#: includes/labels/views/create.php:141
+#: includes/labels/views/order-box.php:50
+msgid "Create shipment"
 msgstr ""
 
-#: includes/class-wc-frenet-shipping-simulator.php:114
-msgid "Too many shipping simulations in a short time. Please wait a minute and try again."
+#: includes/labels/class-wc-frenet-labels-admin.php:57
+#: includes/labels/views/create.php:153
+msgid "Labels"
 msgstr ""
 
-#: includes/class-wc-frenet-shipping-simulator.php:113
-msgid "Unable to simulate the shipping. Try adding the product to the cart and proceed to get the shipping cost."
+#: includes/labels/class-wc-frenet-labels-admin.php:57
+msgid "Manage your labels"
 msgstr ""
 
-#: includes/class-wc-frenet-shipping-simulator.php:116
-msgid "Cost"
+#: includes/labels/class-wc-frenet-labels-admin.php:58
+msgid "Statement"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:58
+msgid "Wallet statement"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:59
+msgid "Printing"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:59
+#: includes/labels/class-wc-frenet-labels-admin.php:622
+#: includes/labels/class-wc-frenet-labels-admin.php:640
+msgid "Label printing"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:60
+#: includes/labels/views/order-tracking.php:15
+#: includes/labels/views/settings.php:187
+#: includes/labels/views/setup.php:199
+msgid "Tracking"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:61
+#: includes/labels/views/dropoff.php:75
+msgid "Drop-off point"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:62
+#: includes/labels/views/settings.php:169
+msgid "Products"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:62
+msgid "Products: weight, size and automatic carrier"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:63
+msgid "First steps"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:114
+#: includes/labels/class-wc-frenet-labels-admin.php:299
+#: includes/labels/class-wc-frenet-labels-admin.php:315
+#: includes/labels/class-wc-frenet-labels-admin.php:612
+#: includes/labels/class-wc-frenet-labels-products.php:185
+#: includes/labels/class-wc-frenet-labels-setup.php:285
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:205
+msgid "Calculating freight…"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:206
+#: includes/tracking/class-wc-frenet-autofill.php:63
+msgid "Looking up the CEP…"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:207
+msgid "Address filled from the CEP. Check it."
+msgstr ""
+
+#. translators: %s: amount, e.g. R$ 50,00
+#: includes/labels/class-wc-frenet-labels-admin.php:209
+#, php-format
+msgid "Pay %s at Mercado Pago"
+msgstr ""
+
+#. translators: %s: minimum amount, e.g. R$ 5,00
+#: includes/labels/class-wc-frenet-labels-admin.php:211
+#, php-format
+msgid "Type at least %s."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:212
+msgid "Opening Mercado Pago…"
+msgstr ""
+
+#. translators: %s: maximum amount, e.g. R$ 11.800,00
+#: includes/labels/class-wc-frenet-labels-admin.php:214
+#: includes/labels/class-wc-frenet-labels-service.php:1101
+#, php-format
+msgid "Your Frenet wallet takes up to %s more right now."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:215
+#: includes/labels/views/create.php:136
+#: includes/labels/views/create.php:161
+#: includes/labels/views/statement.php:46
+msgid "Balance after"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:216
+msgid "Select at least one order."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:217
+#: includes/labels/class-wc-frenet-labels-auto.php:148
+#: includes/labels/class-wc-frenet-labels-auto.php:161
+#: includes/labels/views/create.php:56
+#: includes/labels/views/settings.php:99
+msgid "Best price"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:218
+#: includes/labels/class-wc-frenet-labels-auto.php:149
+#: includes/labels/class-wc-frenet-labels-auto.php:162
+#: includes/labels/views/create.php:57
+#: includes/labels/views/settings.php:100
+msgid "Fastest"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:219
+msgid "Customer choice"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:221
+msgid "Select"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:222
+msgid "Selected"
+msgstr ""
+
+#. translators: %s: carrier name, "Best price" or "Fastest"
+#: includes/labels/class-wc-frenet-labels-admin.php:224
+#, php-format
+msgid "Use %s in every selected order"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:225
+msgid "Best price (any carrier)"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:226
+msgid "Fastest (any carrier)"
+msgstr ""
+
+#. translators: 1: carrier name or option, 2: number of orders
+#: includes/labels/class-wc-frenet-labels-admin.php:228
+#, php-format
+msgid "%1$s selected in %2$d order."
+msgid_plural "%1$s selected in %2$d orders."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of orders where the carrier is not available
+#: includes/labels/class-wc-frenet-labels-admin.php:230
+#, php-format
+msgid "Not available in %d order, which kept its carrier."
+msgid_plural "Not available in %d orders, which kept their carrier."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: business days
+#: includes/labels/class-wc-frenet-labels-admin.php:232
+#, php-format
+msgid "up to %d business day"
+msgid_plural "up to %d business days"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: business days
+#: includes/labels/class-wc-frenet-labels-admin.php:234
+#, php-format
+msgid "%d business day"
+msgid_plural "%d business days"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number of labels, 2: total amount
+#: includes/labels/class-wc-frenet-labels-admin.php:236
+#, php-format
+msgid "Buy %1$d label · %2$s"
+msgid_plural "Buy %1$d labels · %2$s"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of shipments
+#: includes/labels/class-wc-frenet-labels-admin.php:238
+#, php-format
+msgid "Create %d shipment (pay later in Labels)"
+msgid_plural "Create %d shipments (pay later in Labels)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:240
+#: includes/labels/views/create.php:114
+msgid "optional"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:241
+msgid "This order has no NF-e key: Frenet will generate a DC-e for it."
+msgstr ""
+
+#. translators: %d: number of orders
+#: includes/labels/class-wc-frenet-labels-admin.php:243
+#, php-format
+msgid "None of the %d orders has an NF-e key: Frenet will generate a DC-e for each one."
+msgstr ""
+
+#. translators: 1: orders without NF-e key, 2: selected orders
+#: includes/labels/class-wc-frenet-labels-admin.php:245
+#, php-format
+msgid "%1$d of the %2$d orders has no NF-e key: Frenet will generate a DC-e for it."
+msgid_plural "%1$d of the %2$d orders have no NF-e key: Frenet will generate a DC-e for them."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:247
+msgid "requires NF-e"
+msgstr ""
+
+#. translators: %d: number of orders
+#: includes/labels/class-wc-frenet-labels-admin.php:249
+#, php-format
+msgid "%d order has no NF-e key and this carrier requires one: add the key or choose another carrier."
+msgid_plural "%d orders have no NF-e key and this carrier requires one: add the keys or choose another carrier."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number of orders, 2: carrier names
+#: includes/labels/class-wc-frenet-labels-admin.php:251
+#, php-format
+msgid "%1$d order has no NF-e key and goes with %2$s, which requires one: Frenet will refuse it. Go back, add the key or choose another carrier."
+msgid_plural "%1$d orders have no NF-e key and go with %2$s, which requires one: Frenet will refuse them. Go back, add the keys or choose another carrier."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:252
+msgid "Working… do not close this page."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:253
+#: includes/labels/views/setup.php:65
+msgid "Done"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:254
+msgid "Not created"
+msgstr ""
+
+#. translators: %d: number of shipments created
+#: includes/labels/class-wc-frenet-labels-admin.php:257
+#, php-format
+msgid "Done: %d shipment created."
+msgid_plural "Done: %d shipments created."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of orders with an error
+#: includes/labels/class-wc-frenet-labels-admin.php:259
+#, php-format
+msgid "%d order with an error: see the Notes column of the red row."
+msgid_plural "%d orders with an error: see the Notes column of the red rows."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:260
+msgid "Your balance does not cover this total. Add balance at the top of this screen or select fewer orders."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:261
+msgid "Not enough balance"
+msgstr ""
+
+#. translators: %s: amount
+#: includes/labels/class-wc-frenet-labels-admin.php:263
+#, php-format
+msgid "Missing %s"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:264
+msgid "Cancel this Frenet label? If it was paid, Frenet returns the amount to the wallet (usually overnight)."
+msgstr ""
+
+#. translators: 1: number of labels, 2: total amount
+#: includes/labels/class-wc-frenet-labels-admin.php:266
+#, php-format
+msgid "Pay %1$d label with the Frenet wallet (%2$s)?"
+msgid_plural "Pay %1$d labels with the Frenet wallet (%2$s)?"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number of labels, 2: total amount
+#: includes/labels/class-wc-frenet-labels-admin.php:268
+#, php-format
+msgid "Pay %1$d label · %2$s"
+msgid_plural "Pay %1$d labels · %2$s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:269
+msgid "Saved"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:271
+msgid "No default point"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:272
+#: includes/labels/views/create.php:116
+#: includes/labels/views/dropoff.php:50
+#: includes/labels/views/setup.php:214
+#: includes/labels/views/setup.php:215
+#: includes/labels/views/setup.php:216
+msgid "Change"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:273
+msgid "Choose"
+msgstr ""
+
+#. translators: %s: carrier name
+#: includes/labels/class-wc-frenet-labels-admin.php:275
+#, php-format
+msgid "Drop-off point for %s"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:276
+msgid "Current:"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:277
+msgid "Searching drop-off points…"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:278
+msgid "This carrier has no drop-off points to choose near this CEP."
+msgstr ""
+
+#. translators: %d: number of drop-off points
+#: includes/labels/class-wc-frenet-labels-admin.php:280
+#, php-format
+msgid "%d point found."
+msgid_plural "%d points found. Type to filter."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: points shown, 2: points found
+#: includes/labels/class-wc-frenet-labels-admin.php:282
+#, php-format
+msgid "%1$d of %2$d point"
+msgid_plural "%1$d of %2$d points"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:283
+#: includes/labels/class-wc-frenet-labels-admin.php:747
+#: includes/labels/views/dropoff.php:26
+#: includes/labels/views/order-box.php:42
+#: includes/labels/views/setup.php:104
+#: includes/labels/views/setup.php:208
+msgid "Open the Frenet panel"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:284
+msgid "Updating…"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:285
+msgid "Balance updated"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:286
+msgid "Something went wrong. Reload the page and try again."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:370
+#: includes/labels/class-wc-frenet-labels-setup.php:437
+#: includes/tracking/class-wc-frenet-tracking-admin.php:97
+msgid "Your session expired. Reload the page."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:377
+msgid "This needs the Frenet partner token. Add it in Frenet > First steps, or buy the label in the Frenet panel. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:378
+msgid "Frenet labels are not configured. Open Frenet > Settings."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:391
+#: includes/tracking/class-wc-frenet-tracking-admin.php:112
+msgid "Order not found."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:453
+msgid "Select at least one unpaid label."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:471
+msgid "Label cancelled. Frenet returns the amount to the wallet, usually overnight."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:472
+msgid "Unpaid shipment deleted."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:516
+msgid "No movement yet. Events appear once the carrier scans the package."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:584
+msgid "Default drop-off point saved. Frenet uses it for the next labels of this carrier."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:621
+msgid "Select at least one paid label to print."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:689
+msgid "Create Frenet shipment"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:724
+msgid "Frenet shipment"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-admin.php:746
+msgid "Creating the label here needs the partner token. Buy it in the Frenet panel and paste the tracking code above."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-api.php:49
+#: includes/labels/class-wc-frenet-labels-api.php:81
+msgid "Frenet labels need the store token and the partner token. Check the Frenet settings."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-api.php:106
+#: includes/labels/class-wc-frenet-labels-api.php:157
+#: includes/tracking/class-wc-frenet-tracking-admin.php:100
+msgid "Frenet token not configured in the Frenet shipping method."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-api.php:200
+msgid "Frenet refused the partner token. Check it in the Frenet settings. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-api.php:205
+msgid "Frenet refused the store token. Check the client token in Frenet > Settings. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-api.php:206
+msgid "Frenet refused the store token. Check the token of the Frenet shipping method. Nothing was charged."
+msgstr ""
+
+#. translators: %d: HTTP status
+#: includes/labels/class-wc-frenet-labels-api.php:277
+#, php-format
+msgid "Frenet answered HTTP %d."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:146
+msgid "The carrier the customer chose at checkout (best price when it is not available)"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:160
+msgid "The general rule"
+msgstr ""
+
+#. translators: %s: carrier name
+#: includes/labels/class-wc-frenet-labels-auto.php:166
+#, php-format
+msgid "Always %s"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:193
+#: includes/labels/class-wc-frenet-labels-auto.php:419
+msgid "fastest"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:196
+#: includes/labels/class-wc-frenet-labels-auto.php:422
+msgid "best price"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:198
+msgid "the general rule"
+msgstr ""
+
+#. translators: %s: products and what they ask
+#: includes/labels/class-wc-frenet-labels-auto.php:378
+#, php-format
+msgid "Carrier chosen by the products: %s."
+msgstr ""
+
+#. translators: %s: products and what they ask
+#: includes/labels/class-wc-frenet-labels-auto.php:381
+#, php-format
+msgid "Service chosen by the rule of the products: %s."
+msgstr ""
+
+#. translators: 1: carrier, 2: products and what they ask
+#: includes/labels/class-wc-frenet-labels-auto.php:384
+#, php-format
+msgid "%1$s did not quote for this order: the best price was used instead (the products asked for %2$s)."
+msgstr ""
+
+#. translators: %s: products and what they ask
+#: includes/labels/class-wc-frenet-labels-auto.php:387
+#, php-format
+msgid "The products ask for different carriers (%s): the general rule was used."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:424
+msgid "the carrier the customer chose"
+msgstr ""
+
+#. translators: 1: carrier, 2: products and what they ask
+#: includes/labels/class-wc-frenet-labels-auto.php:536
+#, php-format
+msgid "%1$s did not quote for this order and the products ask for it (%2$s)."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:537
+msgid "Every carrier available requires an NF-e key and the order has none. Add the key or create the shipment by hand."
+msgstr ""
+
+#. translators: 1: Frenet shipment id, 2: carrier and service, 3: price, 4: rule
+#: includes/labels/class-wc-frenet-labels-auto.php:550
+#, php-format
+msgid "Frenet shipment %1$s created automatically: %2$s, %3$s (rule: %4$s)."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:557
+msgid "It was not paid: see Notes and pay it in Labels."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-auto.php:581
+msgid "the products"
+msgstr ""
+
+#. translators: %s: reason
+#: includes/labels/class-wc-frenet-labels-auto.php:658
+#, php-format
+msgid "Automatic Frenet shipment not created: %s"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-dropoff.php:98
+msgid "Type a CEP with 8 digits."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-dropoff.php:147
+msgid "Choose a drop-off point."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-dropoff.php:153
+msgid "Frenet did not accept this point for this carrier (\"Unidade não existe\"). Nothing changed. Choose it in the Frenet panel, in Shipping methods > Carriers."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-nfe.php:93
+msgid "The NF-e key has 44 characters. Copy it again from the invoice (DANFE)."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-nfe.php:95
+msgid "This NF-e key is not valid: the last digit does not match. Check for a typo."
+msgstr ""
+
+#. translators: 1: invoice number, 2: invoice series
+#: includes/labels/class-wc-frenet-labels-nfe.php:106
+#, php-format
+msgid "NF %1$s, series %2$s"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-products.php:228
+msgid "Automatic Frenet shipment with"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-products.php:231
+msgid "Carrier of the automatic shipment when this product is in the order. Empty: the general rule of Frenet > Settings > Automation. Also editable in Frenet > Products."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:108
+msgid "This order has no product to ship."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:117
+msgid "No carrier delivers this package to this CEP right now. Check the weight, the size and the address."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:265
+#: includes/labels/class-wc-frenet-labels-service.php:271
+msgid "This order already has a Frenet shipment. Cancel it first."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:275
+msgid "Frenet did not answer the last attempt of this order and the store is still checking whether it created the shipment. Wait a few minutes before creating it again."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:278
+msgid "Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender: Frenet requires it. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:292
+msgid "This carrier service is no longer available for this order. Calculate the freight again and choose another one."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:320
+msgid "Frenet did not answer in time and nothing has been charged yet. If Frenet created the shipment anyway, the store finds it within a few minutes and goes on as usual: do not create it again."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:332
+msgid "Frenet did not accept the NF-e key of this order. Check that it is the invoice of this order. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:333
+msgid "This carrier requires an invoice. Paste the NF-e key of the order and try again, or choose another carrier. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:342
+msgid "Frenet did not return a shipment. Nothing was charged."
+msgstr ""
+
+#. translators: 1: shipment id, 2: carrier service
+#: includes/labels/class-wc-frenet-labels-service.php:368
+#, php-format
+msgid "Frenet shipment %1$s (%2$s) sent to the Frenet panel, waiting for payment there."
+msgstr ""
+
+#. translators: 1: shipment id, 2: carrier service
+#: includes/labels/class-wc-frenet-labels-service.php:370
+#, php-format
+msgid "Frenet shipment %1$s (%2$s) created, not paid yet."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:405
+msgid "Another wallet payment is running right now, so this one was not sent. Nothing was charged: try again in a moment in Labels."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:436
+msgid "These labels are already paid or cancelled at Frenet. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:443
+msgid "Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels."
+msgstr ""
+
+#. translators: 1: shipment id, 2: amount
+#: includes/labels/class-wc-frenet-labels-service.php:477
+#, php-format
+msgid "Frenet label %1$s paid (%2$s)."
+msgstr ""
+
+#. translators: %s: error
+#: includes/labels/class-wc-frenet-labels-service.php:493
+#, php-format
+msgid "The payment did not answer (%s). The store checks again every minute; do not pay twice."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:498
+msgid "The label was not paid."
+msgstr ""
+
+#. translators: %d: number of labels
+#: includes/labels/class-wc-frenet-labels-service.php:502
+#, php-format
+msgid "%d label did not fit in the wallet balance and stays unpaid: add balance and pay it in Labels."
+msgid_plural "%d labels did not fit in the wallet balance and stay unpaid: add balance and pay them in Labels."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:750
+msgid "Frenet label ready to print."
+msgstr ""
+
+#. translators: %s: tracking code
+#: includes/labels/class-wc-frenet-labels-service.php:754
+#: includes/tracking/class-wc-frenet-tracking.php:228
+#, php-format
+msgid "Tracking code added: %s"
+msgstr ""
+
+#. translators: %s: tracking code
+#: includes/labels/class-wc-frenet-labels-service.php:792
+#, php-format
+msgid "Tracking code %s removed: its Frenet label was cancelled."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:902
+msgid "The Frenet label was not paid: Frenet did not charge it. Check the wallet balance and pay it in Labels."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:907
+msgid "Frenet has not released the label after 10 minutes. Check the shipment in the Frenet panel."
+msgstr ""
+
+#. translators: %s: shipment id
+#: includes/labels/class-wc-frenet-labels-service.php:980
+#, php-format
+msgid "Frenet created shipment %s although it did not answer at the time."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:985
+msgid "Frenet did not create the shipment that went unanswered. Nothing was charged; the label can be created again."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1004
+msgid "The customer did not give a CPF or CNPJ, and Frenet requires it on the label. Add a CPF field to the checkout (for example with the Brazilian Market plugin) so new orders bring it; for this order, add the custom field _billing_cpf with the CPF. Nothing was charged."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1008
+msgid "The shipping address has no house number, and Frenet requires it. Edit the address of the order and put the number after the street (for example \"Rua Augusta, 100\"), or \"S/N\" when there is none. Nothing was charged."
+msgstr ""
+
+#. translators: %s: shipment id
+#: includes/labels/class-wc-frenet-labels-service.php:1047
+#, php-format
+msgid "Frenet did not confirm whether shipment %s was cancelled. Nothing changed in the store: try again in a moment."
+msgstr ""
+
+#. translators: %s: shipment id
+#: includes/labels/class-wc-frenet-labels-service.php:1051
+#, php-format
+msgid "Frenet holds the wallet balance for shipment %s, whose payment did not go through, and it cannot be cancelled or deleted now. Pay it in Labels after adding balance, or contact Frenet support to release it."
+msgstr ""
+
+#. translators: 1: shipment id, 2: status name
+#: includes/labels/class-wc-frenet-labels-service.php:1055
+#, php-format
+msgid "Frenet did not cancel shipment %1$s (%2$s). Cancel it in the Frenet panel."
+msgstr ""
+
+#. translators: %s: shipment id
+#: includes/labels/class-wc-frenet-labels-service.php:1070
+#, php-format
+msgid "Frenet label %s cancelled. Frenet returns the amount to the wallet (usually overnight)."
+msgstr ""
+
+#. translators: %s: shipment id
+#: includes/labels/class-wc-frenet-labels-service.php:1072
+#, php-format
+msgid "Unpaid Frenet shipment %s deleted."
+msgstr ""
+
+#. translators: %s: minimum amount, e.g. R$ 5,00
+#: includes/labels/class-wc-frenet-labels-service.php:1095
+#, php-format
+msgid "Type an amount of at least %s."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1129
+#: includes/labels/views/deposit-notice.php:16
+msgid "Frenet did not start the payment. Nothing was charged; try again or add balance in the Frenet panel."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1200
+msgid "Frenet did not return the wallet balance."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1265
+msgid "Frenet did not return the wallet statement."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1344
+msgid "Select at least one paid label."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1358
+msgid "Frenet did not generate the PDF. Only paid labels can be printed; try again in a minute."
+msgstr ""
+
+#. translators: %d: status number
+#: includes/labels/class-wc-frenet-labels-service.php:1392
+#, php-format
+msgid "Status %d"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1402
+msgid "Created"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1403
+msgid "Awaiting payment"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1404
+msgid "Payment not completed"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1405
+msgid "Paid"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1406
+msgid "Posted"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1407
+msgid "Cancellation scheduled"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1408
+msgid "Cancelled"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1409
+msgid "Deleted"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-service.php:1410
+msgid "Delivered at the drop-off point"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:88
+msgid "Connect your account"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:88
+msgid "Store token, and partner token for labels"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:89
+#: includes/labels/views/setup.php:138
+msgid "Confirm the sender"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:89
+msgid "Who sends the parcels"
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:171
+msgid "Type the sender name."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:174
+msgid "Type the CPF or CNPJ of the Frenet account."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:176
+msgid "This CPF/CNPJ is not valid. Check the digits."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:179
+msgid "Type a valid e-mail."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:182
+#: includes/tracking/class-wc-frenet-autofill.php:116
+msgid "A CEP has 8 digits."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:185
+msgid "Type the street."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:186
+msgid "Type the number (or S/N)."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:187
+msgid "Type the neighborhood."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:188
+msgid "Type the city."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:196
+msgid "Choose the state (UF)."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:329
+msgid "Paste the store token (Frenet panel > Integrations)."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:332
+msgid "Fill in the highlighted fields."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:349
+msgid "Frenet did not recognise this token. Copy it again from the Frenet panel > Integrations."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:352
+msgid "Frenet did not accept this partner token. Paste it again or check it with Frenet."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:363
+msgid "Frenet did not accept this partner token, so it was not saved. The store token works: quotes, tracking and the balance keep working."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:367
+msgid "Frenet did not accept the tokens. Nothing was saved as connected."
+msgstr ""
+
+#. translators: %s: Frenet answer
+#: includes/labels/class-wc-frenet-labels-setup.php:369
+#, php-format
+msgid "Could not check the account with Frenet: %s Try again in a minute."
+msgstr ""
+
+#. translators: %s: wallet balance, e.g. R$ 10,00
+#: includes/labels/class-wc-frenet-labels-setup.php:379
+#, php-format
+msgid "Account connected. Wallet balance: %s."
+msgstr ""
+
+#. translators: %s: wallet balance, e.g. R$ 10,00
+#: includes/labels/class-wc-frenet-labels-setup.php:381
+#, php-format
+msgid "Account connected in basic mode. Wallet balance: %s."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:405
+msgid "Check the highlighted fields."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels-setup.php:409
+msgid "Sender confirmed. It goes on every label."
+msgstr ""
+
+#: includes/labels/class-wc-frenet-labels.php:46
+msgid "Invalid deposit notification key."
+msgstr ""
+
+#: includes/labels/views/create.php:33
+msgid "Choose the orders, calculate the freight to compare carriers and create the shipments. Nothing is charged before you confirm."
+msgstr ""
+
+#: includes/labels/views/create.php:35
+msgid "Automation on:"
+msgstr ""
+
+#. translators: %s: rule
+#: includes/labels/views/create.php:35
+#, php-format
+msgid "paid orders create their shipment on their own (%s). This screen is for the ones that did not go through or that you want to send by hand."
+msgstr ""
+
+#. translators: 1: orders shown, 2: orders selected
+#: includes/labels/views/create.php:41
+#, php-format
+msgid "Showing the first %1$d of the %2$d selected orders. Create their shipments, then select the others in WooCommerce > Orders."
+msgstr ""
+
+#: includes/labels/views/create.php:46
+msgid "Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender before creating shipments: Frenet requires it."
+msgstr ""
+
+#: includes/labels/views/create.php:51
+msgid "Carriers for the selected orders"
+msgstr ""
+
+#: includes/labels/views/create.php:54
+#: includes/labels/views/create.php:86
+#: includes/labels/views/create.php:152
+#: includes/labels/views/dropoff.php:37
+msgid "Carrier"
+msgstr ""
+
+#: includes/labels/views/create.php:55
+msgid "Available"
+msgstr ""
+
+#: includes/labels/views/create.php:58
+msgid "Use for every order"
+msgstr ""
+
+#: includes/labels/views/create.php:63
+msgid "Select a carrier to use it in every order where it is available, or the best price or the fastest option of each order, whatever the carrier."
+msgstr ""
+
+#: includes/labels/views/create.php:68
+msgid "No order waiting for a shipment"
+msgstr ""
+
+#: includes/labels/views/create.php:69
+msgid "Orders in processing or on hold without a Frenet shipment appear here. You can also select orders in WooCommerce > Orders and use the bulk action \"Create Frenet shipment\"."
+msgstr ""
+
+#: includes/labels/views/create.php:70
+msgid "Go to orders"
+msgstr ""
+
+#: includes/labels/views/create.php:81
+#: includes/labels/viewsrinting.php:46
+#: includes/labels/viewsroducts.php:89
+msgid "Select all"
+msgstr ""
+
+#: includes/labels/views/create.php:82
+#: includes/labels/views/labels.php:117
+#: includes/labels/viewsrinting.php:48
+#: includes/labels/views/tracking.php:47
+#: includes/labels/views/tracking.php:99
+msgid "Order"
+msgstr ""
+
+#: includes/labels/views/create.php:83
+msgid "Destination"
+msgstr ""
+
+#: includes/labels/views/create.php:84
+msgid "Package"
+msgstr ""
+
+#: includes/labels/views/create.php:85
+#: includes/labels/views/order-box.php:55
+msgid "NF-e"
+msgstr ""
+
+#: includes/labels/views/create.php:87
+#: includes/labels/views/labels.php:120
+#: includes/labels/viewsrinting.php:50
+#: includes/labels/views/statement.php:44
+msgid "Status"
+msgstr ""
+
+#: includes/labels/views/create.php:88
+#: includes/labels/views/labels.php:124
+msgid "Notes"
+msgstr ""
+
+#. translators: %s: order number
+#: includes/labels/views/create.php:105
+#, php-format
+msgid "Select order %s"
+msgstr ""
+
+#. translators: %d: items
+#: includes/labels/views/create.php:108
+#, php-format
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/views/create.php:112
+msgid "What the products ask for the automatic shipment"
+msgstr ""
+
+#. translators: %s: products and what they ask
+#: includes/labels/views/create.php:112
+#, php-format
+msgid "Products ask: %s"
+msgstr ""
+
+#: includes/labels/views/create.php:116
+msgid "Add NF-e key"
+msgstr ""
+
+#: includes/labels/views/create.php:117
+msgid "44 characters from the DANFE"
+msgstr ""
+
+#: includes/labels/views/create.php:117
+msgid "NF-e access key"
+msgstr ""
+
+#: includes/labels/views/create.php:118
+msgid "Save"
+msgstr ""
+
+#: includes/labels/views/create.php:122
+msgid "Calculate the freight"
+msgstr ""
+
+#: includes/labels/views/create.php:134
+msgid "Selected orders"
+msgstr ""
+
+#: includes/labels/views/create.php:135
+msgid "Freight total"
+msgstr ""
+
+#: includes/labels/views/create.php:139
+msgid "Clear quotes"
+msgstr ""
+
+#: includes/labels/views/create.php:140
+msgid "Calculate freight"
+msgstr ""
+
+#: includes/labels/views/create.php:149
+msgid "Review before creating"
+msgstr ""
+
+#: includes/labels/views/create.php:154
+msgid "Subtotal"
+msgstr ""
+
+#: includes/labels/views/create.php:157
+msgid "Total"
+msgstr ""
+
+#: includes/labels/views/create.php:160
+msgid "Balance now"
+msgstr ""
+
+#: includes/labels/views/create.php:167
+msgid "Frenet generates the content declaration (DC-e) for every order without an NF-e key. If your store is required to issue an NF-e (it depends on its state registration), it cannot use the DC-e: go back and add the NF-e key of those orders."
+msgstr ""
+
+#: includes/labels/views/create.php:171
+#: includes/labels/views/setup.php:176
+msgid "Back"
+msgstr ""
+
+#: includes/labels/views/deposit-notice.php:13
+msgid "Payment sent. The balance shows up as soon as Mercado Pago confirms it (Pix in a few minutes)."
+msgstr ""
+
+#: includes/labels/views/deposit-notice.php:14
+msgid "Payment pending at Mercado Pago. The balance shows up when it is confirmed."
+msgstr ""
+
+#: includes/labels/views/deposit-notice.php:15
+msgid "The payment was not completed. Nothing was added to the wallet."
+msgstr ""
+
+#: includes/labels/views/dropoff.php:14
+msgid "Some carriers let you choose where you drop off your packages. Frenet uses the default point of each carrier for its next labels. To turn a default point off, use the Frenet panel."
+msgstr ""
+
+#: includes/labels/views/dropoff.php:24
+msgid "No active carrier"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:25
+msgid "Activate carriers in the Frenet panel to choose their drop-off points here."
+msgstr ""
+
+#: includes/labels/views/dropoff.php:38
+msgid "Default drop-off point"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:39
+#: includes/labels/views/labels.php:126
+#: includes/labels/views/tracking.php:104
+msgid "Actions"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:48
+msgid "Loading…"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:51
+msgid "In the Frenet panel"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:65
+msgid "Near the CEP"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:68
+msgid "Search points"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:71
+msgid "Filter by name, neighborhood or city"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:80
+msgid "Save default point"
+msgstr ""
+
+#: includes/labels/views/dropoff.php:81
+#: includes/labels/views/labels.php:192
+#: includes/labels/views/order-box.php:46
+#: includes/labels/views/wallet.php:64
+msgid "Cancel"
+msgstr ""
+
+#: includes/labels/views/labels.php:17
+msgid "Every shipment of your Frenet account, also the ones created in the Frenet panel. Select unpaid labels to pay them together, or paid ones to print them."
+msgstr ""
+
+#. translators: %s: error
+#: includes/labels/views/labels.php:23
+#: includes/labels/views/statement.php:21
+#, php-format
+msgid "Frenet did not answer: %s. Reload the page in a moment."
+msgstr ""
+
+#: includes/labels/views/labels.php:42
+msgid "Filter by status"
+msgstr ""
+
+#: includes/labels/views/labels.php:43
+msgid "Show:"
+msgstr ""
+
+#: includes/labels/views/labels.php:45
+msgid "All"
+msgstr ""
+
+#. translators: 1: page, 2: pages, 3: total shipments
+#: includes/labels/views/labels.php:66
+#, php-format
+msgid "Page %1$d of %2$d · %3$s shipments in the account. The filter applies to this page."
+msgstr ""
+
+#: includes/labels/views/labels.php:72
+msgid "No label with this status on this page."
+msgstr ""
+
+#: includes/labels/views/labels.php:72
+msgid "No Frenet labels yet. Create one in \"Create shipment\"."
+msgstr ""
+
+#: includes/labels/views/labels.php:116
+msgid "Select or clear every label shown"
+msgstr ""
+
+#: includes/labels/views/labels.php:117
+#: includes/labels/viewsrinting.php:47
+msgid "Shipment"
+msgstr ""
+
+#: includes/labels/views/labels.php:118
+#: includes/labels/viewsrinting.php:49
+msgid "Service"
+msgstr ""
+
+#: includes/labels/views/labels.php:119
+msgid "Price"
+msgstr ""
+
+#: includes/labels/views/labels.php:121
+#: includes/labels/views/order-box.php:33
+#: includes/labels/views/order-tracking.php:23
+#: includes/labels/views/tracking.php:100
+msgid "Tracking code"
+msgstr ""
+
+#: includes/labels/views/labels.php:122
+#: includes/tracking/class-wc-frenet-tracking-admin.php:55
+msgid "Updated"
+msgstr ""
+
+#. translators: %s: shipment
+#: includes/labels/views/labels.php:145
+#: includes/labels/viewsrinting.php:56
+#, php-format
+msgid "Select shipment %s"
+msgstr ""
+
+#: includes/labels/views/labels.php:152
+msgid "Order of another store or created in the Frenet panel"
+msgstr ""
+
+#: includes/labels/views/labels.php:189
+msgid "Print"
+msgstr ""
+
+#: includes/labels/views/labels.php:203
+#: includes/labels/viewsrinting.php:68
+msgid "Selected labels"
+msgstr ""
+
+#: includes/labels/views/labels.php:204
+msgid "To pay"
+msgstr ""
+
+#: includes/labels/views/labels.php:208
+msgid "Print selected"
+msgstr ""
+
+#: includes/labels/views/labels.php:210
+msgid "Pay selected"
+msgstr ""
+
+#: includes/labels/views/labels.php:218
+#: includes/labels/viewsroducts.php:147
+#: includes/labels/views/statement.php:77
+msgid "Pages"
+msgstr ""
+
+#: includes/labels/views/labels.php:234
+#: includes/labels/views/statement.php:79
+msgid "Newer"
+msgstr ""
+
+#. translators: 1: page, 2: pages
+#: includes/labels/views/labels.php:236
+#: includes/labels/viewsroducts.php:152
+#: includes/labels/views/statement.php:81
+#, php-format
+msgid "Page %1$d of %2$d"
+msgstr ""
+
+#: includes/labels/views/labels.php:252
+#: includes/labels/views/statement.php:83
+msgid "Older"
+msgstr ""
+
+#: includes/labels/views/not-ready.php:14
+msgid "Frenet labels are turned off"
+msgstr ""
+
+#: includes/labels/views/not-ready.php:15
+msgid "The partner token is saved, but the label screens are off. Turn on \"Enable Frenet labels\" in Settings to create labels from the store."
+msgstr ""
+
+#: includes/labels/views/not-ready.php:16
+msgid "Open Settings"
+msgstr ""
+
+#: includes/labels/views/not-ready.php:18
+msgid "Buying labels from the store needs the partner token"
+msgstr ""
+
+#: includes/labels/views/not-ready.php:19
+msgid "Your Frenet account is connected in basic mode. Already working: freight quotes at checkout, the simulator on the product page, tracking, the address by CEP and the wallet balance."
+msgstr ""
+
+#: includes/labels/views/not-ready.php:20
+msgid "Creating, paying, printing and cancelling labels here needs the partner token, exclusive to the Frenet whitelabel service. Until you have it, buy the labels in the Frenet panel and paste the tracking code in the order: the store follows the tracking and tells the customer."
+msgstr ""
+
+#: includes/labels/views/not-ready.php:22
+#: includes/labels/views/settings.php:45
+#: includes/labels/views/setup.php:207
+msgid "Add the partner token"
+msgstr ""
+
+#: includes/labels/views/not-ready.php:23
+msgid "Buy labels in the Frenet panel"
+msgstr ""
+
+#: includes/labels/views/not-ready.php:26
+#: includes/labels/views/setup.php:81
+msgid "Connect your Frenet account"
+msgstr ""
+
+#: includes/labels/views/not-ready.php:27
+msgid "With the store token, the store quotes freight, tracks parcels and fills the address by CEP. With the partner token too (Frenet whitelabel service), it also buys and prints labels."
+msgstr ""
+
+#: includes/labels/views/not-ready.php:28
+msgid "Connect the account"
+msgstr ""
+
+#. translators: %s: shipment id
+#: includes/labels/views/order-box.php:25
+#, php-format
+msgid "Shipment %s"
+msgstr ""
+
+#: includes/labels/views/order-box.php:36
+msgid "Sent to the Frenet panel: pay and print it there."
+msgstr ""
+
+#: includes/labels/views/order-box.php:40
+msgid "Print label"
+msgstr ""
+
+#: includes/labels/views/order-box.php:44
+msgid "Pay in Labels"
+msgstr ""
+
+#: includes/labels/views/order-box.php:49
+msgid "No Frenet shipment yet."
+msgstr ""
+
+#: includes/labels/views/order-box.php:55
+msgid "none"
+msgstr ""
+
+#: includes/labels/views/order-tracking.php:20
+#: includes/labels/views/tracking.php:123
+#: includes/tracking/class-wc-frenet-tracking-admin.php:56
+msgid "No movement yet"
+msgstr ""
+
+#: includes/labels/views/order-tracking.php:25
+msgid "E-mail the customer"
+msgstr ""
+
+#: includes/labels/views/order-tracking.php:27
+msgid "Save code"
+msgstr ""
+
+#: includes/labels/views/order-tracking.php:29
+msgid "Update now"
+msgstr ""
+
+#. translators: %s: shipment ids
+#: includes/labels/viewsrinting.php:14
+#, php-format
+msgid "Frenet left these labels out of the last PDF: %s. Print them again in a minute; if it keeps failing, check them in Labels."
+msgstr ""
+
+#: includes/labels/viewsrinting.php:27
+msgid "Print the paid labels in one file. Choose the paper format of your printer."
+msgstr ""
+
+#: includes/labels/viewsrinting.php:31
+msgid "No paid label to print among the latest 100 shipments."
+msgstr ""
+
+#: includes/labels/viewsrinting.php:32
+msgid "See unpaid labels"
+msgstr ""
+
+#: includes/labels/viewsrinting.php:38
+msgid "Paper format"
+msgstr ""
+
+#: includes/labels/viewsrinting.php:39
+msgid "Common printer, several labels per page."
+msgstr ""
+
+#: includes/labels/viewsrinting.php:40
+msgid "Thermal label printer."
+msgstr ""
+
+#: includes/labels/viewsrinting.php:71
+msgid "Opens the PDF in a new tab."
+msgstr ""
+
+#: includes/labels/viewsrinting.php:72
+msgid "Print selected labels"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:32
+msgid "Weight"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:33
+msgid "Length"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:34
+msgid "Width"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:35
+msgid "Height"
+msgstr ""
+
+#. translators: %d: products
+#: includes/labels/viewsroducts.php:42
+#, php-format
+msgid "%d product saved."
+msgid_plural "%d products saved."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/viewsroducts.php:46
+msgid "Weight, size and the carrier of the automatic shipment, product by product. What you save here also shows in the product form and can be imported by CSV."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:49
+msgid "Automatic shipments are on"
+msgstr ""
+
+#. translators: %s: rule
+#: includes/labels/viewsroducts.php:50
+#, php-format
+msgid "(rule: %s)."
+msgstr ""
+
+#. translators: %s: rule
+#: includes/labels/viewsroducts.php:51
+msgid "A product that asks for a carrier or a rule wins over the general rule for the orders it is in."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:53
+msgid "Automatic shipments are off."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:54
+msgid "What you set here is used when you turn them on in Settings."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:56
+msgid "Customers see the Frenet carriers at checkout."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:56
+msgid "Customers do not see Frenet at checkout: they pay your other shipping method and the carrier is decided here."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:62
+msgid "Search products"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:63
+msgid "Product name or SKU"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:64
+msgid "Show"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:66
+msgid "All products"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:67
+msgid "Without weight or size"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:68
+msgid "With their own carrier or rule"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:70
+msgid "Search"
+msgstr ""
+
+#. translators: %d: products
+#: includes/labels/viewsroducts.php:71
+#, php-format
+msgid "%d product"
+msgid_plural "%d products"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/viewsroducts.php:76
+msgid "No product found"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:77
+msgid "Simple products and variations are listed: a variation without its own carrier follows its parent product."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:90
+msgid "Product"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:94
+#: includes/labels/viewsroducts.php:114
+#: includes/labels/viewsroducts.php:132
+msgid "Automatic shipment with"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:106
+msgid "variation"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:110
+msgid "missing weight or size"
+msgstr ""
+
+#. translators: %s: what the parent product asks
+#: includes/labels/viewsroducts.php:116
+#, php-format
+msgid "Like the parent product (%s)"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:119
+msgid "Edit product"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:126
+msgid "Apply to the selected products"
+msgstr ""
+
+#. translators: %d: selected products (replaced by the page script)
+#: includes/labels/viewsroducts.php:127
+#, php-format
+msgid "%d product selected"
+msgid_plural "%d products selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: selected products (replaced by the page script)
+#: includes/labels/viewsroducts.php:128
+msgid "Select products to change several at once."
+msgstr ""
+
+#: includes/labels/viewsroducts.php:133
+msgid "Automatic shipment with…"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:138
+msgid "Apply to the selected"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:141
+msgid "Unsaved changes:"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:142
+#: includes/labels/views/settings.php:203
+msgid "Save changes"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:151
+msgid "Previous"
+msgstr ""
+
+#: includes/labels/viewsroducts.php:156
+msgid "Next"
+msgstr ""
+
+#: includes/labels/views/settings.php:16
+msgid "Settings saved."
+msgstr ""
+
+#: includes/labels/views/settings.php:24
+msgid "Finish the first steps"
+msgstr ""
+
+#. translators: %s: list of steps, e.g. "Connect your account, Confirm the sender"
+#: includes/labels/views/settings.php:34
+#, php-format
+msgid "Still to do: %s."
+msgstr ""
+
+#: includes/labels/views/settings.php:37
+msgid "Continue setup"
+msgstr ""
+
+#: includes/labels/views/settings.php:42
+msgid "Basic mode: no partner token"
+msgstr ""
+
+#: includes/labels/views/settings.php:43
+msgid "Quotes, simulator, tracking, address by CEP and the balance work. Buying labels from the store needs the partner token; until then, buy them in the Frenet panel."
+msgstr ""
+
+#: includes/labels/views/settings.php:54
+msgid "General"
+msgstr ""
+
+#: includes/labels/views/settings.php:55
+msgid "Enable Frenet labels"
+msgstr ""
+
+#: includes/labels/views/settings.php:57
+msgid "Client token"
+msgstr ""
+
+#: includes/labels/views/settings.php:59
+#: includes/labels/views/settings.php:79
+#: includes/labels/views/setup.php:90
+#: includes/labels/views/setup.php:112
+msgid "Saved. Type a new one to replace it."
+msgstr ""
+
+#: includes/labels/views/settings.php:63
+#: includes/labels/views/setup.php:95
+msgid "Leave empty to keep the saved token. Remove it to use the token of the Frenet shipping method."
+msgstr ""
+
+#: includes/labels/views/settings.php:67
+msgid "Leave empty to use the token of the Frenet shipping method."
+msgstr ""
+
+#: includes/labels/views/settings.php:68
+msgid "Empty: the token of the Frenet shipping method is used (found)."
+msgstr ""
+
+#: includes/labels/views/settings.php:74
+msgid "Remove the saved client token"
+msgstr ""
+
+#: includes/labels/views/settings.php:77
+#: includes/labels/views/setup.php:110
+msgid "Partner token (optional, for labels)"
+msgstr ""
+
+#: includes/labels/views/settings.php:80
+msgid "Exclusive to Frenet customers with the whitelabel service: each store has its own (x-partner-token). Ask Frenet for it. Required to create, list, pay and cancel labels. Keep it secret like a password."
+msgstr ""
+
+#: includes/labels/views/settings.php:82
+msgid "Remove the saved partner token"
+msgstr ""
+
+#: includes/labels/views/settings.php:85
+msgid "API URL"
+msgstr ""
+
+#: includes/labels/views/settings.php:88
+msgid "Set by FRENET_LABELS_API_URL in wp-config.php."
+msgstr ""
+
+#: includes/labels/views/settings.php:91
+msgid "Default: https://whitelabel.frenet.com.br/v1. Only https addresses on frenet.com.br are accepted. Change it only for tests."
+msgstr ""
+
+#: includes/labels/views/settings.php:98
+msgid "Default service"
+msgstr ""
+
+#: includes/labels/views/settings.php:102
+msgid "Select the best option automatically"
+msgstr ""
+
+#: includes/labels/views/settings.php:103
+msgid "Off: each order starts with the carrier the customer chose at checkout. On: it starts with the best one by the default service. You can always change it before creating."
+msgstr ""
+
+#: includes/labels/views/settings.php:104
+msgid "Batch label printing"
+msgstr ""
+
+#: includes/labels/views/settings.php:105
+msgid "Label format"
+msgstr ""
+
+#: includes/labels/views/settings.php:113
+#: includes/labels/views/setup.php:215
+msgid "Sender"
+msgstr ""
+
+#: includes/labels/views/settings.php:114
+msgid "Filled in from the store settings (WooCommerce > Settings > General and the Frenet shipping method). Change only what is different on the labels; empty a field to use the store value again."
+msgstr ""
+
+#: includes/labels/views/settings.php:119
+msgid "Name"
+msgstr ""
+
+#: includes/labels/views/settings.php:120
+#: includes/labels/views/setup.php:127
+msgid "CPF/CNPJ"
+msgstr ""
+
+#: includes/labels/views/settings.php:121
+#: includes/labels/views/setup.php:128
+msgid "E-mail"
+msgstr ""
+
+#: includes/labels/views/settings.php:122
+#: includes/labels/views/setup.php:129
+msgid "CEP"
+msgstr ""
+
+#: includes/labels/views/settings.php:123
+#: includes/labels/views/setup.php:130
+msgid "Street"
+msgstr ""
+
+#: includes/labels/views/settings.php:124
+#: includes/labels/views/setup.php:131
+msgid "Number"
+msgstr ""
+
+#: includes/labels/views/settings.php:125
+msgid "Complement"
+msgstr ""
+
+#: includes/labels/views/settings.php:126
+#: includes/labels/views/setup.php:133
+msgid "Neighborhood"
+msgstr ""
+
+#: includes/labels/views/settings.php:127
+#: includes/labels/views/setup.php:134
+msgid "City"
+msgstr ""
+
+#: includes/labels/views/settings.php:128
+#: includes/labels/views/setup.php:164
+msgid "State (UF)"
+msgstr ""
+
+#: includes/labels/views/settings.php:143
+#: includes/labels/views/setup.php:216
+msgid "Payment"
+msgstr ""
+
+#: includes/labels/views/settings.php:144
+msgid "Pay with the wallet when creating"
+msgstr ""
+
+#: includes/labels/views/settings.php:145
+msgid "Off: labels bought here are created unpaid and wait in Labels until you pay them."
+msgstr ""
+
+#: includes/labels/views/settings.php:149
+msgid "Automation"
+msgstr ""
+
+#: includes/labels/views/settings.php:150
+msgid "Create the shipment automatically when an order is paid"
+msgstr ""
+
+#: includes/labels/views/settings.php:151
+msgid "A minute after a paid order with delivery in Brazil comes in, the store quotes it, picks the service by the rule below, creates the shipment and pays it with the wallet (when wallet payment is on). The result goes to the order history and to Create shipment > Notes."
+msgstr ""
+
+#: includes/labels/views/settings.php:152
+msgid "I authorise the store to buy labels and debit my Frenet wallet automatically, without confirming each order."
+msgstr ""
+
+#: includes/labels/views/settings.php:153
+msgid "Without this authorisation the automation stays off. Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes."
+msgstr ""
+
+#: includes/labels/views/settings.php:156
+msgid "Which service"
+msgstr ""
+
+#: includes/labels/views/settings.php:165
+msgid "Who decides, in this order: 1) the customer, when the rule is \"the carrier the customer chose\" and they paid for a Frenet service; 2) the products (Frenet > Products); 3) this rule."
+msgstr ""
+
+#: includes/labels/views/settings.php:166
+msgid "Frenet is not offered at checkout (no shipping zone has the Frenet method), so the customer never chooses. Who decides, in this order: 1) the products (Frenet > Products); 2) this rule."
+msgstr ""
+
+#: includes/labels/views/settings.php:170
+msgid "If the carrier a product asks for does not quote"
+msgstr ""
+
+#: includes/labels/views/settings.php:172
+msgid "Use the best price instead"
+msgstr ""
+
+#: includes/labels/views/settings.php:173
+msgid "Do not create the shipment (leave the reason in Notes)"
+msgstr ""
+
+#: includes/labels/views/settings.php:178
+msgid "Checkout"
+msgstr ""
+
+#: includes/labels/views/settings.php:179
+msgid "Fill the address from the CEP"
+msgstr ""
+
+#: includes/labels/views/settings.php:180
+msgid "Street, neighborhood, city and state appear when the customer types the CEP, in the classic checkout, the checkout block and My Account. Number and complement are never changed. Leave it off if another plugin already does this."
+msgstr ""
+
+#: includes/labels/views/settings.php:182
+msgid "Infixs Checkout Fields already fills the address from the CEP at checkout and in My Account, so the Frenet one stays off on those pages and works only in the cart."
+msgstr ""
+
+#: includes/labels/views/settings.php:188
+msgid "Check the tracking automatically every hour"
+msgstr ""
+
+#: includes/labels/views/settings.php:189
+msgid "Orders with a tracking code (bought here or added by hand) are checked with Frenet until they are delivered."
+msgstr ""
+
+#: includes/labels/views/settings.php:190
+msgid "Change the order status with the tracking"
+msgstr ""
+
+#: includes/labels/views/settings.php:191
+msgid "Adds the statuses In transit, Awaiting pickup, Delivered and Returning, and moves the order according to the latest event. Cancelled, refunded and completed orders are never changed."
+msgstr ""
+
+#: includes/labels/views/settings.php:192
+msgid "E-mail the tracking code to the customer"
+msgstr ""
+
+#: includes/labels/views/settings.php:194
+msgid "Status e-mails (in transit, awaiting pickup, delivered, returning) are turned on or off one by one, and every text is edited, in"
+msgstr ""
+
+#: includes/labels/views/settings.php:195
+msgid "WooCommerce > Settings > Emails"
+msgstr ""
+
+#: includes/labels/views/settings.php:201
+msgid "Changes apply to the next labels and quotes."
+msgstr ""
+
+#: includes/labels/views/settings.php:209
+msgid "Turn on automatic shipments?"
+msgstr ""
+
+#: includes/labels/views/settings.php:211
+msgid "The store will spend your Frenet balance on its own."
+msgstr ""
+
+#: includes/labels/views/settings.php:212
+msgid "A minute after each paid order with delivery in Brazil, it quotes the freight, creates the shipment and pays it with the wallet, without asking anyone. Each label is charged exactly like one you create by hand."
+msgstr ""
+
+#: includes/labels/views/settings.php:215
+msgid "Service:"
+msgstr ""
+
+#: includes/labels/views/settings.php:216
+msgid "Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes."
+msgstr ""
+
+#: includes/labels/views/settings.php:217
+msgid "A label that should not go out: cancel it in Labels and Frenet returns the amount to the wallet."
+msgstr ""
+
+#: includes/labels/views/settings.php:218
+msgid "You can turn it off here at any time."
+msgstr ""
+
+#: includes/labels/views/settings.php:221
+msgid "Not now"
+msgstr ""
+
+#: includes/labels/views/settings.php:222
+msgid "I understand, turn it on"
+msgstr ""
+
+#: includes/labels/views/setup.php:48
+msgid "Setup steps"
+msgstr ""
+
+#: includes/labels/views/setup.php:65
+msgid "Only with the partner token"
+msgstr ""
+
+#: includes/labels/views/setup.php:80
+msgid "Step 1 of 2"
+msgstr ""
+
+#: includes/labels/views/setup.php:82
+msgid "With the store token, the store quotes freight, tracks parcels, fills the address by CEP and shows your wallet balance. To also buy and print labels here, add the partner token. We check both with Frenet before going on."
+msgstr ""
+
+#: includes/labels/views/setup.php:88
+msgid "Store token"
+msgstr ""
+
+#: includes/labels/views/setup.php:90
+msgid "Using the token of the Frenet shipping method"
+msgstr ""
+
+#: includes/labels/views/setup.php:99
+msgid "Found in the Frenet shipping method: leave it empty to use that one."
+msgstr ""
+
+#: includes/labels/views/setup.php:100
+msgid "The same token you use to quote freight. It is in the Frenet panel, in Integrations."
+msgstr ""
+
+#: includes/labels/views/setup.php:107
+msgid "Remove the saved store token"
+msgstr ""
+
+#: includes/labels/views/setup.php:114
+msgid "Exclusive to Frenet customers with the whitelabel service; each store has its own. Without it, leave it empty: everything else works and the labels are bought in the Frenet panel. Keep it secret like a password."
+msgstr ""
+
+#: includes/labels/views/setup.php:117
+msgid "Check and continue"
+msgstr ""
+
+#: includes/labels/views/setup.php:126
+msgid "Name or company name"
+msgstr ""
+
+#: includes/labels/views/setup.php:132
+msgid "Complement (optional)"
+msgstr ""
+
+#: includes/labels/views/setup.php:137
+msgid "Step 2 of 2"
+msgstr ""
+
+#: includes/labels/views/setup.php:139
+msgid "This goes on every label as the sender. We filled it with your store data (WooCommerce > Settings > General); check each field and complete what is missing."
+msgstr ""
+
+#: includes/labels/views/setup.php:141
+msgid "WooCommerce has no neighborhood field, so we looked it up by the CEP. Check that it is right."
+msgstr ""
+
+#: includes/labels/views/setup.php:157
+msgid "The one of the Frenet account that pays the labels."
+msgstr ""
+
+#: includes/labels/views/setup.php:166
+msgid "Choose…"
+msgstr ""
+
+#: includes/labels/views/setup.php:175
+msgid "Confirm sender"
+msgstr ""
+
+#: includes/labels/views/setup.php:186
+msgid "Almost there"
+msgstr ""
+
+#. translators: %d: number of steps
+#: includes/labels/views/setup.php:190
+#, php-format
+msgid "%d step is still missing. Labels cannot be bought until it is done."
+msgid_plural "%d steps are still missing. Labels cannot be bought until they are done."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/views/setup.php:193
+msgid "Continue"
+msgstr ""
+
+#: includes/labels/views/setup.php:195
+msgid "Account connected in basic mode"
+msgstr ""
+
+#: includes/labels/views/setup.php:196
+msgid "With the store token, this already works:"
+msgstr ""
+
+#: includes/labels/views/setup.php:198
+msgid "Freight at checkout"
+msgstr ""
+
+#: includes/labels/views/setup.php:198
+msgid "Quotes of the carriers of your Frenet account, and the simulator on the product page."
+msgstr ""
+
+#: includes/labels/views/setup.php:199
+msgid "Paste the tracking code in the order: the store follows it and can e-mail the customer."
+msgstr ""
+
+#: includes/labels/views/setup.php:200
+msgid "Address by CEP"
+msgstr ""
+
+#: includes/labels/views/setup.php:200
+msgid "Street, neighborhood, city and state filled at checkout."
+msgstr ""
+
+#: includes/labels/views/setup.php:201
+#: includes/labels/views/wallet.php:19
+msgid "Wallet balance"
+msgstr ""
+
+#: includes/labels/views/setup.php:201
+msgid "At the top of the Frenet screens."
+msgstr ""
+
+#: includes/labels/views/setup.php:203
+msgid "Buying, printing and cancelling labels from the store needs the partner token (Frenet whitelabel service). Until then, buy them in the Frenet panel."
+msgstr ""
+
+#: includes/labels/views/setup.php:204
+msgid "Tracking e-mails and the address by CEP stay off until you turn them on in Settings."
+msgstr ""
+
+#: includes/labels/views/setup.php:206
+#: includes/labels/views/setup.php:222
+msgid "Review all settings"
+msgstr ""
+
+#: includes/labels/views/setup.php:211
+msgid "All set"
+msgstr ""
+
+#: includes/labels/views/setup.php:212
+msgid "The store can buy Frenet labels. This is what was configured:"
+msgstr ""
+
+#: includes/labels/views/setup.php:214
+msgid "Account"
+msgstr ""
+
+#: includes/labels/views/setup.php:214
+msgid "Connected"
+msgstr ""
+
+#: includes/labels/views/setup.php:216
+msgid "With the wallet, when creating"
+msgstr ""
+
+#: includes/labels/views/setup.php:216
+msgid "Later, in Labels"
+msgstr ""
+
+#: includes/labels/views/setup.php:217
+msgid "Balance"
+msgstr ""
+
+#: includes/labels/views/setup.php:217
+msgid "Labels are paid with the wallet. Add balance with \"Add balance\", at the top."
+msgstr ""
+
+#: includes/labels/views/setup.php:219
+msgid "Automatic shipments, tracking e-mails and the address by CEP stay off until you turn them on in Settings."
+msgstr ""
+
+#: includes/labels/views/setup.php:221
+msgid "Create my first shipment"
+msgstr ""
+
+#: includes/labels/views/statement.php:15
+msgid "Every movement of your Frenet wallet: deposits, label payments, refunds of cancelled labels and adjustments. Refunds usually arrive overnight."
+msgstr ""
+
+#: includes/labels/views/statement.php:31
+msgid "No movements in the wallet yet."
+msgstr ""
+
+#. translators: 1: page, 2: pages, 3: total movements
+#: includes/labels/views/statement.php:36
+#, php-format
+msgid "Page %1$d of %2$d · %3$s movements in the account."
+msgstr ""
+
+#: includes/labels/views/statement.php:42
+msgid "Date"
+msgstr ""
+
+#: includes/labels/views/statement.php:43
+msgid "Movement"
+msgstr ""
+
+#: includes/labels/views/statement.php:45
+#: includes/labels/views/wallet.php:42
+msgid "Amount"
+msgstr ""
+
+#: includes/labels/views/statement.php:73
+msgid "Amounts without a sign did not change the balance: they only record a step (a refund being processed, a payment on hold or a deposit that failed)."
+msgstr ""
+
+#: includes/labels/views/tracking.php:17
+msgid "Follow every order shipped with a tracking code, from labels bought here or codes added by hand."
+msgstr ""
+
+#: includes/labels/views/tracking.php:19
+msgid "Tracking sections"
+msgstr ""
+
+#: includes/labels/views/tracking.php:20
+msgid "Orders"
+msgstr ""
+
+#: includes/labels/views/tracking.php:21
+#: includes/labels/views/tracking.php:93
+msgid "Import codes"
+msgstr ""
+
+#: includes/labels/views/tracking.php:26
+msgid "Tracking uses the token of the Frenet shipping method. Set it in WooCommerce > Settings > Shipping > Frenet."
+msgstr ""
+
+#: includes/labels/views/tracking.php:33
+msgid "Add tracking codes in bulk"
+msgstr ""
+
+#: includes/labels/views/tracking.php:34
+msgid "One order per line: order number and tracking code, separated by \";\", \",\" or a tab. You can paste two columns straight from a spreadsheet."
+msgstr ""
+
+#: includes/labels/views/tracking.php:35
+msgid "Orders and codes"
+msgstr ""
+
+#: includes/labels/views/tracking.php:37
+msgid "E-mail the tracking code to each customer"
+msgstr ""
+
+#: includes/labels/views/tracking.php:39
+msgid "Review before applying"
+msgstr ""
+
+#: includes/labels/views/tracking.php:46
+msgid "Line"
+msgstr ""
+
+#: includes/labels/views/tracking.php:48
+#: includes/tracking/class-wc-frenet-tracking-admin.php:72
+msgid "New code"
+msgstr ""
+
+#: includes/labels/views/tracking.php:49
+msgid "Current code"
+msgstr ""
+
+#: includes/labels/views/tracking.php:50
+msgid "What happens"
+msgstr ""
+
+#: includes/labels/views/tracking.php:57
+msgid "Edit lines"
+msgstr ""
+
+#: includes/labels/views/tracking.php:77
+msgid "Automatic tracking on"
+msgstr ""
+
+#: includes/labels/views/tracking.php:77
+msgid "Automatic tracking off"
+msgstr ""
+
+#: includes/labels/views/tracking.php:79
+msgid "Checked every hour; the order status follows the latest event."
+msgstr ""
+
+#: includes/labels/views/tracking.php:79
+msgid "Checked every hour; the order status is not changed."
+msgstr ""
+
+#: includes/labels/views/tracking.php:81
+msgid "Turn it on in Settings"
+msgstr ""
+
+#: includes/labels/views/tracking.php:85
+msgid "Update all now"
+msgstr ""
+
+#: includes/labels/views/tracking.php:92
+msgid "No order has a tracking code yet. Codes arrive when a label is paid, or add them on the order screen or in Import codes."
+msgstr ""
+
+#: includes/labels/views/tracking.php:101
+msgid "Order status"
+msgstr ""
+
+#: includes/labels/views/tracking.php:102
+msgid "Latest movement"
+msgstr ""
+
+#: includes/labels/views/tracking.php:103
+msgid "Checked"
+msgstr ""
+
+#: includes/labels/views/tracking.php:126
+msgid "Never"
+msgstr ""
+
+#: includes/labels/views/tracking.php:127
+msgid "Update"
+msgstr ""
+
+#: includes/labels/views/wallet.php:21
+msgid "Unavailable"
+msgstr ""
+
+#. translators: %s: number of labels
+#: includes/labels/views/wallet.php:28
+#, php-format
+msgid "%s label available"
+msgid_plural "%s labels available"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/labels/views/wallet.php:34
+msgid "Add balance in the Frenet panel"
+msgstr ""
+
+#: includes/labels/views/wallet.php:37
+msgid "Add balance"
+msgstr ""
+
+#: includes/labels/views/wallet.php:47
+msgid "Quick amounts"
+msgstr ""
+
+#. translators: %s: minimum amount, e.g. R$ 5,00
+#: includes/labels/views/wallet.php:56
+#, php-format
+msgid "Minimum %s · Pix, card or boleto"
+msgstr ""
+
+#: includes/labels/views/wallet.php:60
+msgid "Without HTTPS, after paying you land on the Frenet panel."
+msgstr ""
+
+#: includes/labels/views/wallet.php:63
+msgid "Continue to Mercado Pago"
+msgstr ""
+
+#: includes/labels/views/wallet.php:70
+msgid "After paying, update the balance here."
+msgstr ""
+
+#: includes/labels/views/wallet.php:70
+msgid "Update balance"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-autofill.php:64
+msgid "We could not find this CEP. Check the number or fill in the address by hand."
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-autofill.php:128
+msgid "CEP not found."
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-autofill.php:158
+msgid "Too many lookups. Wait a minute and try again."
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:65
+msgctxt "Order status"
+msgid "In transit"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:66
+msgctxt "Order status"
+msgid "Awaiting pickup"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:67
+msgctxt "Order status"
+msgid "Delivered"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:68
+msgctxt "Order status"
+msgid "Returning"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:83
+msgid "Change status to in transit"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:84
+msgid "Change status to awaiting pickup"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:85
+msgid "Change status to delivered"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-order-statuses.php:86
+msgid "Change status to returning"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:51
+msgid "Checking with Frenet…"
+msgstr ""
+
+#. translators: 1: orders checked so far, 2: orders to check
+#: includes/tracking/class-wc-frenet-tracking-admin.php:53
+#, php-format
+msgid "Checking with Frenet… %1$d of %2$d"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:54
+msgid "Saving…"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:57
+msgid "Checked: no movement yet. Events appear once the carrier scans the package."
+msgstr ""
+
+#. translators: %s: message from Frenet
+#: includes/tracking/class-wc-frenet-tracking-admin.php:59
+#, php-format
+msgid "Checked. Frenet answered: %s"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:60
+msgid "Code saved"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:61
+msgid "Code removed"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:62
+msgid "Paste at least one line \"order;code\"."
+msgstr ""
+
+#. translators: %d: number of orders
+#: includes/tracking/class-wc-frenet-tracking-admin.php:64
+#, php-format
+msgid "Apply to %d order"
+msgid_plural "Apply to %d orders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:65
+msgid "Nothing to apply: check the lines marked below."
+msgstr ""
+
+#. translators: %d: codes applied
+#: includes/tracking/class-wc-frenet-tracking-admin.php:67
+#, php-format
+msgid "%d code applied."
+msgid_plural "%d codes applied."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: lines skipped
+#: includes/tracking/class-wc-frenet-tracking-admin.php:69
+#, php-format
+msgid "%d line skipped."
+msgid_plural "%d lines skipped."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: line numbers
+#: includes/tracking/class-wc-frenet-tracking-admin.php:71
+#, php-format
+msgid "Lines not understood (expected \"order;code\"): %s"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:73
+msgid "Replaces the current code"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:74
+msgid "Already has this code"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:75
+msgid "Order not found"
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:76
+msgid "Repeated order: only the first line counts"
+msgstr ""
+
+#. translators: %d: orders checked
+#: includes/tracking/class-wc-frenet-tracking-admin.php:78
+#, php-format
+msgid "%d order checked."
+msgid_plural "%d orders checked."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: status changes
+#: includes/tracking/class-wc-frenet-tracking-admin.php:80
+#, php-format
+msgid "%d status change."
+msgid_plural "%d status changes."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: orders without tracking events yet
+#: includes/tracking/class-wc-frenet-tracking-admin.php:82
+#, php-format
+msgid "%d order without movement yet."
+msgid_plural "%d orders without movement yet."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: errors
+#: includes/tracking/class-wc-frenet-tracking-admin.php:84
+#, php-format
+msgid "%d error."
+msgid_plural "%d errors."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/tracking/class-wc-frenet-tracking-admin.php:181
+msgid "This does not look like a tracking code: use letters and numbers, 8 to 40 characters."
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking.php:243
+msgid "Tracking code added."
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking.php:260
+msgid "This order has no tracking code."
+msgstr ""
+
+#: includes/tracking/class-wc-frenet-tracking.php:263
+msgid "This order was not shipped with a Frenet service, so Frenet cannot track it."
+msgstr ""
+
+#. translators: %s: tracking event description
+#: includes/tracking/class-wc-frenet-tracking.php:450
+#, php-format
+msgid "Tracking: %s"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:41
+msgid "Sent to the customer when the Frenet tracking moves the order to this status."
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:71
+msgid "Order awaiting pickup (Frenet)"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:72
+msgid "Your order #{order_number} is waiting for pickup"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:73
+msgid "Your order is waiting for pickup"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:77
+msgid "Order delivered (Frenet)"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:78
+msgid "Your order #{order_number} was delivered"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:79
+msgid "Your order was delivered"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:83
+msgid "Order returning (Frenet)"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:84
+msgid "Your order #{order_number} is being returned"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:85
+msgid "Your order is being returned"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:89
+msgid "Order in transit (Frenet)"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:90
+msgid "Your order #{order_number} is on its way"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-status.php:91
+#: includes/tracking/emails/class-wc-frenet-email-tracking.php:50
+msgid "Your order is on its way"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-tracking.php:22
+msgid "Tracking code (Frenet)"
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-tracking.php:23
+msgid "Sent to the customer when a tracking code is added to the order."
+msgstr ""
+
+#: includes/tracking/emails/class-wc-frenet-email-tracking.php:41
+msgid "Your order #{order_number} has been shipped"
+msgstr ""
+
+#. translators: %s: customer first name
+#: templates/emails/frenet-status.php:22
+#: templates/emails/frenet-tracking.php:19
+#, php-format
+msgid "Hi %s,"
+msgstr ""
+
+#. translators: 1: order number, 2: order status
+#: templates/emails/frenet-status.php:24
+#: templates/emailslain/frenet-status.php:19
+#, php-format
+msgid "Order #%1$s: %2$s."
+msgstr ""
+
+#: templates/emails/frenet-status.php:29
+#: templates/emails/frenet-tracking.php:22
+#: templates/emailslain/frenet-status.php:25
+#: templates/emailslain/frenet-tracking.php:18
+msgid "Tracking code:"
+msgstr ""
+
+#: templates/emails/frenet-status.php:31
+#: templates/emails/frenet-tracking.php:24
+msgid "Track my order"
+msgstr ""
+
+#. translators: %s: order number
+#: templates/emails/frenet-tracking.php:21
+#: templates/emailslain/frenet-tracking.php:17
+#, php-format
+msgid "Your order #%s has been shipped."
 msgstr ""
 
 #: templates/single-product/shipping-simulator.php:43
@@ -198,44 +2881,14 @@ msgstr ""
 msgid "Please wait..."
 msgstr ""
 
-#: includes/class-wc-frenet.php:275
-msgid "Virtual Products"
+#: woo-shipping-gateway.php:219
+msgid "Unable to confirm the Frenet shipping quote. Refresh the page or re-enter the zip code, or choose another shipping method before placing the order."
 msgstr ""
 
-#: includes/class-wc-frenet.php:277
-msgid "Charges a fixed fee as shipping on orders with virtual products, such as a processing fee. When the cart has only virtual products, the fee is the only shipping option; with physical products, it is added to every Frenet quote."
+#: woo-shipping-gateway.php:254
+msgid "FRENET: Enable the SimpleXML PHP extension."
 msgstr ""
 
-#: includes/class-wc-frenet.php:280
-msgid "Virtual Products Fee"
-msgstr ""
-
-#: includes/class-wc-frenet.php:283
-msgid "Charge a fixed fee as shipping when the cart has virtual products."
-msgstr ""
-
-#: includes/class-wc-frenet.php:288
-msgid "Virtual Products Fee Amount"
-msgstr ""
-
-#: includes/class-wc-frenet.php:290
-msgid "Fixed amount charged once per order. The fee is only charged when the amount is greater than zero."
-msgstr ""
-
-#: includes/class-wc-frenet.php:295
-msgid "Virtual Products Fee Name"
-msgstr ""
-
-#: includes/class-wc-frenet.php:297
-msgid "Name of the fee shown to the customer in the cart, checkout and order."
-msgstr ""
-
-#: includes/class-wc-frenet.php:299 includes/class-wc-frenet.php:582
-msgid "Order processing fee"
-msgstr ""
-
-#. translators: 1: shipping service, 2: virtual products fee name, 3: virtual products fee amount
-#: includes/class-wc-frenet.php:598
-#, php-format
-msgid "%1$s + %2$s (%3$s)"
+#: woo-shipping-gateway.php:262
+msgid "FRENET: Install WooCommerce to use this extension."
 msgstr ""

@@ -5,13 +5,13 @@
  * Description: Frenet para WooCommerce
  * Author: Rafael Mancini
  * Author URI: http://www.frenet.com.br
- * Version: 2.1.24
+ * Version: 2.1.25
  * License: GPLv2 or later
  * Text Domain: woo-shipping-gateway
  * Domain Path: languages/
  * Tested up to: 7.1
  * Requires at least: 3.5
- * WC tested up to: 11.0.1
+ * WC tested up to: 11.1.2
  * Tags: shipping, woocommerce, frete, gateway
  */
 
@@ -39,6 +39,19 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+register_deactivation_hook(
+	__FILE__,
+	static function () {
+		foreach ( array( 'woocommerce_frenet_tracking_sync', 'woocommerce_frenet_labels_poll', 'woocommerce_frenet_labels_recover', 'frenet_labels_auto_create' ) as $hook ) {
+			wp_unschedule_hook( $hook );
+			if ( function_exists( 'as_unschedule_all_actions' ) ) {
+				as_unschedule_all_actions( $hook );
+			}
+		}
+		delete_option( 'woocommerce_frenet_tracking_schedule' );
+	}
+);
+
 if ( ! class_exists( 'WC_Frenet_Main' ) ) :
 
     /**
@@ -50,7 +63,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
          *
          * @var string
          */
-        const VERSION = '2.1.24';
+        const VERSION = '2.1.25';
 
         /**
          * Instance of this class.
@@ -74,6 +87,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-helper.php';
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-shipping-simulator.php';
                 include_once WOO_FRENET_PATH . 'includes/class-wc-frenet-virtual-fee.php';
+                include_once WOO_FRENET_PATH . 'includes/labels/class-wc-frenet-labels.php';
 
                 add_filter( 'woocommerce_shipping_methods', array( $this, 'wcfrenet_add_method' ) );
 
@@ -97,7 +111,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
             }
 
             if ( ! class_exists( 'SimpleXmlElement' ) ) {
-                add_action( 'admin_notices', 'wcfrenet_extensions_missing_notice' );
+                add_action( 'admin_notices', array( $this, 'wcfrenet_extensions_missing_notice' ) );
             }
         }
 
@@ -237,7 +251,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
         function wcfrenet_extensions_missing_notice() {
             ?>
             <div class="notice notice-error is-dismissible">
-            <p><?php _e( 'FRENET: Você precisa ativar a extensão do php SimpleXmlElement' ); ?></p>
+            <p><?php esc_html_e( 'FRENET: Enable the SimpleXML PHP extension.', 'woo-shipping-gateway' ); ?></p>
             </div>
             <?php
         }
@@ -245,7 +259,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
         function wcfrenet_woocommerce_fallback_notice() {
             ?>
             <div class="notice notice-error is-dismissible">
-            <p><?php _e( 'FRENET: Instale o woocomerce para poder usar esta extensão' ); ?></p>
+            <p><?php esc_html_e( 'FRENET: Install WooCommerce to use this extension.', 'woo-shipping-gateway' ); ?></p>
             </div>
             <?php
         }

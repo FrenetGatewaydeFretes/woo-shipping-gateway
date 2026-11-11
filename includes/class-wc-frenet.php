@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * WC_Frenet class.
  */
@@ -210,7 +215,9 @@ class WC_Frenet extends WC_Shipping_Method {
                 'title' => __('Shipping Simulator', 'woo-shipping-gateway'),
                 'type' => 'checkbox',
                 'label' => __('Enable', 'woo-shipping-gateway'),
-                'description' => __('Display shipping simulator in single product', 'woo-shipping-gateway'),
+                'description' => WC_Frenet_Helper::other_product_calculator()
+                    ? __('Correios Automático already shows its shipping calculator on the product page, with the Frenet rates, so the Frenet simulator stays hidden. To use the Frenet one, turn off the calculator in Correios Automático settings.', 'woo-shipping-gateway')
+                    : __('Display shipping simulator in single product', 'woo-shipping-gateway'),
                 'desc_tip' => true,
                 'default' => 'yes'
             ),
@@ -334,6 +341,7 @@ class WC_Frenet extends WC_Shipping_Method {
 				'type'             => 'checkbox',
 				'label'            => __( 'Enable logging', 'woo-shipping-gateway' ),
 				'default'          => 'no',
+				/* translators: %s: path of the Frenet log file */
 				'description'      => sprintf( __( 'Log Frenet events, such as WebServices requests, inside %s. Quote failures are always logged to the WooCommerce log regardless of this setting.', 'woo-shipping-gateway' ), '<code>woocommerce/logs/frenet-' . sanitize_file_name( wp_hash( 'frenet' ) ) . '.txt</code>' )
 			)
 		);
@@ -410,13 +418,11 @@ class WC_Frenet extends WC_Shipping_Method {
 	 */
     public function admin_options()
     {
-        $html = '<h3>' . esc_html($this->method_title) . '</h3>';
-        $html .= '<p>' . __( esc_html('Frenet is a brazilian delivery method.'), 'woo-shipping-gateway' ) . '</p>';
-        $html .= '<table class="form-table">';
-        echo $html;
+        echo '<h3>' . esc_html($this->method_title) . '</h3>';
+        echo '<p>' . esc_html__( 'Frenet is a brazilian delivery method.', 'woo-shipping-gateway' ) . '</p>';
+        echo '<table class="form-table">';
         $this->generate_settings_html();
-        $html = '</table>';
-        echo $html;
+        echo '</table>';
 	}
 
 	/**
@@ -640,6 +646,7 @@ class WC_Frenet extends WC_Shipping_Method {
         }
 
         if ( $date > 0 ) {
+            /* translators: %d: number of working days until delivery */
             $name .= ' (' . sprintf( _n( 'Delivery in %d working day', 'Delivery in %d working days', $date, 'woo-shipping-gateway' ),  $date ) . ')';
         }
 
@@ -651,8 +658,8 @@ class WC_Frenet extends WC_Shipping_Method {
      */
     protected function get_coupom($package) {
         $coupom = "";
-        if (in_array( "applied_coupons", array_keys( $package ) ) && count($package["applied_coupons"]) > 0) {
-            $coupom = $package["applied_coupons"][0];
+        if ( ! empty( $package["applied_coupons"] ) ) {
+            $coupom = reset( $package["applied_coupons"] );
         }
         return $coupom;
     }
@@ -701,7 +708,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 }
 
                 if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'Product: ' . print_r($product, true));
+                    $this->log->add( $this->id, 'Product: ' . wp_json_encode($product instanceof WC_Data ? $product->get_data() : $product, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
                 }
 
                 $shippingItem = new stdClass();
@@ -781,7 +788,7 @@ class WC_Frenet extends WC_Shipping_Method {
                     $shippingItem->isFragile=false;
 
                     if ( 'yes' == $this->debug ) {
-                        $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
+                        $this->log->add( $this->id, 'shippingItem: ' . wp_json_encode($shippingItem, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
                     }
 
                     $shippingItem->Quantity = $qty;
@@ -895,7 +902,7 @@ class WC_Frenet extends WC_Shipping_Method {
     protected function requestJson(array $serviceParam, $context = '')
     {
         $this->log('Requesting the Frenet WebServices...');
-        $this->log(print_r($serviceParam, true));
+        $this->log(wp_json_encode($serviceParam, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         $this->log('URL: ' . $this->urlShipQuote);
 
         $values   = array();
@@ -921,7 +928,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 continue;
             }
 
-            $this->log( 'WebServices response [' . ( isset( $service->ServiceDescription ) ? $service->ServiceDescription : '' ) . ']: ' . print_r( $service, true ) );
+            $this->log( 'WebServices response [' . ( isset( $service->ServiceDescription ) ? $service->ServiceDescription : '' ) . ']: ' . wp_json_encode( $service, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) );
             $values[ (string) $service->ServiceCode ] = $service;
         }
 
