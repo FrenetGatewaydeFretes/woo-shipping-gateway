@@ -50,7 +50,7 @@ class WC_Frenet_Tracking {
 			add_action(
 				'woocommerce_order_status_' . $status,
 				function ( $order_id ) use ( $status ) {
-					if ( ! self::$quiet && WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
+					if ( ! self::$quiet ) {
 						WC()->mailer();
 						do_action( 'woocommerce_frenet_status_email_' . $status, $order_id );
 					}
