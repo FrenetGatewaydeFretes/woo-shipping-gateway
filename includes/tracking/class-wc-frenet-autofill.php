@@ -6,11 +6,13 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Fills street, neighborhood, city and state from the CEP in the classic checkout, the checkout
  * and cart blocks and My Account > Addresses. Lookups go to the Frenet API (GET /CEP/Address) with
- * the store token, are cached for 30 days per CEP and throttled per visitor.
+ * the store token, are cached for 30 days per CEP and throttled per visitor. The storefront asks the public
+ * read-only route GET /wp-json/frenet/v1/cep/{cep}, which works on cached pages (no nonce).
  */
 class WC_Frenet_Autofill {
 
 	const AJAX     = 'frenet_address_by_cep';
+	const ROUTE    = 'frenet/v1';
 	const CACHE    = 'wc_frenet_cep_';
 	const THROTTLE = 30; // Lookups per visitor per minute.
 
@@ -23,6 +25,7 @@ class WC_Frenet_Autofill {
 		if ( ! WC_Frenet_Labels_Settings::on( 'autofill' ) ) {
 			return;
 		}
+		add_action( 'rest_api_init', array( __CLASS__, 'routes' ) );
 		add_action( 'wp_ajax_' . self::AJAX, array( __CLASS__, 'ajax' ) );
 		add_action( 'wp_ajax_nopriv_' . self::AJAX, array( __CLASS__, 'ajax' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
@@ -47,9 +50,7 @@ class WC_Frenet_Autofill {
 			'frenet-autofill',
 			'frenetAutofill',
 			array(
-				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-				'action'   => self::AJAX,
-				'nonce'    => wp_create_nonce( self::AJAX ),
+				'restUrl'  => rest_url( self::ROUTE . '/cep/' ),
 				'loading'  => __( 'Looking up the CEP…', 'woo-shipping-gateway' ),
 				'notFound' => __( 'We could not find this CEP. Check the number or fill in the address by hand.', 'woo-shipping-gateway' ),
 			)
@@ -126,20 +127,86 @@ class WC_Frenet_Autofill {
 	}
 
 	/**
-	 * AJAX: address of a CEP (read-only, public, throttled).
+	 * Public read-only REST route: address of a CEP.
 	 *
 	 * @return void
 	 */
-	public static function ajax() {
-		check_ajax_referer( self::AJAX, 'nonce' );
+	public static function routes() {
+		register_rest_route(
+			self::ROUTE,
+			'/cep/(?P<cep>\d{8})',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( __CLASS__, 'rest' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'cep' => array(
+						'type'     => 'string',
+						'pattern'  => '^\d{8}$',
+						'required' => true,
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * REST: address of a CEP (404 when unknown, 429 when throttled, 502 when Frenet fails).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public static function rest( WP_REST_Request $request ) {
+		if ( self::throttled() ) {
+			return new WP_Error( 'frenet_cep_throttled', self::throttle_message(), array( 'status' => 429 ) );
+		}
+		$address = self::lookup( (string) $request['cep'] );
+		if ( is_wp_error( $address ) ) {
+			$codes = array(
+				'frenet_cep_invalid'   => 400,
+				'frenet_cep_not_found' => 404,
+			);
+			return new WP_Error( $address->get_error_code(), $address->get_error_message(), array( 'status' => $codes[ $address->get_error_code() ] ?? 502 ) );
+		}
+		return rest_ensure_response( $address );
+	}
+
+	/**
+	 * Counts a lookup of the visitor; true when over the limit.
+	 *
+	 * @return bool
+	 */
+	private static function throttled() {
 		$ip   = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$key  = 'wc_frenet_cep_rl_' . md5( $ip );
 		$hits = (int) get_transient( $key );
 		if ( $hits >= self::THROTTLE ) {
-			wp_send_json_error( array( 'message' => __( 'Too many lookups. Wait a minute and try again.', 'woo-shipping-gateway' ) ), 429 );
+			return true;
 		}
 		set_transient( $key, $hits + 1, MINUTE_IN_SECONDS );
-		$cep     = isset( $_POST['cep'] ) ? sanitize_text_field( wp_unslash( $_POST['cep'] ) ) : '';
+		return false;
+	}
+
+	/**
+	 * Message of a throttled lookup.
+	 *
+	 * @return string
+	 */
+	private static function throttle_message() {
+		return __( 'Too many lookups. Wait a minute and try again.', 'woo-shipping-gateway' );
+	}
+
+	/**
+	 * AJAX: address of a CEP, for pages cached before the REST route (read-only, public, throttled).
+	 *
+	 * @deprecated Use the REST route frenet/v1/cep/{cep}.
+	 * @return void
+	 */
+	public static function ajax() {
+		if ( self::throttled() ) {
+			wp_send_json_error( array( 'message' => self::throttle_message() ), 429 );
+		}
+		$cep     = isset( $_POST['cep'] ) ? sanitize_text_field( wp_unslash( $_POST['cep'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only lookup; a nonce cached with the page would only break it.
 		$address = self::lookup( $cep );
 		if ( is_wp_error( $address ) ) {
 			wp_send_json_error( array( 'message' => $address->get_error_message() ) ); // 200: an unknown CEP is an answer, not a server error.

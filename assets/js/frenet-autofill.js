@@ -15,29 +15,41 @@
 		return String( value || '' ).replace( /\D/g, '' );
 	}
 
+	function ask( cep ) {
+		if ( frenetAutofill.restUrl ) {
+			return fetch( frenetAutofill.restUrl + cep, { credentials: 'omit', headers: { Accept: 'application/json' } } ).then( function ( r ) {
+				return r.json().then( function ( j ) {
+					return { address: r.ok && j && j.city ? j : null, message: j && j.message, final: r.ok || 400 === r.status || 404 === r.status };
+				} );
+			} );
+		}
+		var body = new URLSearchParams( { action: frenetAutofill.action, nonce: frenetAutofill.nonce || '', cep: cep } );
+		return fetch( frenetAutofill.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } ).then( function ( r ) {
+			return r.json().then( function ( j ) {
+				return { address: j && j.success ? j.data : null, message: j && j.data && j.data.message, final: r.ok };
+			} );
+		} );
+	}
+
 	function lookup( cep ) {
 		cep = digits( cep );
 		if ( cep.length !== 8 ) {
 			return Promise.resolve( null );
 		}
 		if ( ! cache[ cep ] ) {
-			var body = new URLSearchParams( { action: frenetAutofill.action, nonce: frenetAutofill.nonce, cep: cep } );
-			var failed = function ( message ) {
-				delete cache[ cep ];
-				return { error: message || frenetAutofill.notFound };
-			};
-			cache[ cep ] = fetch( frenetAutofill.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
-				.then( function ( r ) {
-					return r.json().then( function ( j ) {
-						var message = j && j.data && j.data.message;
-						if ( ! r.ok ) {
-							return failed( message );
-						}
-						return j && j.success ? j.data : { error: message || frenetAutofill.notFound };
-					} );
+			cache[ cep ] = ask( cep )
+				.then( function ( res ) {
+					if ( res.address ) {
+						return res.address;
+					}
+					if ( ! res.final ) {
+						delete cache[ cep ];
+					}
+					return { error: res.message || frenetAutofill.notFound };
 				} )
 				.catch( function () {
-					return failed();
+					delete cache[ cep ];
+					return { error: frenetAutofill.notFound };
 				} );
 		}
 		return cache[ cep ];
