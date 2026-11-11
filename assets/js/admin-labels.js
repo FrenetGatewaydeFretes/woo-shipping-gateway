@@ -143,12 +143,21 @@
 
 	// "Atualizar saldo": balance is added in the Frenet panel; back here, read it again.
 	document.querySelectorAll( '[data-frenet-wallet-refresh]' ).forEach( function ( btn ) {
+		var note = btn.parentNode.querySelector( '[data-frenet-wallet-status]' );
+		var say = function ( text ) {
+			if ( note ) {
+				note.textContent = text;
+			}
+		};
 		btn.addEventListener( 'click', function () {
-			btn.disabled = true;
-			btn.textContent = t.updating;
+			if ( 'true' === btn.getAttribute( 'aria-disabled' ) ) {
+				return;
+			}
+			btn.setAttribute( 'aria-disabled', 'true' );
+			say( t.updating );
 			post( 'wallet' ).then( function ( res ) {
-				btn.disabled = false;
-				btn.textContent = res.success ? t.balanceOk : ( ( res.data && res.data.message ) || t.error );
+				btn.removeAttribute( 'aria-disabled' );
+				say( res.success ? t.balanceOk : ( ( res.data && res.data.message ) || t.error ) );
 				if ( res.success ) {
 					document.querySelectorAll( '[data-frenet-wallet] [data-balance]' ).forEach( function ( b ) {
 						b.setAttribute( 'data-balance', res.data.balance );

@@ -68,4 +68,5 @@ $frenet_min   = WC_Frenet_Labels_Service::money( WC_Frenet_Labels_Service::DEPOS
 		</details>
 	<?php endif; ?>
 	<button type="button" class="frenet-header__link" data-frenet-wallet-refresh title="<?php esc_attr_e( 'After paying, update the balance here.', 'woo-shipping-gateway' ); ?>"><?php esc_html_e( 'Update balance', 'woo-shipping-gateway' ); ?></button>
+	<span class="frenet-header__meta" role="status" aria-live="polite" data-frenet-wallet-status></span>
 </div>

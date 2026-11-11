@@ -126,6 +126,7 @@
 .frenet-header__link:hover,
 .frenet-header__link:focus-visible { color: #fff; text-decoration-thickness: 2px; }
 .frenet-header__link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.frenet-header__link[aria-disabled="true"] { cursor: progress; }
 .frenet-brand img { width: 28px; height: 28px; border-radius: 7px; }
 .frenet-brand__word { font-family: var(--fl-display); font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
 .frenet-labels .frenet-header .frenet-title { margin: 0; padding: 0; color: #fff; font-family: var(--fl-display); font-size: 22px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
