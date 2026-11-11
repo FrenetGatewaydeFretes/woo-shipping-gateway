@@ -387,7 +387,7 @@
 		var pRefresh = function () {
 			var n = pPicked().length;
 			var all = products.querySelectorAll( '[data-frenet-pick]' ).length;
-			pCount.textContent = n ? pCount.getAttribute( 'data-some' ).replace( '%d', String( n ) ) : pCount.getAttribute( 'data-zero' );
+			pCount.textContent = n ? fmt( pCount.getAttribute( 1 === n ? 'data-one' : 'data-some' ), n ) : pCount.getAttribute( 'data-zero' );
 			pApply.disabled = n === 0;
 			pAll.checked = n > 0 && n === all;
 		};

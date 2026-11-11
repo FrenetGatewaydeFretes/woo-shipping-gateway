@@ -124,8 +124,8 @@ $frenet_cols   = array(
 	</div>
 	<div class="frenet-bar frenet-bar--products">
 		<div class="frenet-bulk" role="group" aria-label="<?php esc_attr_e( 'Apply to the selected products', 'woo-shipping-gateway' ); ?>">
-			<?php /* translators: %d: selected products (replaced by the page script) */ $frenet_some = __( '%d product(s) selected', 'woo-shipping-gateway' ); ?>
-			<span class="frenet-bulk__count" data-frenet-count data-zero="<?php esc_attr_e( 'Select products to change several at once.', 'woo-shipping-gateway' ); ?>" data-some="<?php echo esc_attr( $frenet_some ); ?>"><?php esc_html_e( 'Select products to change several at once.', 'woo-shipping-gateway' ); ?></span>
+			<?php /* translators: %d: selected products (replaced by the page script) */ $frenet_some = _n_noop( '%d product selected', '%d products selected', 'woo-shipping-gateway' ); ?>
+			<span class="frenet-bulk__count" data-frenet-count data-zero="<?php esc_attr_e( 'Select products to change several at once.', 'woo-shipping-gateway' ); ?>" data-one="<?php echo esc_attr( translate_nooped_plural( $frenet_some, 1, 'woo-shipping-gateway' ) ); ?>" data-some="<?php echo esc_attr( translate_nooped_plural( $frenet_some, 2, 'woo-shipping-gateway' ) ); ?>"><?php esc_html_e( 'Select products to change several at once.', 'woo-shipping-gateway' ); ?></span>
 			<?php foreach ( $frenet_cols as $frenet_field => $frenet_col ) : ?>
 				<input type="text" inputmode="decimal" data-frenet-bulk="<?php echo esc_attr( $frenet_field ); ?>" placeholder="<?php echo esc_attr( $frenet_col ); ?>" aria-label="<?php echo esc_attr( $frenet_col ); ?>">
 			<?php endforeach; ?>
