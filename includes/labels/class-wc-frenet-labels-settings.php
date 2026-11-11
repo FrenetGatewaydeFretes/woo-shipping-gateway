@@ -102,8 +102,7 @@ class WC_Frenet_Labels_Settings {
 		$out['token']           = sanitize_text_field( (string) ( $input['token'] ?? '' ) );
 		$partner                = sanitize_text_field( (string) ( $input['partner_token'] ?? '' ) );
 		$out['partner_token']   = '' !== $partner ? $partner : $current['partner_token'];
-		$url                    = esc_url_raw( trim( (string) ( $input['api_url'] ?? '' ) ) );
-		$out['api_url']         = '' !== $url ? untrailingslashit( $url ) : self::DEFAULT_URL;
+		$out['api_url']         = isset( $input['api_url'] ) ? self::clean_api_url( $input['api_url'] ) : $current['api_url'];
 		$out['default_service'] = WC_Frenet_Labels_Compare::BEST_TIME === ( $input['default_service'] ?? '' ) ? WC_Frenet_Labels_Compare::BEST_TIME : WC_Frenet_Labels_Compare::BEST_PRICE;
 		// The labels are always bought from the store (the "send to the Frenet panel" choice was dropped on 2026-10-20).
 		$out['journey']          = 'here';
@@ -189,6 +188,48 @@ class WC_Frenet_Labels_Settings {
 		}
 		$opts = self::shipping_options();
 		return trim( (string) ( $opts['token'] ?? '' ) );
+	}
+
+	/**
+	 * WhiteLabel API address: the FRENET_LABELS_API_URL constant of wp-config.php when defined, otherwise the saved
+	 * one when it is still a Frenet address, otherwise the default.
+	 *
+	 * @return string
+	 */
+	public static function api_url() {
+		if ( self::api_url_locked() ) {
+			return untrailingslashit( esc_url_raw( trim( FRENET_LABELS_API_URL ) ) );
+		}
+		return self::clean_api_url( self::get( 'api_url' ) );
+	}
+
+	/**
+	 * Whether the API address is set in wp-config.php (FRENET_LABELS_API_URL) instead of the settings screen.
+	 *
+	 * @return bool
+	 */
+	public static function api_url_locked() {
+		return defined( 'FRENET_LABELS_API_URL' ) && is_string( FRENET_LABELS_API_URL ) && '' !== trim( FRENET_LABELS_API_URL );
+	}
+
+	/**
+	 * API address typed on the settings screen: only https on frenet.com.br or one of its subdomains, because the
+	 * store and partner tokens are sent to it; anything else falls back to the default.
+	 *
+	 * @param mixed $url Typed address.
+	 * @return string
+	 */
+	public static function clean_api_url( $url ) {
+		$url   = esc_url_raw( trim( (string) $url ), array( 'https' ) );
+		$parts = '' !== $url ? wp_parse_url( $url ) : false;
+		if ( ! is_array( $parts ) || 'https' !== strtolower( $parts['scheme'] ?? '' ) || array_intersect_key( $parts, array_flip( array( 'user', 'pass', 'query', 'fragment' ) ) ) ) {
+			return self::DEFAULT_URL;
+		}
+		$host = strtolower( (string) ( $parts['host'] ?? '' ) );
+		if ( 'frenet.com.br' !== $host && '.frenet.com.br' !== substr( $host, -14 ) ) {
+			return self::DEFAULT_URL;
+		}
+		return untrailingslashit( $url );
 	}
 
 	/**

@@ -75,8 +75,13 @@ if ( $frenet_left ) :
 		<?php endif; ?>
 
 		<label class="frenet-field" for="frenet-url"><?php esc_html_e( 'API URL', 'woo-shipping-gateway' ); ?></label>
-		<input id="frenet-url" class="regular-text code" type="url" name="frenet_labels[api_url]" value="<?php echo esc_attr( $frenet_s['api_url'] ); ?>" aria-describedby="frenet-url-help">
-		<p id="frenet-url-help" class="description"><?php esc_html_e( 'Default: https://whitelabel.frenet.com.br/v1. Change it only for tests.', 'woo-shipping-gateway' ); ?></p>
+		<?php if ( WC_Frenet_Labels_Settings::api_url_locked() ) : ?>
+			<input id="frenet-url" class="regular-text code" type="url" value="<?php echo esc_attr( WC_Frenet_Labels_Settings::api_url() ); ?>" disabled aria-describedby="frenet-url-help">
+			<p id="frenet-url-help" class="description"><?php esc_html_e( 'Set by FRENET_LABELS_API_URL in wp-config.php.', 'woo-shipping-gateway' ); ?></p>
+		<?php else : ?>
+			<input id="frenet-url" class="regular-text code" type="url" name="frenet_labels[api_url]" value="<?php echo esc_attr( WC_Frenet_Labels_Settings::api_url() ); ?>" aria-describedby="frenet-url-help">
+			<p id="frenet-url-help" class="description"><?php esc_html_e( 'Default: https://whitelabel.frenet.com.br/v1. Only https addresses on frenet.com.br are accepted. Change it only for tests.', 'woo-shipping-gateway' ); ?></p>
+		<?php endif; ?>
 	</section>
 
 	<section class="frenet-card">

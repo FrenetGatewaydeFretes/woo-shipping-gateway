@@ -44,7 +44,7 @@ class WC_Frenet_Labels_Api {
 		}
 		$format = '' !== self::$format ? self::$format : WC_Frenet_Labels_Settings::get( 'label_format' );
 		return self::send(
-			untrailingslashit( WC_Frenet_Labels_Settings::get( 'api_url' ) ) . $path,
+			WC_Frenet_Labels_Settings::api_url() . $path,
 			$method,
 			array(
 				'token'             => $token,
