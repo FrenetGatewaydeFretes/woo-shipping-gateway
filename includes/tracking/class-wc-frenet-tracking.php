@@ -15,8 +15,10 @@ defined( 'ABSPATH' ) || exit;
  */
 class WC_Frenet_Tracking {
 
-	const CRON  = 'woocommerce_frenet_tracking_sync';
-	const BATCH = 50;
+	const CRON   = 'woocommerce_frenet_tracking_sync';
+	const BATCH  = 50;
+	const OPEN   = array( 'processing', 'on-hold', 'frenet-transit', 'frenet-pickup' );
+	const CURSOR = 'woocommerce_frenet_tracking_cursor';
 
 	/**
 	 * Hooks.
@@ -368,45 +370,52 @@ class WC_Frenet_Tracking {
 	}
 
 	/**
-	 * Orders with a tracking code that are not finished yet, least recently synced first.
+	 * One page of the orders with a tracking code that are not finished yet, oldest first.
 	 *
-	 * @param int $limit Max orders.
-	 * @return array<int, WC_Order>
+	 * @param int $limit  Max orders.
+	 * @param int $offset Orders to skip.
+	 * @return array{orders: array<int, WC_Order>, total: int}
 	 */
-	public static function open_orders( $limit = self::BATCH ) {
-		$orders = wc_get_orders(
+	public static function open_orders( $limit = self::BATCH, $offset = 0 ) {
+		$found = wc_get_orders(
 			array(
-				'limit'        => $limit,
-				'status'       => array( 'processing', 'on-hold', 'frenet-transit', 'frenet-pickup' ),
+				'limit'        => (int) $limit,
+				'offset'       => (int) $offset,
+				'paginate'     => true,
+				'status'       => self::OPEN,
 				'meta_key'     => '_frenet_tracking_code', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one indexed lookup of orders with a code.
 				'meta_compare' => 'EXISTS',
-				'orderby'      => 'date',
+				'orderby'      => 'date ID',
 				'order'        => 'ASC',
 			)
 		);
-		usort(
-			$orders,
-			function ( $a, $b ) {
-				return (int) $a->get_meta( '_frenet_tracking_synced' ) <=> (int) $b->get_meta( '_frenet_tracking_synced' );
-			}
+		return array(
+			'orders' => (array) $found->orders,
+			'total'  => (int) $found->total,
 		);
-		return $orders;
 	}
 
 	/**
-	 * Hourly run (also "Update all now" in Frenet > Tracking).
+	 * Syncs one page of open orders. The next offset leaves out the orders that are finished now, so the next
+	 * page starts right after this one.
 	 *
-	 * @return array{synced: int, changed: int, pending: int, errors: int}
+	 * @param int $offset Orders to skip.
+	 * @param int $limit  Max orders.
+	 * @return array{synced: int, changed: int, pending: int, errors: int, offset: int, total: int, remaining: int, done: bool}
 	 */
-	public static function cron_sync() {
-		$out = array(
+	public static function sync_batch( $offset, $limit ) {
+		$offset = max( 0, (int) $offset );
+		$page   = self::open_orders( $limit, $offset );
+		$out    = array(
 			'synced'  => 0,
 			'changed' => 0,
 			'pending' => 0,
 			'errors'  => 0,
 		);
-		foreach ( self::open_orders() as $order ) {
-			$r = self::sync( $order );
+		$open   = 0;
+		foreach ( $page['orders'] as $order ) {
+			$r     = self::sync( $order );
+			$open += $order->has_status( self::OPEN ) ? 1 : 0;
 			if ( is_wp_error( $r ) ) {
 				++$out['errors'];
 				continue;
@@ -415,6 +424,27 @@ class WC_Frenet_Tracking {
 			$out['changed'] += $r['changed'] ? 1 : 0;
 			$out['pending'] += $r['pending'] ? 1 : 0;
 		}
+		$remaining = max( 0, $page['total'] - $offset - count( $page['orders'] ) );
+		return $out + array(
+			'offset'    => $offset + $open,
+			'total'     => $page['total'],
+			'remaining' => $remaining,
+			'done'      => count( $page['orders'] ) < (int) $limit || 0 === $remaining,
+		);
+	}
+
+	/**
+	 * Hourly run: the next page of open orders, round-robin, so every order gets its turn however many there are.
+	 *
+	 * @return array{synced: int, changed: int, pending: int, errors: int, offset: int, total: int, remaining: int, done: bool}
+	 */
+	public static function cron_sync() {
+		$offset = (int) get_option( self::CURSOR, 0 );
+		$out    = self::sync_batch( $offset, self::BATCH );
+		if ( $offset > 0 && 0 === $out['synced'] + $out['errors'] ) {
+			$out = self::sync_batch( 0, self::BATCH );
+		}
+		update_option( self::CURSOR, $out['done'] ? 0 : $out['offset'], false );
 		WC_Frenet_Labels_Api::log( sprintf( 'Tracking sync: %d synced, %d status changes, %d without events yet, %d errors.', $out['synced'], $out['changed'], $out['pending'], $out['errors'] ) );
 		return $out;
 	}
