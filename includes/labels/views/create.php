@@ -7,13 +7,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$frenet_ids = isset( $_GET['orders'] ) ? array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_GET['orders'] ) ) ) ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only preselection.
+$frenet_max       = 50;
+$frenet_requested = isset( $_GET['orders'] ) ? array_values( array_unique( array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_GET['orders'] ) ) ) ) ) ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only preselection.
+$frenet_ids       = array_slice( $frenet_requested, 0, $frenet_max );
 if ( $frenet_ids ) {
 	$frenet_orders = array_filter( array_map( 'wc_get_order', $frenet_ids ) );
 } else {
 	$frenet_orders = wc_get_orders(
 		array(
-			'limit'   => 50,
+			'limit'   => $frenet_max,
 			'status'  => array( 'wc-processing', 'wc-on-hold' ),
 			'orderby' => 'date',
 			'order'   => 'DESC',
@@ -31,6 +33,14 @@ foreach ( $frenet_orders as $frenet_order ) {
 <p class="frenet-lead"><?php esc_html_e( 'Choose the orders, calculate the freight to compare carriers and create the shipments. Nothing is charged before you confirm.', 'woo-shipping-gateway' ); ?></p>
 <?php if ( WC_Frenet_Labels_Auto::enabled() ) : ?>
 	<div class="notice notice-info inline"><p><strong><?php esc_html_e( 'Automation on:', 'woo-shipping-gateway' ); ?></strong> <?php /* translators: %s: rule */ printf( esc_html__( 'paid orders create their shipment on their own (%s). This screen is for the ones that did not go through or that you want to send by hand.', 'woo-shipping-gateway' ), esc_html( WC_Frenet_Labels_Auto::rule_label() ) ); ?></p></div>
+<?php endif; ?>
+<?php if ( count( $frenet_requested ) > $frenet_max ) : ?>
+	<div class="notice notice-warning inline"><p>
+		<?php
+		/* translators: 1: orders shown, 2: orders selected */
+		echo esc_html( sprintf( __( 'Showing the first %1$d of the %2$d selected orders. Create their shipments, then select the others in WooCommerce > Orders.', 'woo-shipping-gateway' ), $frenet_max, count( $frenet_requested ) ) );
+		?>
+	</p></div>
 <?php endif; ?>
 <?php if ( ! WC_Frenet_Labels_Payload::sender_ready() ) : ?>
 	<div class="notice notice-warning inline"><p><?php esc_html_e( 'Fill in the sender address (street, city and CEP) in Frenet > Settings > Sender before creating shipments: Frenet requires it.', 'woo-shipping-gateway' ); ?></p></div>
