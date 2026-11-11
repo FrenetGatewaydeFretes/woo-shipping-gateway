@@ -320,7 +320,7 @@ class WC_Frenet_Labels_Admin {
 		if ( ! current_user_can( self::CAP ) || ! check_admin_referer( self::NONCE ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'woo-shipping-gateway' ), 403 );
 		}
-		$value = (float) str_replace( ',', '.', preg_replace( '/[^\d,.]/', '', sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) ) );
+		$value = self::amount( sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) );
 		$back  = wp_get_referer() ? wp_get_referer() : self::url( self::SLUG );
 		$back  = self::absolute( remove_query_arg( array( 'deposit', 'saved' ), $back ) );
 		$url   = WC_Frenet_Labels_Service::deposit( $value, $back, rest_url( WC_Frenet_Labels_Service::DEPOSIT_ROUTE ) );
@@ -332,6 +332,17 @@ class WC_Frenet_Labels_Admin {
 		}
 		wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Mercado Pago checkout (checked in the service).
 		exit;
+	}
+
+	/**
+	 * Amount typed in the deposit form, read like the form script reads it: "." groups thousands, "," starts the cents.
+	 *
+	 * @param string $raw Typed amount, e.g. "1.234,56" or "R$ 50,00".
+	 * @return float
+	 */
+	public static function amount( $raw ) {
+		$digits = str_replace( '.', '', (string) preg_replace( '/[^\d,.]/', '', (string) $raw ) );
+		return (float) preg_replace( '/,/', '.', $digits, 1 );
 	}
 
 	/**
