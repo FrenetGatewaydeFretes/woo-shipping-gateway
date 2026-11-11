@@ -369,7 +369,7 @@ class WC_Frenet_Labels_Service {
 	 * @return array{statuses: array<string, int>, total: float, message: string, unknown: bool}
 	 */
 	public static function pay( array $ids ) {
-		$ids = array_values( array_unique( array_filter( array_map( 'strval', $ids ), 'ctype_digit' ) ) );
+		$ids = array_values( array_unique( array_filter( array_map( 'strval', $ids ), array( __CLASS__, 'is_shipment_id' ) ) ) );
 		if ( self::missing_balance( $ids ) > 0 ) {
 			return self::keep_unpaid( $ids, __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' ) );
 		}
@@ -433,6 +433,17 @@ class WC_Frenet_Labels_Service {
 			'message'  => $message,
 			'unknown'  => $unknown,
 		);
+	}
+
+	/**
+	 * Whether a value is a Frenet shipment id: only digits and not zero. Pure.
+	 *
+	 * @param mixed $id Value.
+	 * @return bool
+	 */
+	public static function is_shipment_id( $id ) {
+		$id = (string) $id;
+		return ctype_digit( $id ) && '' !== ltrim( $id, '0' );
 	}
 
 	/**
