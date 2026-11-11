@@ -74,11 +74,33 @@ $frenet_pages = max( 1, (int) ceil( $frenet_list['total'] / $frenet_per ) );
 	// One pass to know what the table needs: the "Notes" column only when some label failed.
 	$frenet_prepared = array();
 	$frenet_any_note = false;
+	$frenet_order_of = array();
 	foreach ( $frenet_rows as $frenet_s ) {
+		// "175" or "175-2" (second label of order 175, see WC_Frenet_Labels_Payload::frenet_order_id()).
+		$frenet_order_of[] = preg_match( '/^(\d+)(?:-\d+)?$/', (string) ( $frenet_s['orderId'] ?? '' ), $frenet_m ) ? (int) $frenet_m[1] : 0;
+	}
+	$frenet_known = array();
+	if ( array_filter( $frenet_order_of ) ) {
+		foreach (
+			wc_get_orders(
+				array(
+					'post__in' => array_values( array_unique( array_filter( $frenet_order_of ) ) ),
+					'type'     => 'shop_order',
+					'limit'    => -1,
+				)
+			) as $frenet_found
+		) {
+			$frenet_known[ $frenet_found->get_id() ] = $frenet_found;
+		}
+	}
+	foreach ( $frenet_rows as $frenet_i => $frenet_s ) {
 		$frenet_id     = (string) ( $frenet_s['shipmentId'] ?? '' );
 		$frenet_status = (int) ( $frenet_s['shipmentStatus'] ?? 0 );
-		// "175" or "175-2" (second label of order 175, see WC_Frenet_Labels_Payload::frenet_order_id()).
-		$frenet_order      = preg_match( '/^(\d+)(?:-\d+)?$/', (string) ( $frenet_s['orderId'] ?? '' ), $frenet_m ) ? wc_get_order( (int) $frenet_m[1] ) : false;
+		$frenet_wanted = $frenet_order_of[ $frenet_i ];
+		if ( $frenet_wanted && ! array_key_exists( $frenet_wanted, $frenet_known ) ) {
+			$frenet_known[ $frenet_wanted ] = wc_get_order( $frenet_wanted );
+		}
+		$frenet_order      = $frenet_wanted ? $frenet_known[ $frenet_wanted ] : false;
 		$frenet_mine       = $frenet_order instanceof WC_Order && (string) $frenet_order->get_meta( '_frenet_shipment_id' ) === $frenet_id;
 		$frenet_paid       = in_array( $frenet_status, WC_Frenet_Labels_Service::PAID_STATUSES, true );
 		$frenet_issue      = $frenet_mine && ! $frenet_paid && ! in_array( $frenet_status, WC_Frenet_Labels_Service::GONE_STATUSES, true ) ? WC_Frenet_Labels_Service::issue( $frenet_order ) : null;
