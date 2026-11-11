@@ -9,7 +9,8 @@ defined( 'ABSPATH' ) || exit;
 
 $frenet_per    = 50;
 $frenet_p      = isset( $_GET['p'] ) ? max( 0, absint( $_GET['p'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination.
-$frenet_filter = isset( $_GET['status'] ) ? absint( $_GET['status'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
+$frenet_filter = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
+$frenet_filter = 'unpaid' === $frenet_filter ? $frenet_filter : absint( $frenet_filter );
 $frenet_list   = WC_Frenet_Labels_Service::shipments( $frenet_p, $frenet_per );
 $frenet_slug   = WC_Frenet_Labels_Admin::SLUG . '-labels';
 ?>
@@ -31,7 +32,7 @@ $frenet_counts = array();
 foreach ( $frenet_list['shipments'] as $frenet_s ) {
 	$frenet_status                   = (int) ( $frenet_s['shipmentStatus'] ?? 0 );
 	$frenet_counts[ $frenet_status ] = ( $frenet_counts[ $frenet_status ] ?? 0 ) + 1;
-	if ( ! $frenet_filter || $frenet_filter === $frenet_status ) {
+	if ( ! $frenet_filter || $frenet_filter === $frenet_status || ( 'unpaid' === $frenet_filter && in_array( $frenet_status, WC_Frenet_Labels_Service::UNPAID_STATUSES, true ) ) ) {
 		$frenet_rows[] = $frenet_s;
 	}
 }

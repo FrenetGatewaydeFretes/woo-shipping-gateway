@@ -29,7 +29,7 @@ $frenet_format = WC_Frenet_Labels_Settings::get( 'label_format' );
 	<div class="notice notice-error inline"><p><?php echo esc_html( $frenet_list->get_error_message() ); ?></p></div>
 <?php elseif ( ! $frenet_paid ) : ?>
 	<div class="frenet-empty frenet-empty--small"><p><?php esc_html_e( 'No paid label to print among the latest 100 shipments.', 'woo-shipping-gateway' ); ?></p>
-		<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG . '-labels', array( 'status' => 2 ) ) ); ?>"><?php esc_html_e( 'See unpaid labels', 'woo-shipping-gateway' ); ?></a></div>
+		<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG . '-labels', array( 'status' => 'unpaid' ) ) ); ?>"><?php esc_html_e( 'See unpaid labels', 'woo-shipping-gateway' ); ?></a></div>
 <?php else : ?>
 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" target="_blank" data-frenet-print-form>
 	<input type="hidden" name="action" value="frenet_labels_print">
