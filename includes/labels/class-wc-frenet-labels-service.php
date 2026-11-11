@@ -711,6 +711,10 @@ class WC_Frenet_Labels_Service {
 			$order->update_meta_data( '_frenet_shipment_status', (string) $label['status'] );
 		}
 		$new_code = '' !== $label['tracking'] && (string) $order->get_meta( '_frenet_tracking_code' ) !== $label['tracking'];
+		if ( $new_code ) {
+			$order->delete_meta_data( '_frenet_tracking_events' );
+			$order->delete_meta_data( '_frenet_tracking_url' );
+		}
 		if ( '' !== $label['tracking'] ) {
 			$order->update_meta_data( '_frenet_tracking_code', $label['tracking'] );
 			// Remembers which code came from the label, so cancelling it never removes a code typed by hand.
