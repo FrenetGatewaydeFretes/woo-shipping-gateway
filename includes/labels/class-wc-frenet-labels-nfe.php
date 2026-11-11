@@ -84,7 +84,7 @@ class WC_Frenet_Labels_Nfe {
 	 */
 	public static function error_message( $code ) {
 		if ( 'length' === $code ) {
-			return __( 'The NF-e key has 44 digits. Copy it again from the invoice (DANFE).', 'woo-shipping-gateway' );
+			return __( 'The NF-e key has 44 characters. Copy it again from the invoice (DANFE).', 'woo-shipping-gateway' );
 		}
 		return __( 'This NF-e key is not valid: the last digit does not match. Check for a typo.', 'woo-shipping-gateway' );
 	}
