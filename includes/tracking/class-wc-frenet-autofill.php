@@ -210,7 +210,7 @@ class WC_Frenet_Autofill {
 		/**
 		 * CEP lookups that may reach Frenet per visitor IP per minute (0 = no limit).
 		 *
-		 * @since 2.1.26
+		 * @since 3.0.0
 		 *
 		 * @param int $limit Lookups.
 		 */
@@ -218,7 +218,7 @@ class WC_Frenet_Autofill {
 		/**
 		 * CEP lookups that may reach Frenet per minute for the whole store (0 = no limit).
 		 *
-		 * @since 2.1.26
+		 * @since 3.0.0
 		 *
 		 * @param int $limit Lookups.
 		 */
@@ -258,7 +258,7 @@ class WC_Frenet_Autofill {
 		/**
 		 * Request header holding the visitor IP set by a trusted proxy (e.g. CF-Connecting-IP); empty uses REMOTE_ADDR.
 		 *
-		 * @since 2.1.26
+		 * @since 3.0.0
 		 *
 		 * @param string $header Header name.
 		 */
