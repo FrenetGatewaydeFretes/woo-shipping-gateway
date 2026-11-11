@@ -27,6 +27,8 @@ class WC_Frenet_Order_Statuses {
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_to_list' ) );
 		add_filter( 'woocommerce_order_is_paid_statuses', array( __CLASS__, 'paid' ) );
 		add_filter( 'woocommerce_reports_order_statuses', array( __CLASS__, 'reports' ) );
+		add_filter( 'bulk_actions-edit-shop_order', array( __CLASS__, 'bulk_actions' ), 20 );
+		add_filter( 'bulk_actions-woocommerce_page_wc-orders', array( __CLASS__, 'bulk_actions' ), 20 );
 	}
 
 	/**
@@ -59,6 +61,32 @@ class WC_Frenet_Order_Statuses {
 			self::DELIVERED => _x( 'Delivered', 'Order status', 'woo-shipping-gateway' ),
 			self::RETURNING => _x( 'Returning', 'Order status', 'woo-shipping-gateway' ),
 		);
+	}
+
+	/**
+	 * "Change status to …" bulk actions of the order lists; WooCommerce runs every mark_<status> it knows.
+	 *
+	 * @param array<string, string> $actions Bulk actions.
+	 * @return array<string, string>
+	 */
+	public static function bulk_actions( $actions ) {
+		if ( ! isset( $actions['mark_completed'] ) ) {
+			return $actions;
+		}
+		$ours = array(
+			'mark_frenet-transit'   => __( 'Change status to in transit', 'woo-shipping-gateway' ),
+			'mark_frenet-pickup'    => __( 'Change status to awaiting pickup', 'woo-shipping-gateway' ),
+			'mark_frenet-delivered' => __( 'Change status to delivered', 'woo-shipping-gateway' ),
+			'mark_frenet-returning' => __( 'Change status to returning', 'woo-shipping-gateway' ),
+		);
+		$out  = array();
+		foreach ( $actions as $key => $label ) {
+			$out[ $key ] = $label;
+			if ( 'mark_completed' === $key ) {
+				$out = array_merge( $out, $ours );
+			}
+		}
+		return $out;
 	}
 
 	/**
