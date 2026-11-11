@@ -2,40 +2,43 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * NF-e access key (chave de acesso, 44 digits) of an order, for carriers that require an invoice
+ * NF-e access key (chave de acesso, 44 characters) of an order, for carriers that require an invoice
  * (validated live 2026-09-30: J&T answers "Chave da nota fiscal inválida" without it).
  *
  * Key layout (Manual de Orientação do Contribuinte, NF-e 4.0), 1-based positions:
  *   1-2 cUF · 3-6 AAMM · 7-20 CNPJ · 21-22 modelo · 23-25 série · 26-34 nNF · 35 tpEmis · 36-43 cNF · 44 cDV
  * cDV = mod 11 over the first 43 digits, weights 2..9 from the right; remainder 0 or 1 → 0.
  *
- * Order meta: _frenet_nfe_key (44 digits, only when valid).
+ * Order meta: _frenet_nfe_key (44 characters, only when valid).
  */
 class WC_Frenet_Labels_Nfe {
 
 	const META = '_frenet_nfe_key';
 
 	/**
-	 * Keeps only the digits of a pasted key ("3526 0911 2223..." or with dots).
+	 * Keeps only the characters of a pasted key ("3526 0911 2223..." or with dots). The issuer's CNPJ inside the key
+	 * may be alphanumeric (from July 2026), so letters are kept, upper case, unless the digits alone make a whole key.
 	 *
 	 * @param string $key Raw key.
 	 * @return string
 	 */
 	public static function normalize( $key ) {
-		return (string) preg_replace( '/\D/', '', (string) $key );
+		$digits = (string) preg_replace( '/\D/', '', (string) $key );
+		return 44 === strlen( $digits ) ? $digits : (string) preg_replace( '/[^0-9A-Z]/', '', strtoupper( (string) $key ) );
 	}
 
 	/**
-	 * Check digit of the first 43 digits.
+	 * Check digit of the first 43 characters; each one counts as its ASCII code minus 48, as in the alphanumeric CNPJ
+	 * (a digit counts as itself).
 	 *
-	 * @param string $first43 43 digits.
+	 * @param string $first43 43 characters.
 	 * @return int
 	 */
 	public static function check_digit( $first43 ) {
 		$sum    = 0;
 		$weight = 2;
 		for ( $i = strlen( $first43 ) - 1; $i >= 0; $i-- ) {
-			$sum   += (int) $first43[ $i ] * $weight;
+			$sum   += ( ord( $first43[ $i ] ) - 48 ) * $weight;
 			$weight = 9 === $weight ? 2 : $weight + 1;
 		}
 		$rest = $sum % 11;
@@ -58,7 +61,7 @@ class WC_Frenet_Labels_Nfe {
 			'series' => '',
 			'model'  => '',
 		);
-		if ( 44 !== strlen( $digits ) ) {
+		if ( ! preg_match( '/^\d{6}[0-9A-Z]{12}\d{26}$/', $digits ) ) {
 			$out['error'] = 'length';
 			return $out;
 		}
