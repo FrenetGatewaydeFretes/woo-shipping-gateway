@@ -117,6 +117,7 @@ class WC_Frenet_Tracking {
 		$emails['WC_Frenet_Email_Status_Transit']   = new WC_Frenet_Email_Status( 'frenet-transit', 'no' );
 		$emails['WC_Frenet_Email_Status_Pickup']    = new WC_Frenet_Email_Status( 'frenet-pickup', 'yes' );
 		$emails['WC_Frenet_Email_Status_Delivered'] = new WC_Frenet_Email_Status( 'frenet-delivered', 'yes' );
+		$emails['WC_Frenet_Email_Status_Returning'] = new WC_Frenet_Email_Status( 'frenet-returning', 'no' );
 		return $emails;
 	}
 

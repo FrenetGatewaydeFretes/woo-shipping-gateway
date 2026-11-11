@@ -72,6 +72,12 @@ class WC_Frenet_Email_Status extends WC_Email {
 					'subject' => __( 'Your order #{order_number} was delivered', 'woo-shipping-gateway' ),
 					'heading' => __( 'Your order was delivered', 'woo-shipping-gateway' ),
 				);
+			case 'frenet-returning':
+				return array(
+					'title'   => __( 'Order returning (Frenet)', 'woo-shipping-gateway' ),
+					'subject' => __( 'Your order #{order_number} is being returned', 'woo-shipping-gateway' ),
+					'heading' => __( 'Your order is being returned', 'woo-shipping-gateway' ),
+				);
 		}
 		return array(
 			'title'   => __( 'Order in transit (Frenet)', 'woo-shipping-gateway' ),
