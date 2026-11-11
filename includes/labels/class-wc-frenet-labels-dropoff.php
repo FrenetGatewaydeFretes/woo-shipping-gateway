@@ -20,7 +20,7 @@ class WC_Frenet_Labels_Dropoff {
 	 * @return array<int, array{code: string, name: string, services: array<int, string>}>|WP_Error
 	 */
 	public static function carriers( $fresh = false ) {
-		$cached = $fresh ? false : get_transient( self::CARRIERS );
+		$cached = $fresh ? false : get_transient( self::carriers_key() );
 		if ( is_array( $cached ) ) {
 			return $cached;
 		}
@@ -29,8 +29,18 @@ class WC_Frenet_Labels_Dropoff {
 			return $res;
 		}
 		$out = self::group( (array) ( WC_Frenet_Labels_Api::field( $res, 'shippingServices' ) ?? array() ) );
-		set_transient( self::CARRIERS, $out, HOUR_IN_SECONDS );
+		set_transient( self::carriers_key(), $out, HOUR_IN_SECONDS );
 		return $out;
+	}
+
+	/**
+	 * Cache key of the carriers of the tokens in use: changing a token never shows the old account's carriers.
+	 *
+	 * @return string
+	 */
+	public static function carriers_key() {
+		$account = WC_Frenet_Labels_Settings::store_token() . '|' . WC_Frenet_Labels_Settings::get( 'partner_token' ) . '|' . WC_Frenet_Labels_Settings::get( 'api_url' );
+		return self::CARRIERS . '_' . substr( md5( $account ), 0, 12 );
 	}
 
 	/**
