@@ -20,6 +20,7 @@ require_once __DIR__ . '/class-wc-frenet-labels-products.php';
 
 require_once dirname( __DIR__ ) . '/tracking/class-wc-frenet-tracking-module.php';
 
+WC_Frenet_Labels_Settings::init();
 add_action( WC_Frenet_Labels_Service::POLL_HOOK, array( 'WC_Frenet_Labels_Service', 'poll' ), 10, 2 );
 add_action( WC_Frenet_Labels_Service::RECOVER_HOOK, array( 'WC_Frenet_Labels_Service', 'recover' ), 10, 2 );
 add_action(

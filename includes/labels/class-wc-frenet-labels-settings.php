@@ -11,6 +11,34 @@ class WC_Frenet_Labels_Settings {
 	const DEFAULT_URL = 'https://whitelabel.frenet.com.br/v1';
 
 	/**
+	 * Settings of this request (the option is not autoloaded), until the option changes.
+	 *
+	 * @var array<string, string>|null
+	 */
+	private static $cache = null;
+
+	/**
+	 * Hooks.
+	 *
+	 * @return void
+	 */
+	public static function init() {
+		foreach ( array( 'add_option_', 'update_option_', 'delete_option_' ) as $hook ) {
+			add_action( $hook . self::OPTION, array( __CLASS__, 'flush' ) );
+		}
+		add_action( 'switch_blog', array( __CLASS__, 'flush' ) );
+	}
+
+	/**
+	 * Forgets the settings read in this request.
+	 *
+	 * @return void
+	 */
+	public static function flush() {
+		self::$cache = null;
+	}
+
+	/**
 	 * Defaults: everything off and the safest choices.
 	 *
 	 * The address-by-CEP and the tracking sync start off: other Brazilian checkout plugins may
@@ -61,8 +89,11 @@ class WC_Frenet_Labels_Settings {
 	 * @return array<string, string>
 	 */
 	public static function all() {
-		$saved = get_option( self::OPTION, array() );
-		return array_merge( self::defaults(), is_array( $saved ) ? array_map( 'strval', $saved ) : array() );
+		if ( null === self::$cache ) {
+			$saved       = get_option( self::OPTION, array() );
+			self::$cache = array_merge( self::defaults(), is_array( $saved ) ? array_map( 'strval', $saved ) : array() );
+		}
+		return self::$cache;
 	}
 
 	/**
@@ -127,6 +158,7 @@ class WC_Frenet_Labels_Settings {
 			$out['partner_token'] = '';
 		}
 		update_option( self::OPTION, $out, false );
+		self::flush();
 	}
 
 	/**
@@ -138,6 +170,7 @@ class WC_Frenet_Labels_Settings {
 	public static function update( array $values ) {
 		$out = array_merge( self::all(), array_intersect_key( $values, self::defaults() ) );
 		update_option( self::OPTION, array_map( 'strval', $out ), false );
+		self::flush();
 	}
 
 	/**
