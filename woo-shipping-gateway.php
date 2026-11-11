@@ -39,6 +39,19 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+register_deactivation_hook(
+	__FILE__,
+	static function () {
+		foreach ( array( 'woocommerce_frenet_tracking_sync', 'woocommerce_frenet_labels_poll', 'woocommerce_frenet_labels_recover', 'frenet_labels_auto_create' ) as $hook ) {
+			wp_unschedule_hook( $hook );
+			if ( function_exists( 'as_unschedule_all_actions' ) ) {
+				as_unschedule_all_actions( $hook );
+			}
+		}
+		delete_option( 'woocommerce_frenet_tracking_schedule' );
+	}
+);
+
 if ( ! class_exists( 'WC_Frenet_Main' ) ) :
 
     /**
