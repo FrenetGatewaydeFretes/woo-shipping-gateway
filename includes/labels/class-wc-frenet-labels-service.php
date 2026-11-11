@@ -389,9 +389,15 @@ class WC_Frenet_Labels_Service {
 		if ( ! $todo ) {
 			return self::pay_result( $statuses, 0.0, $statuses ? __( 'These labels are already paid or cancelled at Frenet. Nothing was charged.', 'woo-shipping-gateway' ) : '', false );
 		}
-		if ( self::missing_balance( $prices ) > 0 ) {
-			$message = __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' );
-			return self::pay_result( $statuses + self::keep_unpaid( $todo, $message, $known ), 0.0, $message, false );
+		$wallet = self::wallet( true );
+		$short  = array();
+		if ( ! is_wp_error( $wallet ) ) {
+			list( $todo, $short ) = self::fit( $prices, (float) $wallet['balance'] );
+		}
+		$no_balance = __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' );
+		$statuses  += self::keep_unpaid( $short, $no_balance, $known );
+		if ( ! $todo ) {
+			return self::pay_result( $statuses, 0.0, $no_balance, false );
 		}
 		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', '/shipments/checkout', array_map( 'intval', $todo ) );
 		self::forget_wallet();
@@ -440,10 +446,14 @@ class WC_Frenet_Labels_Service {
 			/* translators: %s: error */
 			$message = sprintf( __( 'The payment did not answer (%s). The store checks again every minute; do not pay twice.', 'woo-shipping-gateway' ), $res->get_error_message() );
 		} elseif ( '' === $message && $unpaid ) {
-			$message = __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' );
+			$message = $no_balance;
 		}
 		foreach ( $unpaid as $order ) {
 			self::set_issue( $order, '' !== $message ? $message : __( 'The label was not paid.', 'woo-shipping-gateway' ) );
+		}
+		if ( $short ) {
+			/* translators: %d: number of labels */
+			$message = trim( $message . ' ' . sprintf( _n( '%d label did not fit in the wallet balance and stays unpaid: add balance and pay it in Labels.', '%d labels did not fit in the wallet balance and stay unpaid: add balance and pay them in Labels.', count( $short ), 'woo-shipping-gateway' ), count( $short ) ) );
 		}
 		return self::pay_result( $statuses, $total, $message, $unknown );
 	}
@@ -512,20 +522,29 @@ class WC_Frenet_Labels_Service {
 	}
 
 	/**
-	 * What the wallet lacks to pay these shipments; 0 when it covers them or the balance is unknown.
+	 * Splits shipments, in the given order, into those the balance pays and those left for later. Pure.
 	 *
 	 * Frenet holds the whole balance on a checkout it cannot finish and the shipment can no longer be deleted
 	 * (validated live 2026-11-11), so a payment the wallet cannot cover is never sent.
 	 *
-	 * @param array<string, float> $prices Price of each shipment id.
-	 * @return float
+	 * @param array<string, float> $prices  Price of each shipment id, in the order to pay.
+	 * @param float                $balance Wallet balance.
+	 * @return array{0: array<int, string>, 1: array<int, string>} Ids to pay and ids left unpaid.
 	 */
-	public static function missing_balance( array $prices ) {
-		$wallet = self::wallet( true );
-		if ( is_wp_error( $wallet ) ) {
-			return 0.0;
+	public static function fit( array $prices, $balance ) {
+		$left  = round( (float) $balance, 2 );
+		$pay   = array();
+		$short = array();
+		foreach ( $prices as $id => $price ) {
+			$price = round( (float) $price, 2 );
+			if ( $price <= $left ) {
+				$pay[] = (string) $id;
+				$left  = round( $left - $price, 2 );
+			} else {
+				$short[] = (string) $id;
+			}
 		}
-		return max( 0.0, round( array_sum( $prices ) - (float) $wallet['balance'], 2 ) );
+		return array( $pay, $short );
 	}
 
 	/**
