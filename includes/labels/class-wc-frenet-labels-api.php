@@ -218,11 +218,12 @@ class WC_Frenet_Labels_Api {
 	 * Writes to the WooCommerce log (source "frenet-labels"), always redacted.
 	 *
 	 * @param string $message Message.
+	 * @param string $level   WooCommerce log level (error, warning, info, debug...).
 	 * @return void
 	 */
-	public static function log( $message ) {
+	public static function log( $message, $level = 'error' ) {
 		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->error( self::redact( $message ), array( 'source' => 'frenet-labels' ) );
+			wc_get_logger()->log( (string) $level, self::redact( $message ), array( 'source' => 'frenet-labels' ) );
 		}
 	}
 
@@ -268,7 +269,7 @@ class WC_Frenet_Labels_Api {
 			}
 			$refused = self::refused( $msg );
 			$msg     = '' !== $msg ? self::clean_error( $msg ) : sprintf( /* translators: %d: HTTP status */ __( 'Frenet answered HTTP %d.', 'woo-shipping-gateway' ), $code );
-			self::log( "Frenet {$method} {$path} HTTP {$code}: " . substr( $raw, 0, 400 ) );
+			self::log( "Frenet {$method} {$path} HTTP {$code}: {$msg}" );
 			return new WP_Error(
 				'frenet_labels_http_' . $code,
 				$msg,
