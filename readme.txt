@@ -291,6 +291,24 @@ Yes. Enable the "Virtual Products Fee" in the Frenet settings and set the fee am
 
 
 
+== External services ==
+
+This plugin connects to Frenet, the shipping platform it integrates with, and, only when the store adds balance to its Frenet wallet, to Mercado Pago.
+
+**Frenet shipping quote** (api.frenet.com.br): used to show shipping rates in the cart, at checkout and in the product page simulator. Each quote sends the store token, the origin CEP, the customer's destination CEP and country, the weight, size, quantity and value of the items, and the applied coupon code.
+
+**Frenet address by CEP** (api.frenet.com.br): used only when "Fill the address from the CEP" is turned on. When the customer types a CEP at checkout, in the cart or in My Account, that CEP is sent with the store token to return the street, neighborhood, city and state.
+
+**Frenet tracking** (api.frenet.com.br): used when the store adds a tracking code to an order or the automatic tracking is turned on. It sends the tracking code and the carrier service code to read the delivery events.
+
+**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels with its partner token. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. It also reads the wallet balance and statement, the carriers and the drop-off points.
+
+**Mercado Pago** (mercadopago.com.br): used only when the store clicks "Add balance". Frenet creates the payment with the amount and the store's return address, and the store's browser is sent to the Mercado Pago checkout to pay it. The plugin never receives card or bank data.
+
+Frenet: [Terms of use](https://frenet.com.br/termos-de-uso/) · [Privacy policy](https://frenet.com.br/politica-de-privacidade/)
+
+Mercado Pago: [Terms and policies](https://www.mercadopago.com.br/ajuda/termos-e-politicas_194) · [Privacy policy](https://www.mercadopago.com.br/privacidade)
+
 == Installation ==
 
 Instale a Frenet no seu WooCommerce seguindo o passo a passo do [tutorial de integração](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) disponível na Central de Ajuda. 
