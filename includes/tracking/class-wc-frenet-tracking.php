@@ -18,11 +18,13 @@ defined( 'ABSPATH' ) || exit;
  */
 class WC_Frenet_Tracking {
 
-	const CRON    = 'woocommerce_frenet_tracking_sync';
-	const BATCH   = 50;
-	const OPEN    = array( 'processing', 'on-hold', 'frenet-transit', 'frenet-pickup' );
-	const CURSOR  = 'woocommerce_frenet_tracking_cursor';
-	const CHECKED = 'wc_frenet_tracking_checked_';
+	const CRON        = 'woocommerce_frenet_tracking_sync';
+	const GROUP       = 'woo-shipping-gateway';
+	const SCHEDULE    = 'woocommerce_frenet_tracking_schedule';
+	const BATCH       = 50;
+	const OPEN        = array( 'processing', 'on-hold', 'frenet-transit', 'frenet-pickup' );
+	const CURSOR      = 'woocommerce_frenet_tracking_cursor';
+	const CHECKED     = 'wc_frenet_tracking_checked_';
 
 	/**
 	 * Hooks.
@@ -31,7 +33,7 @@ class WC_Frenet_Tracking {
 	 */
 	public static function init() {
 		add_action( self::CRON, array( __CLASS__, 'cron_sync' ) );
-		add_action( 'init', array( __CLASS__, 'schedule' ) );
+		add_action( 'init', array( __CLASS__, 'schedule' ), 20 );
 		add_filter( 'woocommerce_email_classes', array( __CLASS__, 'emails' ) );
 		// Slugs only: this runs on plugins_loaded, and translating here would load the text domain too early (WP 6.7+).
 		foreach ( WC_Frenet_Order_Statuses::slugs() as $slug ) {
@@ -50,17 +52,48 @@ class WC_Frenet_Tracking {
 	}
 
 	/**
-	 * Keeps the hourly event in line with the setting (created or removed).
+	 * Keeps the hourly run in line with the setting (created or removed): an Action Scheduler action when WooCommerce
+	 * ships it, else a WP-Cron event. The Action Scheduler queue is checked at most once an hour or when the setting
+	 * changes.
 	 *
 	 * @return void
 	 */
 	public static function schedule() {
-		$next = wp_next_scheduled( self::CRON );
-		if ( WC_Frenet_Labels_Settings::on( 'tracking_sync' ) && ! $next ) {
-			wp_schedule_event( time() + 300, 'hourly', self::CRON );
-		} elseif ( ! WC_Frenet_Labels_Settings::on( 'tracking_sync' ) && $next ) {
+		$on = WC_Frenet_Labels_Settings::on( 'tracking_sync' );
+		if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
+			$next = wp_next_scheduled( self::CRON );
+			if ( $on && ! $next ) {
+				wp_schedule_event( time() + 300, 'hourly', self::CRON );
+			} elseif ( ! $on && $next ) {
+				wp_clear_scheduled_hook( self::CRON );
+			}
+			return;
+		}
+		if ( ! did_action( 'action_scheduler_init' ) ) {
+			return;
+		}
+		$state = $on ? 'on' : 'off';
+		$last  = get_option( self::SCHEDULE );
+		if ( is_array( $last ) && ( $last['state'] ?? '' ) === $state && (int) ( $last['time'] ?? 0 ) > time() - HOUR_IN_SECONDS ) {
+			return;
+		}
+		if ( wp_next_scheduled( self::CRON ) ) {
 			wp_clear_scheduled_hook( self::CRON );
 		}
+		$has = as_has_scheduled_action( self::CRON, array(), self::GROUP );
+		if ( $on && ! $has ) {
+			as_schedule_recurring_action( time(), HOUR_IN_SECONDS, self::CRON, array(), self::GROUP );
+		} elseif ( ! $on && $has ) {
+			as_unschedule_all_actions( self::CRON, array(), self::GROUP );
+		}
+		update_option(
+			self::SCHEDULE,
+			array(
+				'state' => $state,
+				'time'  => time(),
+			),
+			true
+		);
 	}
 
 	/**
