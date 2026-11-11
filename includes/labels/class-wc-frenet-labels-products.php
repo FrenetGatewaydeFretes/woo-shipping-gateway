@@ -40,10 +40,17 @@ class WC_Frenet_Labels_Products {
 	 * @return array{rows: array, total: int, pages: int}
 	 */
 	public static function query( $search, $filter, $page ) {
-		$ids   = self::ids( $search, $filter );
-		$total = count( $ids );
+		$args  = self::args( $search, $filter );
+		$found = null === $args ? null : wc_get_products(
+			$args + array(
+				'paginate' => true,
+				'limit'    => self::PER_PAGE,
+				'page'     => max( 0, (int) $page ) + 1,
+			)
+		);
+		$total = $found ? (int) $found->total : 0;
 		$rows  = array();
-		foreach ( array_slice( $ids, $page * self::PER_PAGE, self::PER_PAGE ) as $id ) {
+		foreach ( $found ? (array) $found->products : array() as $id ) {
 			$product = wc_get_product( $id );
 			if ( ! $product ) {
 				continue;
@@ -58,18 +65,17 @@ class WC_Frenet_Labels_Products {
 	}
 
 	/**
-	 * Ids of the products that ship (simple products and variations), filtered, by name.
+	 * Query of the products that ship (simple products and variations), filtered, by name; null when nothing matches.
 	 *
 	 * @param string $search Name or SKU.
 	 * @param string $filter FILTER_* value.
-	 * @return int[]
+	 * @return array<string, mixed>|null
 	 */
-	private static function ids( $search, $filter ) {
+	private static function args( $search, $filter ) {
 		$base = array(
 			'type'    => array( 'simple', 'variation' ),
 			'status'  => array( 'publish', 'private', 'draft' ),
 			'virtual' => false,
-			'limit'   => -1,
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'return'  => 'ids',
@@ -98,12 +104,13 @@ class WC_Frenet_Labels_Products {
 			);
 		}
 		if ( '' === $search ) {
-			return array_map( 'intval', (array) wc_get_products( $base ) );
+			return $base;
 		}
-		$by_name = (array) wc_get_products( array_merge( $base, array( 's' => $search ) ) );
+		$all     = array_merge( $base, array( 'limit' => -1 ) );
+		$by_name = (array) wc_get_products( array_merge( $all, array( 's' => $search ) ) );
 		$by_sku  = (array) wc_get_products(
 			array_merge(
-				$base,
+				$all,
 				array(
 					'meta_query' => array_merge( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- admin search.
 						isset( $base['meta_query'] ) ? array( $base['meta_query'] ) : array(),
@@ -118,7 +125,9 @@ class WC_Frenet_Labels_Products {
 				)
 			)
 		);
-		return array_values( array_unique( array_map( 'intval', array_merge( $by_name, $by_sku ) ) ) );
+
+		$base['include'] = array_values( array_unique( array_map( 'intval', array_merge( $by_name, $by_sku ) ) ) );
+		return $base['include'] ? $base : null;
 	}
 
 	/**
