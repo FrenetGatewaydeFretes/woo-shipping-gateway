@@ -15,10 +15,7 @@ class WC_Frenet_Helper
      * @return int
      */
     public function get_instance_id(){
-        global $wpdb;
-
-        //get enable instance_id to identify method shipping;
-        $instance_id = $wpdb->get_results($wpdb->prepare("SELECT instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE is_enabled = %d AND method_id = %s ", 1, 'frenet'));
+        $instance_id = $this->get_instance_ids();
         if (!empty($instance_id) && isset($instance_id[0]->instance_id)) {
             $instance_id = $instance_id[0]->instance_id;
         } else {
@@ -28,11 +25,19 @@ class WC_Frenet_Helper
         return $instance_id;
     }
 
+    /**
+     * Enabled Frenet methods of every shipping zone, read once per request
+     * @return array|false
+     */
     public function get_instance_ids(){
         global $wpdb;
 
-        //get enable instance_id to identify method shipping;
-        $instance_ids = $wpdb->get_results($wpdb->prepare("SELECT instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE is_enabled = %d AND method_id = %s ", 1, 'frenet'));
+        wp_cache_add_non_persistent_groups('wc_frenet');
+        $instance_ids = wp_cache_get('instance_ids', 'wc_frenet');
+        if (false === $instance_ids) {
+            $instance_ids = $wpdb->get_results($wpdb->prepare("SELECT instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE is_enabled = %d AND method_id = %s ", 1, 'frenet')); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- WooCommerce has no API listing the enabled methods of one type across all zones; cached for the request.
+            wp_cache_set('instance_ids', $instance_ids, 'wc_frenet');
+        }
 
         if ($instance_ids && is_array($instance_ids)) {
             return $instance_ids;
