@@ -162,7 +162,8 @@ class WC_Frenet_Labels_Admin {
 	 */
 	public static function assets( $hook ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- WordPress passes the hook suffix.
 		$screen   = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		$is_order = $screen && in_array( $screen->id, array( 'shop_order', 'woocommerce_page_wc-orders' ), true );
+		$orders   = array( 'shop_order', function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'woocommerce_page_wc-orders' );
+		$is_order = $screen && in_array( $screen->id, $orders, true );
 		if ( '' === self::current_page() && ! $is_order ) {
 			return;
 		}
