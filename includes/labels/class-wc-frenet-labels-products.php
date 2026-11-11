@@ -81,19 +81,10 @@ class WC_Frenet_Labels_Products {
 			'return'  => 'ids',
 		);
 		if ( self::FILTER_NO_SIZE === $filter ) {
-			$missing = array( 'relation' => 'OR' );
-			foreach ( array( '_weight', '_length', '_width', '_height' ) as $key ) {
-				$missing[] = array(
-					'key'     => $key,
-					'compare' => 'NOT EXISTS',
-				);
-				$missing[] = array(
-					'key'     => $key,
-					'value'   => '',
-					'compare' => '=',
-				);
+			$base['include'] = self::without_size();
+			if ( ! $base['include'] ) {
+				return null;
 			}
-			$base['meta_query'] = $missing; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- admin screen, paged.
 		} elseif ( self::FILTER_RULE === $filter ) {
 			$base['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- admin screen, paged.
 				array(
@@ -128,6 +119,24 @@ class WC_Frenet_Labels_Products {
 
 		$base['include'] = array_values( array_unique( array_map( 'intval', array_merge( $by_name, $by_sku ) ) ) );
 		return $base['include'] ? $base : null;
+	}
+
+	/**
+	 * Ids of the products and variations without weight or one of the sizes, counting what a variation inherits
+	 * from its parent product, as the rows show it.
+	 *
+	 * @return int[]
+	 */
+	private static function without_size() {
+		global $wpdb;
+		$joins   = '';
+		$missing = array();
+		foreach ( array( '_weight', '_length', '_width', '_height' ) as $i => $key ) {
+			$joins    .= $wpdb->prepare( " LEFT JOIN {$wpdb->postmeta} o{$i} ON o{$i}.post_id = p.ID AND o{$i}.meta_key = %s LEFT JOIN {$wpdb->postmeta} r{$i} ON r{$i}.post_id = p.post_parent AND r{$i}.meta_key = %s", $key, $key ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names and aliases only.
+			$missing[] = "CAST( REPLACE( IF( o{$i}.meta_value IS NULL OR o{$i}.meta_value IN ( '', '0' ), IFNULL( r{$i}.meta_value, '' ), o{$i}.meta_value ), ',', '.' ) AS DECIMAL( 20, 6 ) ) <= 0";
+		}
+		$sql = "SELECT p.ID FROM {$wpdb->posts} p{$joins} WHERE p.post_type IN ( 'product', 'product_variation' ) AND p.post_status IN ( 'publish', 'private', 'draft' ) AND ( " . implode( ' OR ', $missing ) . ' )';
+		return array_map( 'intval', (array) $wpdb->get_col( $sql ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- built above from prepared parts; admin screen.
 	}
 
 	/**
