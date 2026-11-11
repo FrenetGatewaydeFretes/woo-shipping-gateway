@@ -2,8 +2,9 @@
 Contributors: frenet, apiki, aguiart0, pedroasa
 Donate link: http://www.frenet.com.br/  
 Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
-Requires at least: 3.5  
+Requires at least: 6.2  
 Tested up to: 7.1
+Requires PHP: 7.4  
 Version: 3.0.0
 Stable tag: 3.0.0
 License: GPLv2 or later  
