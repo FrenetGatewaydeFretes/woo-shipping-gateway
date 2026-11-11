@@ -39,7 +39,7 @@ class WC_Frenet_Labels_Dropoff {
 	 * @return string
 	 */
 	public static function carriers_key() {
-		$account = WC_Frenet_Labels_Settings::store_token() . '|' . WC_Frenet_Labels_Settings::get( 'partner_token' ) . '|' . WC_Frenet_Labels_Settings::get( 'api_url' );
+		$account = WC_Frenet_Labels_Settings::store_token() . '|' . WC_Frenet_Labels_Settings::get( 'partner_token' ) . '|' . WC_Frenet_Labels_Settings::api_url();
 		return self::CARRIERS . '_' . substr( md5( $account ), 0, 12 );
 	}
 
