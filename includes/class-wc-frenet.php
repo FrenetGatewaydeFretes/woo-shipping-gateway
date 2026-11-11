@@ -412,13 +412,11 @@ class WC_Frenet extends WC_Shipping_Method {
 	 */
     public function admin_options()
     {
-        $html = '<h3>' . esc_html($this->method_title) . '</h3>';
-        $html .= '<p>' . esc_html__( 'Frenet is a brazilian delivery method.', 'woo-shipping-gateway' ) . '</p>';
-        $html .= '<table class="form-table">';
-        echo $html;
+        echo '<h3>' . esc_html($this->method_title) . '</h3>';
+        echo '<p>' . esc_html__( 'Frenet is a brazilian delivery method.', 'woo-shipping-gateway' ) . '</p>';
+        echo '<table class="form-table">';
         $this->generate_settings_html();
-        $html = '</table>';
-        echo $html;
+        echo '</table>';
 	}
 
 	/**
