@@ -1,4 +1,10 @@
 <?php
+/**
+ * Settings of the Frenet labels.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

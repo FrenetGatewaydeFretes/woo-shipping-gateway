@@ -1,4 +1,10 @@
 <?php
+/**
+ * NF-e access key of an order.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

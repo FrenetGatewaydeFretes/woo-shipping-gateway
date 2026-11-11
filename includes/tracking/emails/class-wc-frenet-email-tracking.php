@@ -1,4 +1,10 @@
 <?php
+/**
+ * Customer e-mail with the tracking code.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

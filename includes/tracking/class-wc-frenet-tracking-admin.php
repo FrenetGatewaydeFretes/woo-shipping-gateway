@@ -1,4 +1,10 @@
 <?php
+/**
+ * Tracking in the admin: order box, update now and bulk import.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

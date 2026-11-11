@@ -1,4 +1,10 @@
 <?php
+/**
+ * Customer e-mail of a Frenet shipping status.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

@@ -407,6 +407,12 @@ class WC_Frenet_Labels_Auto {
 		);
 	}
 
+	/**
+	 * Name of an automation rule for the shopkeeper.
+	 *
+	 * @param string $rule Rule; the saved one when empty.
+	 * @return string
+	 */
 	public static function rule_label( $rule = '' ) {
 		$rule = '' !== (string) $rule ? (string) $rule : self::rule();
 		if ( WC_Frenet_Labels_Compare::BEST_TIME === $rule ) {

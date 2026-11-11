@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core e-mail hook.
+do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce core e-mail hook.
 ?>
 <?php /* translators: %s: customer first name */ ?>
 <p><?php printf( esc_html__( 'Hi %s,', 'woo-shipping-gateway' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
@@ -28,4 +28,4 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore
 	<?php echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) ); ?>
 <?php endif; ?>
 <?php
-do_action( 'woocommerce_email_footer', $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core e-mail hook.
+do_action( 'woocommerce_email_footer', $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce core e-mail hook.

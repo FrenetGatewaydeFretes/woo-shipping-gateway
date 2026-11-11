@@ -1,4 +1,10 @@
 <?php
+/**
+ * Bootstrap of the tracking module.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

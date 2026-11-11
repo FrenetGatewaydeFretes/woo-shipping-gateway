@@ -1,4 +1,10 @@
 <?php
+/**
+ * Frenet labels admin: menu, screens, AJAX actions, bulk action and order box.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -46,14 +52,14 @@ class WC_Frenet_Labels_Admin {
 	 */
 	public static function pages() {
 		return array(
-			self::SLUG               => array( _x( 'Settings', 'Frenet admin menu', 'woo-shipping-gateway' ), __( 'Frenet settings', 'woo-shipping-gateway' ), 'settings' ),
-			self::SLUG . '-create'   => array( __( 'Create shipment', 'woo-shipping-gateway' ), __( 'Create shipment', 'woo-shipping-gateway' ), 'create' ),
-			self::SLUG . '-labels'   => array( __( 'Labels', 'woo-shipping-gateway' ), __( 'Manage your labels', 'woo-shipping-gateway' ), 'labels' ),
-			self::SLUG . '-statement' => array( __( 'Statement', 'woo-shipping-gateway' ), __( 'Wallet statement', 'woo-shipping-gateway' ), 'statement' ),
-			self::SLUG . '-print'    => array( __( 'Printing', 'woo-shipping-gateway' ), __( 'Label printing', 'woo-shipping-gateway' ), 'printing' ),
-			self::SLUG . '-tracking' => array( __( 'Tracking', 'woo-shipping-gateway' ), __( 'Tracking', 'woo-shipping-gateway' ), 'tracking' ),
-			self::SLUG . '-dropoff'  => array( __( 'Drop-off point', 'woo-shipping-gateway' ), __( 'Drop-off point', 'woo-shipping-gateway' ), 'dropoff' ),
-			self::SLUG . '-products' => array( __( 'Products', 'woo-shipping-gateway' ), __( 'Products: weight, size and automatic carrier', 'woo-shipping-gateway' ), 'products' ),
+			self::SLUG                   => array( _x( 'Settings', 'Frenet admin menu', 'woo-shipping-gateway' ), __( 'Frenet settings', 'woo-shipping-gateway' ), 'settings' ),
+			self::SLUG . '-create'       => array( __( 'Create shipment', 'woo-shipping-gateway' ), __( 'Create shipment', 'woo-shipping-gateway' ), 'create' ),
+			self::SLUG . '-labels'       => array( __( 'Labels', 'woo-shipping-gateway' ), __( 'Manage your labels', 'woo-shipping-gateway' ), 'labels' ),
+			self::SLUG . '-statement'    => array( __( 'Statement', 'woo-shipping-gateway' ), __( 'Wallet statement', 'woo-shipping-gateway' ), 'statement' ),
+			self::SLUG . '-print'        => array( __( 'Printing', 'woo-shipping-gateway' ), __( 'Label printing', 'woo-shipping-gateway' ), 'printing' ),
+			self::SLUG . '-tracking'     => array( __( 'Tracking', 'woo-shipping-gateway' ), __( 'Tracking', 'woo-shipping-gateway' ), 'tracking' ),
+			self::SLUG . '-dropoff'      => array( __( 'Drop-off point', 'woo-shipping-gateway' ), __( 'Drop-off point', 'woo-shipping-gateway' ), 'dropoff' ),
+			self::SLUG . '-products'     => array( __( 'Products', 'woo-shipping-gateway' ), __( 'Products: weight, size and automatic carrier', 'woo-shipping-gateway' ), 'products' ),
 			WC_Frenet_Labels_Setup::PAGE => array( __( 'First steps', 'woo-shipping-gateway' ), __( 'First steps', 'woo-shipping-gateway' ), 'setup' ),
 		);
 	}

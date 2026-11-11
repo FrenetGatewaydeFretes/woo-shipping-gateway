@@ -1,4 +1,10 @@
 <?php
+/**
+ * Shipping order statuses: in transit, awaiting pickup, delivered and returning.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

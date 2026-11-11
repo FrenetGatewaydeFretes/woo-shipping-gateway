@@ -1,4 +1,10 @@
 <?php
+/**
+ * HTTP client of the Frenet public and WhiteLabel APIs.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -230,11 +236,11 @@ class WC_Frenet_Labels_Api {
 	/**
 	 * HTTP request with JSON in and out.
 	 *
-	 * @param string               $url     URL.
-	 * @param string               $method  Method.
+	 * @param string                $url     URL.
+	 * @param string                $method  Method.
 	 * @param array<string, string> $headers Extra headers.
-	 * @param mixed|null           $body    JSON body.
-	 * @param int                  $timeout Seconds.
+	 * @param mixed|null            $body    JSON body.
+	 * @param int                   $timeout Seconds.
 	 * @return array<int|string, mixed>|WP_Error
 	 */
 	private static function send( $url, $method, array $headers, $body, $timeout ) {

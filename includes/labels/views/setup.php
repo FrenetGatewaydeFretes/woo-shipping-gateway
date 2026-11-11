@@ -29,7 +29,7 @@ $frenet_error = static function ( array $errors, $key ) {
 	}
 };
 /**
- * aria attributes of a field with an error.
+ * The aria attributes of a field with an error.
  *
  * @param array<string, string> $errors Field → message.
  * @param string                $key    Field.

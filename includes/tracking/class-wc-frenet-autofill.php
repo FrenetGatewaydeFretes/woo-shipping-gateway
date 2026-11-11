@@ -1,4 +1,10 @@
 <?php
+/**
+ * Address by CEP at checkout, in the cart and in My Account.
+ *
+ * @package woo-shipping-gateway
+ */
+
 use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
 
 defined( 'ABSPATH' ) || exit;

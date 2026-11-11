@@ -1,4 +1,10 @@
 <?php
+/**
+ * First steps of the Frenet labels: account and sender.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -210,7 +216,7 @@ class WC_Frenet_Labels_Setup {
 				for ( $i = 0; $i < $t; $i++ ) {
 					$sum += (int) $doc[ $i ] * ( $t + 1 - $i );
 				}
-				if ( (int) $doc[ $t ] !== ( $sum * 10 ) % 11 % 10 ) {
+				if ( ( $sum * 10 ) % 11 % 10 !== (int) $doc[ $t ] ) {
 					return false;
 				}
 			}
@@ -228,7 +234,7 @@ class WC_Frenet_Labels_Setup {
 				$weight = 2 === $weight ? 9 : $weight - 1;
 			}
 			$rest = $sum % 11;
-			if ( (int) $doc[ $len ] !== ( $rest < 2 ? 0 : 11 - $rest ) ) {
+			if ( ( $rest < 2 ? 0 : 11 - $rest ) !== (int) $doc[ $len ] ) {
 				return false;
 			}
 		}

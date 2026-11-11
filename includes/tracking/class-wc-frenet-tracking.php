@@ -1,4 +1,10 @@
 <?php
+/**
+ * Tracking of Frenet shipments and the order status that follows it.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -52,6 +58,12 @@ class WC_Frenet_Tracking {
 				function ( $order_id ) use ( $status ) {
 					if ( ! self::$quiet ) {
 						WC()->mailer();
+						/**
+						 * Sends the customer e-mail of a shipping status (WC_Frenet_Email_Status), e.g. wc_frenet_status_email_frenet-delivered.
+						 *
+						 * @since 3.0.0
+						 * @param int $order_id Order id.
+						 */
 						do_action( 'wc_frenet_status_email_' . $status, $order_id );
 					}
 				}
@@ -217,6 +229,12 @@ class WC_Frenet_Tracking {
 		$order->save();
 		if ( $notify && WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
 			WC()->mailer();
+			/**
+			 * Sends the tracking code e-mail of an order (WC_Frenet_Email_Tracking).
+			 *
+			 * @since 3.0.0
+			 * @param int $order_id Order id.
+			 */
 			do_action( 'wc_frenet_tracking_email', $order->get_id() );
 		}
 		if ( WC_Frenet_Labels_Settings::on( 'tracking_status' ) && $order->has_status( 'processing' ) ) {

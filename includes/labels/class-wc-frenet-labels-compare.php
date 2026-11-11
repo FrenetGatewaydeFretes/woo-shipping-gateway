@@ -1,4 +1,10 @@
 <?php
+/**
+ * Carrier comparison of a Frenet quote: best price and fastest.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

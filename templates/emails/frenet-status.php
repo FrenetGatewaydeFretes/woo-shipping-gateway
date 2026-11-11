@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core e-mail hook.
+do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce core e-mail hook.
 $frenet_last = $events ? end( $events ) : null;
 ?>
 <?php /* translators: %s: customer first name */ ?>
@@ -36,4 +36,4 @@ $frenet_last = $events ? end( $events ) : null;
 	<?php echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) ); ?>
 <?php endif; ?>
 <?php
-do_action( 'woocommerce_email_footer', $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core e-mail hook.
+do_action( 'woocommerce_email_footer', $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce core e-mail hook.

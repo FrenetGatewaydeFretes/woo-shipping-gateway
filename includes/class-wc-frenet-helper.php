@@ -89,6 +89,12 @@ class WC_Frenet_Helper
             $value = is_array( $settings ) && isset( $settings['general']['calculate_shipping_product_page'] ) ? $settings['general']['calculate_shipping_product_page'] : 'yes';
             $on    = function_exists( 'wc_string_to_bool' ) ? wc_string_to_bool( $value ) : in_array( $value, array( true, 'yes', '1', 1 ), true );
         }
+        /**
+         * Whether the Frenet simulator gives way to the product page calculator of Correios Automático.
+         *
+         * @since 3.0.0
+         * @param bool $on True while that calculator is on.
+         */
         return (bool) apply_filters( 'wc_frenet_simulator_yields', $on );
     }
 

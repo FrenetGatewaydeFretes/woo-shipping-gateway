@@ -1,4 +1,10 @@
 <?php
+/**
+ * Shipment payload sent to Frenet: sender, recipient, items and volumes.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**

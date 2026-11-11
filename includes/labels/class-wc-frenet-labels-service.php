@@ -1,4 +1,10 @@
 <?php
+/**
+ * Frenet labels: create, pay, print, cancel, wallet and statement.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -752,6 +758,12 @@ class WC_Frenet_Labels_Service {
 		// label just bought is not posted yet ("Etiqueta emitida"), and it may still be cancelled.
 		if ( $new_code && WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
 			WC()->mailer();
+			/**
+			 * Sends the tracking code e-mail of an order (WC_Frenet_Email_Tracking).
+			 *
+			 * @since 3.0.0
+			 * @param int $order_id Order id.
+			 */
 			do_action( 'wc_frenet_tracking_email', $order->get_id() );
 		}
 		return $ready;
@@ -1094,7 +1106,7 @@ class WC_Frenet_Labels_Service {
 		$to    = static function ( $result ) use ( $https, $back ) {
 			return $https ? add_query_arg( 'deposit', $result, $back ) : WC_Frenet_Labels_Admin::PANEL;
 		};
-		$res = WC_Frenet_Labels_Api::whitelabel(
+		$res   = WC_Frenet_Labels_Api::whitelabel(
 			'POST',
 			'/wallet/deposit',
 			array(

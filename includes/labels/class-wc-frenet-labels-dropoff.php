@@ -1,4 +1,10 @@
 <?php
+/**
+ * Frenet drop-off points of each carrier.
+ *
+ * @package woo-shipping-gateway
+ */
+
 defined( 'ABSPATH' ) || exit;
 
 /**
