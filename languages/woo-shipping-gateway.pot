@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-11T18:31:39+00:00\n"
+"POT-Creation-Date: 2026-11-11T19:28:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woo-shipping-gateway\n"
@@ -334,7 +334,7 @@ msgstr ""
 
 #: includes/labels/class-wc-frenet-labels-admin.php:60
 #: includes/labels/views/order-tracking.php:15
-#: includes/labels/views/settings.php:184
+#: includes/labels/views/settings.php:187
 #: includes/labels/views/setup.php:199
 msgid "Tracking"
 msgstr ""
@@ -1154,7 +1154,7 @@ msgid "Type a valid e-mail."
 msgstr ""
 
 #: includes/labels/class-wc-frenet-labels-setup.php:182
-#: includes/tracking/class-wc-frenet-autofill.php:99
+#: includes/tracking/class-wc-frenet-autofill.php:116
 msgid "A CEP has 8 digits."
 msgstr ""
 
@@ -1893,7 +1893,7 @@ msgid "Unsaved changes:"
 msgstr ""
 
 #: includes/labels/viewsroducts.php:142
-#: includes/labels/views/settings.php:200
+#: includes/labels/views/settings.php:203
 msgid "Save changes"
 msgstr ""
 
@@ -2138,71 +2138,75 @@ msgstr ""
 msgid "Street, neighborhood, city and state appear when the customer types the CEP, in the classic checkout, the checkout block and My Account. Number and complement are never changed. Leave it off if another plugin already does this."
 msgstr ""
 
-#: includes/labels/views/settings.php:185
-msgid "Check the tracking automatically every hour"
-msgstr ""
-
-#: includes/labels/views/settings.php:186
-msgid "Orders with a tracking code (bought here or added by hand) are checked with Frenet until they are delivered."
-msgstr ""
-
-#: includes/labels/views/settings.php:187
-msgid "Change the order status with the tracking"
+#: includes/labels/views/settings.php:182
+msgid "Infixs Checkout Fields already fills the address from the CEP at checkout and in My Account, so the Frenet one stays off on those pages and works only in the cart."
 msgstr ""
 
 #: includes/labels/views/settings.php:188
-msgid "Adds the statuses In transit, Awaiting pickup, Delivered and Returning, and moves the order according to the latest event. Cancelled, refunded and completed orders are never changed."
+msgid "Check the tracking automatically every hour"
 msgstr ""
 
 #: includes/labels/views/settings.php:189
-msgid "E-mail the tracking code to the customer"
+msgid "Orders with a tracking code (bought here or added by hand) are checked with Frenet until they are delivered."
+msgstr ""
+
+#: includes/labels/views/settings.php:190
+msgid "Change the order status with the tracking"
 msgstr ""
 
 #: includes/labels/views/settings.php:191
-msgid "Status e-mails (in transit, awaiting pickup, delivered, returning) are turned on or off one by one, and every text is edited, in"
+msgid "Adds the statuses In transit, Awaiting pickup, Delivered and Returning, and moves the order according to the latest event. Cancelled, refunded and completed orders are never changed."
 msgstr ""
 
 #: includes/labels/views/settings.php:192
+msgid "E-mail the tracking code to the customer"
+msgstr ""
+
+#: includes/labels/views/settings.php:194
+msgid "Status e-mails (in transit, awaiting pickup, delivered, returning) are turned on or off one by one, and every text is edited, in"
+msgstr ""
+
+#: includes/labels/views/settings.php:195
 msgid "WooCommerce > Settings > Emails"
 msgstr ""
 
-#: includes/labels/views/settings.php:198
+#: includes/labels/views/settings.php:201
 msgid "Changes apply to the next labels and quotes."
 msgstr ""
 
-#: includes/labels/views/settings.php:206
+#: includes/labels/views/settings.php:209
 msgid "Turn on automatic shipments?"
 msgstr ""
 
-#: includes/labels/views/settings.php:208
+#: includes/labels/views/settings.php:211
 msgid "The store will spend your Frenet balance on its own."
 msgstr ""
 
-#: includes/labels/views/settings.php:209
+#: includes/labels/views/settings.php:212
 msgid "A minute after each paid order with delivery in Brazil, it quotes the freight, creates the shipment and pays it with the wallet, without asking anyone. Each label is charged exactly like one you create by hand."
 msgstr ""
 
-#: includes/labels/views/settings.php:212
+#: includes/labels/views/settings.php:215
 msgid "Service:"
 msgstr ""
 
-#: includes/labels/views/settings.php:213
+#: includes/labels/views/settings.php:216
 msgid "Orders without an NF-e key only go with carriers that accept the DC-e; when none does, nothing is created and the reason stays in Notes."
 msgstr ""
 
-#: includes/labels/views/settings.php:214
+#: includes/labels/views/settings.php:217
 msgid "A label that should not go out: cancel it in Labels and Frenet returns the amount to the wallet."
 msgstr ""
 
-#: includes/labels/views/settings.php:215
+#: includes/labels/views/settings.php:218
 msgid "You can turn it off here at any time."
 msgstr ""
 
-#: includes/labels/views/settings.php:218
+#: includes/labels/views/settings.php:221
 msgid "Not now"
 msgstr ""
 
-#: includes/labels/views/settings.php:219
+#: includes/labels/views/settings.php:222
 msgid "I understand, turn it on"
 msgstr ""
 
@@ -2579,11 +2583,11 @@ msgstr ""
 msgid "We could not find this CEP. Check the number or fill in the address by hand."
 msgstr ""
 
-#: includes/tracking/class-wc-frenet-autofill.php:111
+#: includes/tracking/class-wc-frenet-autofill.php:128
 msgid "CEP not found."
 msgstr ""
 
-#: includes/tracking/class-wc-frenet-autofill.php:141
+#: includes/tracking/class-wc-frenet-autofill.php:158
 msgid "Too many lookups. Wait a minute and try again."
 msgstr ""
 
