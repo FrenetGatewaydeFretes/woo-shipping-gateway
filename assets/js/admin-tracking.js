@@ -122,10 +122,23 @@
 			return;
 		}
 		var msg = document.querySelector( '[data-frenet-track-all-status]' );
+		var sum = { synced: 0, changed: 0, pending: 0, errors: 0 };
+		var rounds = 0;
+		var step = function ( offset ) {
+			return post( 'sync_all', { offset: offset } ).then( function ( r ) {
+				Object.keys( sum ).forEach( function ( k ) { sum[ k ] += Number( r[ k ] || 0 ); } );
+				rounds++;
+				if ( false === r.done && r.remaining > 0 && Number( r.synced ) + Number( r.errors ) > 0 && rounds < 200 ) {
+					say( msg, fmt( t.progress, sum.synced + sum.errors, sum.synced + sum.errors + r.remaining ), 'loading' );
+					return step( r.offset );
+				}
+				return sum;
+			} );
+		};
 		btn.disabled = true;
 		say( msg, t.updating, 'loading' );
-		post( 'sync_all', {} ).then( function ( r ) {
-			say( msg, [ count( t.synced, r.synced ), count( t.changed, r.changed ), count( t.pending, r.pending || 0 ), count( t.errors, r.errors ) ].join( ' ' ), r.errors ? 'warn' : 'ok' );
+		step( 0 ).then( function ( r ) {
+			say( msg, [ count( t.synced, r.synced ), count( t.changed, r.changed ), count( t.pending, r.pending ), count( t.errors, r.errors ) ].join( ' ' ), r.errors ? 'warn' : 'ok' );
 			window.setTimeout( function () { window.location.reload(); }, 1500 );
 		} ).catch( function ( err ) {
 			say( msg, err.message, 'error' );

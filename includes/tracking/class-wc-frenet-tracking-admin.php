@@ -43,6 +43,8 @@ class WC_Frenet_Tracking_Admin {
 			array(
 				'i18n' => array(
 					'updating'    => __( 'Checking with Frenet…', 'woo-shipping-gateway' ),
+					/* translators: 1: orders checked so far, 2: orders to check */
+					'progress'    => __( 'Checking with Frenet… %1$d of %2$d', 'woo-shipping-gateway' ),
 					'saving'      => __( 'Saving…', 'woo-shipping-gateway' ),
 					'updated'     => __( 'Updated', 'woo-shipping-gateway' ),
 					'noMovement'  => __( 'No movement yet', 'woo-shipping-gateway' ),
