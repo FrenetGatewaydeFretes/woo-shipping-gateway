@@ -31,7 +31,7 @@ class WC_Frenet_Autofill {
 	 * @return void
 	 */
 	public static function init() {
-		if ( ! WC_Frenet_Labels_Settings::on( 'autofill' ) ) {
+		if ( ! WC_Frenet_Labels_Settings::on( 'autofill' ) || '' === WC_Frenet_Labels_Settings::store_token() ) {
 			return;
 		}
 		add_action( 'rest_api_init', array( __CLASS__, 'routes' ) );
