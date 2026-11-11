@@ -14,6 +14,9 @@ class WC_Frenet_Labels_Payload {
 	/** Sender fields the merchant can change in Frenet > Settings; empty means "use the store's". */
 	const SENDER_FIELDS = array( 'name', 'postcode', 'address_1', 'number', 'address_2', 'neighborhood', 'city', 'state', 'email', 'document' );
 
+	/** Words that start an address complement after the house number (regex alternation, case-insensitive). */
+	const COMPLEMENT_WORDS = 'apartamento|apto|apt|ap|casa|bloco|bl|sala|sl|andar|lote|lt|quadra|qd|conjunto|cj|fundos|loja';
+
 	/**
 	 * Sender as the store is configured: WooCommerce > Settings > General, the origin CEP of the Frenet
 	 * shipping method and the admin e-mail. It fills the Sender fields of the settings.
@@ -22,13 +25,13 @@ class WC_Frenet_Labels_Payload {
 	 */
 	public static function store_sender() {
 		$country = explode( ':', (string) get_option( 'woocommerce_default_country', 'BR' ) );
-		list( $street, $number ) = self::street_number( (string) get_option( 'woocommerce_store_address' ), '' );
+		list( $street, $number, $complement ) = self::street_number( (string) get_option( 'woocommerce_store_address' ), '' );
 		return array(
 			'name'         => (string) get_bloginfo( 'name' ),
 			'postcode'     => WC_Frenet_Labels_Settings::origin_cep(),
 			'address_1'    => $street,
 			'number'       => $number,
-			'address_2'    => '',
+			'address_2'    => $complement,
 			'neighborhood' => (string) get_option( 'woocommerce_store_address_2' ),
 			'city'         => (string) get_option( 'woocommerce_store_city' ),
 			'state'        => isset( $country[1] ) ? (string) $country[1] : '',
@@ -151,20 +154,26 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
-	 * Street and house number. Without the Brazilian Market number field, the number is split off the end of
-	 * the street ("Rua X, 123", "Rua X nº 123"). Pure: unit tested.
+	 * Street, house number and complement. Without the Brazilian Market number field, the number is split off the
+	 * end of the street ("Rua X, 123", "Rua X nº 123"), or off the part before a complement that follows it
+	 * ("Rua X, 123 apto 5", "Rua X, 123 - Bloco B"). Pure: unit tested.
 	 *
 	 * @param string $street Address line 1.
 	 * @param string $number Number field ('' when absent).
-	 * @return array{0: string, 1: string}
+	 * @return array{0: string, 1: string, 2: string}
 	 */
 	public static function street_number( $street, $number ) {
-		$street = trim( (string) $street );
-		$number = trim( (string) $number );
-		if ( '' === $number && preg_match( '/^(.+?)[\s,]+(?:n[º°o.]?\s*)?(\d+[A-Za-z]?|s\/?n)\s*$/iu', $street, $m ) ) {
-			return array( rtrim( $m[1], ' ,' ), $m[2] );
+		$street     = trim( (string) $street );
+		$number     = trim( (string) $number );
+		$complement = '';
+		if ( '' === $number && preg_match( '/^(.*?(?:\d+[A-Za-z]?|\bs\/?n))[\s,]*(?:-\s*)?((?:\d+\s*[º°ª]\s*)?(?:' . self::COMPLEMENT_WORDS . ')(?!\p{L}).*?)((?:\s+-\s+[^-]+)?)$/iu', $street, $m ) ) {
+			$street     = $m[1] . $m[3];
+			$complement = trim( $m[2], ' ,-' );
 		}
-		return array( $street, $number );
+		if ( '' === $number && preg_match( '/^(.+?)[\s,]+(?:n[º°o.]?\s*)?(\d+[A-Za-z]?|s\/?n)\s*$/iu', $street, $m ) ) {
+			return array( rtrim( $m[1], ' ,' ), $m[2], $complement );
+		}
+		return array( $street, $number, $complement );
 	}
 
 	/**
@@ -174,16 +183,17 @@ class WC_Frenet_Labels_Payload {
 	 * @param string $street       Address line 1.
 	 * @param string $number       Number field ('' when absent).
 	 * @param string $neighborhood Neighborhood field ('' when absent).
-	 * @return array{0: string, 1: string, 2: string}
+	 * @return array{0: string, 1: string, 2: string, 3: string} Street, number, neighborhood and complement.
 	 */
 	public static function street_parts( $street, $number, $neighborhood ) {
-		list( $street, $number ) = self::street_number( $street, $number );
-		$neighborhood            = trim( (string) $neighborhood );
+		list( $street, $number, $complement ) = self::street_number( $street, $number );
+		$neighborhood                         = trim( (string) $neighborhood );
 		if ( '' === $neighborhood && preg_match( '/^(.+?)\s+-\s+([^-]+)$/u', $street, $m ) ) {
-			list( $street, $neighborhood ) = array( trim( $m[1] ), trim( $m[2] ) );
-			list( $street, $number )       = self::street_number( $street, $number );
+			list( $street, $neighborhood )  = array( trim( $m[1] ), trim( $m[2] ) );
+			list( $street, $number, $more ) = self::street_number( $street, $number );
+			$complement                     = trim( $complement . ' ' . $more );
 		}
-		return array( $street, $number, $neighborhood );
+		return array( $street, $number, $neighborhood, $complement );
 	}
 
 	/**
@@ -324,13 +334,13 @@ class WC_Frenet_Labels_Payload {
 			);
 		}
 		$address  = static function ( array $a ) {
-			list( $street, $number, $quarter ) = self::street_parts( $a['address_1'], $a['number'], $a['neighborhood'] );
+			list( $street, $number, $quarter, $complement ) = self::street_parts( $a['address_1'], $a['number'], $a['neighborhood'] );
 			return array(
 				'ZipCode'           => preg_replace( '/\D/', '', $a['postcode'] ),
 				'City'              => $a['city'],
 				'Street'            => $street,
 				'AddressNumber'     => $number,
-				'AddressComplement' => trim( $a['address_2'] ),
+				'AddressComplement' => implode( ', ', array_filter( array( trim( $a['address_2'] ), $complement ), 'strlen' ) ),
 				'AddressQuarter'    => '' !== $quarter ? $quarter : '-',
 				'AddressState'      => $a['state'],
 				'Country'           => 'BR',
