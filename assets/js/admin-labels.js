@@ -1388,6 +1388,7 @@
 		var dSave = dropoff.querySelector( '[data-frenet-dropoff-save]' );
 		var dStatus = dEditor.querySelector( '[data-frenet-status]' );
 		var dRow = null;
+		var dSeq = 0;
 		var points = [];
 		var defaults = {};
 
@@ -1458,6 +1459,7 @@
 			syncSave();
 		};
 		var search = function () {
+			var seq = ++dSeq;
 			points = [];
 			dBranch.textContent = '';
 			dBranch.disabled = true;
@@ -1467,6 +1469,9 @@
 			dStatus.textContent = '';
 			dCount.textContent = t.loadingPoints;
 			post( 'branches', { carrier: dRow.getAttribute( 'data-frenet-dropoff-row' ), cep: dCep.value } ).then( function ( res ) {
+				if ( seq !== dSeq ) {
+					return;
+				}
 				if ( ! res.success ) {
 					dCount.textContent = ( res.data && res.data.message ) || t.error;
 					return;
@@ -1506,6 +1511,7 @@
 			search();
 		};
 		var close = function () {
+			dSeq++;
 			dEditor.hidden = true;
 			if ( dRow ) {
 				dRow.classList.remove( 'is-applied' );
