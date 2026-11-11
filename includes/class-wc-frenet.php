@@ -703,7 +703,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 }
 
                 if ( 'yes' == $this->debug ) {
-                    $this->log->add( $this->id, 'Product: ' . print_r($product, true));
+                    $this->log->add( $this->id, 'Product: ' . wp_json_encode($product instanceof WC_Data ? $product->get_data() : $product, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
                 }
 
                 $shippingItem = new stdClass();
@@ -783,7 +783,7 @@ class WC_Frenet extends WC_Shipping_Method {
                     $shippingItem->isFragile=false;
 
                     if ( 'yes' == $this->debug ) {
-                        $this->log->add( $this->id, 'shippingItem: ' . print_r($shippingItem, true));
+                        $this->log->add( $this->id, 'shippingItem: ' . wp_json_encode($shippingItem, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
                     }
 
                     $shippingItem->Quantity = $qty;
@@ -897,7 +897,7 @@ class WC_Frenet extends WC_Shipping_Method {
     protected function requestJson(array $serviceParam, $context = '')
     {
         $this->log('Requesting the Frenet WebServices...');
-        $this->log(print_r($serviceParam, true));
+        $this->log(wp_json_encode($serviceParam, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         $this->log('URL: ' . $this->urlShipQuote);
 
         $values   = array();
@@ -923,7 +923,7 @@ class WC_Frenet extends WC_Shipping_Method {
                 continue;
             }
 
-            $this->log( 'WebServices response [' . ( isset( $service->ServiceDescription ) ? $service->ServiceDescription : '' ) . ']: ' . print_r( $service, true ) );
+            $this->log( 'WebServices response [' . ( isset( $service->ServiceDescription ) ? $service->ServiceDescription : '' ) . ']: ' . wp_json_encode( $service, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) );
             $values[ (string) $service->ServiceCode ] = $service;
         }
 
