@@ -63,7 +63,7 @@ $frenet_format = WC_Frenet_Labels_Settings::get( 'label_format' );
 			</tbody>
 		</table>
 	</div>
-	<div class="frenet-bar" aria-live="polite">
+	<div class="frenet-bar">
 		<div class="frenet-bar__facts">
 			<span class="frenet-bar__fact"><?php esc_html_e( 'Selected labels', 'woo-shipping-gateway' ); ?><strong data-frenet-bar-count><?php echo (int) count( $frenet_paid ); ?></strong></span>
 		</div>

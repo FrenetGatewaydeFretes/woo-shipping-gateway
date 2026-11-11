@@ -175,7 +175,7 @@ else :
 		</table>
 	</div>
 	<?php // Bulk actions follow the screen: pay the unpaid ones, print the paid ones. ?>
-	<div class="frenet-bar" aria-live="polite">
+	<div class="frenet-bar">
 		<div class="frenet-bar__facts">
 			<span class="frenet-bar__fact"><?php esc_html_e( 'Selected labels', 'woo-shipping-gateway' ); ?><strong data-frenet-bar-count>0</strong></span>
 			<span class="frenet-bar__fact" data-frenet-bar-total-wrap hidden><?php esc_html_e( 'To pay', 'woo-shipping-gateway' ); ?><strong data-frenet-bar-total></strong></span>
