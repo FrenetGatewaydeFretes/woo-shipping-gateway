@@ -97,7 +97,7 @@ class WC_Frenet_Labels_Service {
 			return new WP_Error( 'frenet_labels_no_items', __( 'This order has no product to ship.', 'woo-shipping-gateway' ) );
 		}
 		$to  = WC_Frenet_Labels_Payload::recipient( $order );
-		$raw = WC_Frenet_Labels_Api::quote( $to['postcode'], (float) $order->get_subtotal(), $items );
+		$raw = WC_Frenet_Labels_Api::quote( $to['postcode'], WC_Frenet_Labels_Payload::declared_value( $order ), $items );
 		if ( is_wp_error( $raw ) ) {
 			return $raw;
 		}

@@ -302,6 +302,21 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
+	 * Declared value of the package: line totals of the shippable items after discounts, like the checkout quote
+	 * (cart contents total), so virtual items and coupons do not raise it.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return float
+	 */
+	public static function declared_value( WC_Order $order ) {
+		$value = 0.0;
+		foreach ( self::items( $order ) as $i ) {
+			$value += (float) $i['item']->get_total();
+		}
+		return round( $value, 2 );
+	}
+
+	/**
 	 * ShippingItemArray for POST /shipping/quote.
 	 *
 	 * @param WC_Order $order Order.
@@ -372,7 +387,7 @@ class WC_Frenet_Labels_Payload {
 			);
 		};
 		$created  = $order->get_date_created();
-		$value    = round( (float) $order->get_subtotal(), 2 );
+		$value    = self::declared_value( $order );
 		$shipment = array(
 			'Order'     => array(
 				'Id'                    => self::frenet_order_id( $order->get_id(), (int) $order->get_meta( '_frenet_order_attempt' ) ),
