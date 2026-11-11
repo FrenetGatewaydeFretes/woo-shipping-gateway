@@ -395,11 +395,12 @@ class WC_Frenet_Labels_Service {
 		}
 		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', '/shipments/checkout', array_map( 'intval', $todo ) );
 		self::forget_wallet();
-		$unknown = is_wp_error( $res );
-		$message = '';
+		$failed  = is_wp_error( $res );
+		$unknown = $failed && self::unknown_outcome( $res );
+		$message = $failed && ! $unknown ? $res->get_error_message() : '';
 		$unpaid  = array();
 		$total   = 0.0;
-		if ( ! $unknown ) {
+		if ( ! $failed ) {
 			$errors = (array) ( WC_Frenet_Labels_Api::field( $res, 'errors' ) ?? array() );
 			if ( $errors && is_array( $errors[0] ) ) {
 				$message = WC_Frenet_Labels_Api::clean_error( (string) ( WC_Frenet_Labels_Api::field( $errors[0], 'message' ) ?? '' ) );
@@ -408,7 +409,7 @@ class WC_Frenet_Labels_Service {
 		foreach ( $todo as $id ) {
 			$status = self::real_status( $id );
 			if ( null === $status ) {
-				$status = ( ! $unknown && 1 === (int) ( WC_Frenet_Labels_Api::field( $res, 'status' ) ?? 0 ) ) ? self::STATUS_PAID : $known[ $id ];
+				$status = ( ! $failed && 1 === (int) ( WC_Frenet_Labels_Api::field( $res, 'status' ) ?? 0 ) ) ? self::STATUS_PAID : $known[ $id ];
 			}
 			$statuses[ $id ] = $status;
 			$paid            = in_array( $status, self::PAID_STATUSES, true );
