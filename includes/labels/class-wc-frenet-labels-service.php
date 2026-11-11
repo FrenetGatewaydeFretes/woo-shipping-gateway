@@ -1091,27 +1091,43 @@ class WC_Frenet_Labels_Service {
 	}
 
 	/**
-	 * Wallet (GET /wallet), cached five minutes.
+	 * Wallet (GET /wallet), cached five minutes; a failed read is cached one minute, so an outage does not make every
+	 * Frenet page wait for the timeout.
 	 *
 	 * @param bool $fresh Skip the cache.
 	 * @return array{balance: float, labels: int, room: float}|WP_Error
 	 */
 	public static function wallet( $fresh = false ) {
-		$cached = get_transient( self::wallet_key() );
-		if ( ! $fresh && is_array( $cached ) ) {
-			return $cached;
+		if ( ! $fresh ) {
+			$cached = get_transient( self::wallet_key() );
+			if ( is_array( $cached ) ) {
+				return $cached;
+			}
+			$failed = get_transient( self::wallet_key() . '_error' );
+			if ( is_array( $failed ) ) {
+				return new WP_Error( (string) ( $failed['code'] ?? 'frenet_labels_wallet' ), (string) ( $failed['message'] ?? '' ) );
+			}
 		}
 		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/wallet' );
-		if ( is_wp_error( $res ) ) {
-			return $res;
-		}
 		// A refused token comes back as HTTP 200 with only a "message" (validated live 2026-10-27): not a R$ 0,00 wallet.
-		if ( null === WC_Frenet_Labels_Api::field( $res, 'balance' ) ) {
+		if ( ! is_wp_error( $res ) && null === WC_Frenet_Labels_Api::field( $res, 'balance' ) ) {
 			$raw     = (string) ( WC_Frenet_Labels_Api::field( $res, 'message' ) ?? '' );
 			$msg     = WC_Frenet_Labels_Api::clean_error( $raw );
 			$refused = WC_Frenet_Labels_Api::refused( $raw );
-			return new WP_Error( '' !== $refused ? 'frenet_labels_' . $refused . '_token' : 'frenet_labels_wallet', '' !== $msg ? $msg : __( 'Frenet did not return the wallet balance.', 'woo-shipping-gateway' ) );
+			$res     = new WP_Error( '' !== $refused ? 'frenet_labels_' . $refused . '_token' : 'frenet_labels_wallet', '' !== $msg ? $msg : __( 'Frenet did not return the wallet balance.', 'woo-shipping-gateway' ) );
 		}
+		if ( is_wp_error( $res ) ) {
+			set_transient(
+				self::wallet_key() . '_error',
+				array(
+					'code'    => $res->get_error_code(),
+					'message' => $res->get_error_message(),
+				),
+				MINUTE_IN_SECONDS
+			);
+			return $res;
+		}
+		delete_transient( self::wallet_key() . '_error' );
 		$wallet = array(
 			'balance' => (float) ( WC_Frenet_Labels_Api::field( $res, 'balance' ) ?? 0 ),
 			'labels'  => (int) ( WC_Frenet_Labels_Api::field( $res, 'labelLimit' ) ?? 0 ),
@@ -1139,6 +1155,7 @@ class WC_Frenet_Labels_Service {
 	 */
 	public static function forget_wallet() {
 		delete_transient( self::wallet_key() );
+		delete_transient( self::wallet_key() . '_error' );
 		// Key used up to 2.1.25: dropped so it never comes back.
 		delete_transient( self::WALLET );
 	}
