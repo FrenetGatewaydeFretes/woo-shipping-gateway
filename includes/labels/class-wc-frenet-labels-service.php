@@ -27,6 +27,9 @@ class WC_Frenet_Labels_Service {
 	const RECOVER_MAX     = 5;
 	const FIND_PAGES      = 3;
 
+	/** Action Scheduler group of the poll and recover jobs (same as the automatic shipments). */
+	const JOB_GROUP = 'woo-shipping-gateway';
+
 	/** Option row that lets one wallet payment run at a time, and after how many seconds a lock left behind is dropped. */
 	const PAY_LOCK     = 'wc_frenet_labels_pay_lock';
 	const PAY_LOCK_TTL = 120;
@@ -774,33 +777,91 @@ class WC_Frenet_Labels_Service {
 	 * @return void
 	 */
 	public static function schedule_poll( $order_id, $attempt ) {
-		$args = array( (int) $order_id, (int) $attempt );
-		if ( $attempt <= self::POLL_MAX && ! wp_next_scheduled( self::POLL_HOOK, $args ) ) {
-			wp_schedule_single_event( time() + MINUTE_IN_SECONDS, self::POLL_HOOK, $args );
+		if ( $attempt <= self::POLL_MAX ) {
+			self::schedule_job( self::POLL_HOOK, MINUTE_IN_SECONDS, $order_id, $attempt );
 		}
 	}
 
 	/**
-	 * Removes the pending checks of one order (they carry [order_id, attempt]).
+	 * Removes the pending checks of one order (they carry the order id and the attempt).
 	 *
 	 * @param int $order_id Order id.
 	 * @return void
 	 */
 	public static function unschedule_poll( $order_id ) {
 		for ( $attempt = 1; $attempt <= self::POLL_MAX; $attempt++ ) {
-			wp_clear_scheduled_hook( self::POLL_HOOK, array( (int) $order_id, $attempt ) );
+			$args = self::job_args( $order_id, $attempt );
+			if ( function_exists( 'as_unschedule_all_actions' ) ) {
+				as_unschedule_all_actions( self::POLL_HOOK, $args, self::JOB_GROUP );
+			}
+			wp_clear_scheduled_hook( self::POLL_HOOK, array_values( $args ) );
 		}
+	}
+
+	/**
+	 * Schedules one run of a hook for an order, once: Action Scheduler when WooCommerce has it, else WP-Cron.
+	 *
+	 * @param string $hook     Hook.
+	 * @param int    $delay    Seconds from now.
+	 * @param int    $order_id Order id.
+	 * @param int    $attempt  1-based attempt.
+	 * @return void
+	 */
+	private static function schedule_job( $hook, $delay, $order_id, $attempt ) {
+		$args = self::job_args( $order_id, $attempt );
+		if ( function_exists( 'as_schedule_single_action' ) ) {
+			$queued = function_exists( 'as_has_scheduled_action' )
+				? as_has_scheduled_action( $hook, $args, self::JOB_GROUP )
+				: false !== as_next_scheduled_action( $hook, $args, self::JOB_GROUP );
+			if ( ! $queued ) {
+				as_schedule_single_action( time() + $delay, $hook, $args, self::JOB_GROUP );
+			}
+			return;
+		}
+		if ( ! wp_next_scheduled( $hook, array_values( $args ) ) ) {
+			wp_schedule_single_event( time() + $delay, $hook, array_values( $args ) );
+		}
+	}
+
+	/**
+	 * Arguments of a poll or recover job, as Action Scheduler keeps them. Pure.
+	 *
+	 * @param int $order_id Order id.
+	 * @param int $attempt  1-based attempt.
+	 * @return array{order_id: int, attempt: int}
+	 */
+	public static function job_args( $order_id, $attempt ) {
+		return array(
+			'order_id' => (int) $order_id,
+			'attempt'  => (int) $attempt,
+		);
+	}
+
+	/**
+	 * Order id and attempt of a job, whether they come as two values (WP-Cron, Action Scheduler) or one array. Pure.
+	 *
+	 * @param mixed $order_id Order id, or the job arguments.
+	 * @param mixed $attempt  Attempt.
+	 * @return array{0: int, 1: int}
+	 */
+	public static function from_job( $order_id, $attempt ) {
+		if ( is_array( $order_id ) ) {
+			$attempt  = $order_id['attempt'] ?? ( $order_id[1] ?? $attempt );
+			$order_id = $order_id['order_id'] ?? ( $order_id[0] ?? 0 );
+		}
+		return array( (int) $order_id, max( 1, (int) $attempt ) );
 	}
 
 	/**
 	 * Cron: retries the label; after POLL_MAX attempts leaves a note.
 	 *
-	 * @param int $order_id Order id.
-	 * @param int $attempt  Attempt.
+	 * @param int|array<string, int> $order_id Order id, or the job arguments.
+	 * @param int                    $attempt  Attempt.
 	 * @return void
 	 */
-	public static function poll( $order_id, $attempt ) {
-		$order = wc_get_order( $order_id );
+	public static function poll( $order_id, $attempt = 1 ) {
+		list( $order_id, $attempt ) = self::from_job( $order_id, $attempt );
+		$order                      = wc_get_order( $order_id );
 		if ( ! $order instanceof WC_Order || ! self::has_shipment( $order ) || $order->get_meta( '_frenet_label_ready' ) ) {
 			return;
 		}
@@ -872,22 +933,20 @@ class WC_Frenet_Labels_Service {
 	 * @return void
 	 */
 	public static function schedule_recover( $order_id, $attempt ) {
-		$args = array( (int) $order_id, (int) $attempt );
-		if ( ! wp_next_scheduled( self::RECOVER_HOOK, $args ) ) {
-			wp_schedule_single_event( time() + 2 * MINUTE_IN_SECONDS, self::RECOVER_HOOK, $args );
-		}
+		self::schedule_job( self::RECOVER_HOOK, 2 * MINUTE_IN_SECONDS, $order_id, $attempt );
 	}
 
 	/**
 	 * Cron: looks for the shipment of an unanswered creation. Found → stored on the order and paid like any other;
 	 * not found after RECOVER_MAX tries → the order can be created again.
 	 *
-	 * @param int $order_id Order id.
-	 * @param int $attempt  Attempt.
+	 * @param int|array<string, int> $order_id Order id, or the job arguments.
+	 * @param int                    $attempt  Attempt.
 	 * @return void
 	 */
-	public static function recover( $order_id, $attempt ) {
-		$order = wc_get_order( $order_id );
+	public static function recover( $order_id, $attempt = 1 ) {
+		list( $order_id, $attempt ) = self::from_job( $order_id, $attempt );
+		$order                      = wc_get_order( $order_id );
 		if ( ! $order instanceof WC_Order || '' === (string) $order->get_meta( self::RECOVER ) ) {
 			return;
 		}
