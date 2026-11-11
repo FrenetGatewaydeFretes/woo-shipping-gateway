@@ -11,14 +11,18 @@ defined( 'ABSPATH' ) || exit;
  *   _frenet_service_code     Frenet ServiceCode (labels service, else the FRENET_<code> rate)
  *   _frenet_tracking_events  [ [date, location, description, type], ... ] oldest first
  *   _frenet_tracking_url     public tracking page returned by Frenet
- *   _frenet_tracking_synced  timestamp of the last sync
+ *   _frenet_tracking_synced  timestamp of the last sync that changed something
+ *
+ * The time of every check is kept apart (transient wc_frenet_tracking_checked_<order id>), so a check
+ * that finds nothing new does not save the order.
  */
 class WC_Frenet_Tracking {
 
-	const CRON   = 'woocommerce_frenet_tracking_sync';
-	const BATCH  = 50;
-	const OPEN   = array( 'processing', 'on-hold', 'frenet-transit', 'frenet-pickup' );
-	const CURSOR = 'woocommerce_frenet_tracking_cursor';
+	const CRON    = 'woocommerce_frenet_tracking_sync';
+	const BATCH   = 50;
+	const OPEN    = array( 'processing', 'on-hold', 'frenet-transit', 'frenet-pickup' );
+	const CURSOR  = 'woocommerce_frenet_tracking_cursor';
+	const CHECKED = 'wc_frenet_tracking_checked_';
 
 	/**
 	 * Hooks.
@@ -107,8 +111,20 @@ class WC_Frenet_Tracking {
 			'service' => '' !== $service ? $service : self::service_from_rate( $order ),
 			'events'  => is_array( $events ) ? $events : array(),
 			'url'     => (string) $order->get_meta( '_frenet_tracking_url' ),
-			'synced'  => (int) $order->get_meta( '_frenet_tracking_synced' ),
+			'synced'  => self::checked_at( $order ),
 		);
+	}
+
+	/**
+	 * When the current tracking code of the order was last checked with Frenet.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return int Timestamp (0 if never).
+	 */
+	public static function checked_at( WC_Order $order ) {
+		$checked = get_transient( self::CHECKED . $order->get_id() );
+		$time    = is_array( $checked ) && (string) ( $checked['code'] ?? '' ) === (string) $order->get_meta( '_frenet_tracking_code' ) ? (int) ( $checked['time'] ?? 0 ) : 0;
+		return max( $time, (int) $order->get_meta( '_frenet_tracking_synced' ) );
 	}
 
 	/**
@@ -138,6 +154,7 @@ class WC_Frenet_Tracking {
 				$order->delete_meta_data( $key );
 			}
 			$order->save();
+			delete_transient( self::CHECKED . $order->get_id() );
 			return '';
 		}
 		if ( $old === $code ) {
@@ -180,21 +197,35 @@ class WC_Frenet_Tracking {
 			return new WP_Error( 'frenet_no_service', __( 'This order was not shipped with a Frenet service, so Frenet cannot track it.', 'woo-shipping-gateway' ) );
 		}
 		$data = WC_Frenet_Labels_Api::tracking( $t['service'], $t['code'] );
-		$order->update_meta_data( '_frenet_tracking_synced', (string) time() );
+		$now  = time();
+		set_transient(
+			self::CHECKED . $order->get_id(),
+			array(
+				'code' => $t['code'],
+				'time' => $now,
+			),
+			MONTH_IN_SECONDS
+		);
 		if ( is_wp_error( $data ) ) {
-			$order->save();
 			return $data;
 		}
 		$events = self::events_from( $data );
 		// Frenet answers HTTP 200 with "ErrorMessage" while the carrier has nothing yet ("não encontrado", "sem eventos"):
 		// that is "no movement yet", not a failure. Any other message (wrong service code…) is kept as a note.
-		$note = $events ? '' : self::note_from( (string) ( WC_Frenet_Labels_Api::field( $data, 'ErrorMessage' ) ?? '' ) );
-		$url  = (string) ( WC_Frenet_Labels_Api::field( $data, 'TrackingUrl' ) ?? '' );
-		if ( '' !== $url ) {
-			$order->update_meta_data( '_frenet_tracking_url', esc_url_raw( $url ) );
+		$note  = $events ? '' : self::note_from( (string) ( WC_Frenet_Labels_Api::field( $data, 'ErrorMessage' ) ?? '' ) );
+		$url   = esc_url_raw( (string) ( WC_Frenet_Labels_Api::field( $data, 'TrackingUrl' ) ?? '' ) );
+		$dirty = $events !== $t['events'];
+		if ( $dirty ) {
+			$order->update_meta_data( '_frenet_tracking_events', $events );
 		}
-		$order->update_meta_data( '_frenet_tracking_events', $events );
-		$order->save();
+		if ( '' !== $url && $url !== $t['url'] ) {
+			$order->update_meta_data( '_frenet_tracking_url', $url );
+			$dirty = true;
+		}
+		if ( $dirty ) {
+			$order->update_meta_data( '_frenet_tracking_synced', (string) $now );
+			$order->save();
+		}
 		$changed = false;
 		if ( count( $events ) > count( $t['events'] ) && WC_Frenet_Labels_Settings::on( 'tracking_status' ) ) {
 			$changed = self::apply_status( $order, end( $events ) );
