@@ -365,41 +365,63 @@ class WC_Frenet_Labels_Service {
 	/**
 	 * Pays shipments with the wallet (the "cart"). The real status of each one decides.
 	 *
+	 * Labels Frenet already paid or cancelled are never sent again; the price of each one is Frenet's own.
+	 *
 	 * @param array<int, string> $ids Shipment ids.
 	 * @return array{statuses: array<string, int>, total: float, message: string, unknown: bool}
 	 */
 	public static function pay( array $ids ) {
-		$ids = array_values( array_unique( array_filter( array_map( 'strval', $ids ), array( __CLASS__, 'is_shipment_id' ) ) ) );
-		if ( self::missing_balance( $ids ) > 0 ) {
-			return self::keep_unpaid( $ids, __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' ) );
-		}
-		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', '/shipments/checkout', array_map( 'intval', $ids ) );
-		self::forget_wallet();
-		$unknown  = is_wp_error( $res );
-		$message  = '';
+		$ids      = array_values( array_unique( array_filter( array_map( 'strval', $ids ), array( __CLASS__, 'is_shipment_id' ) ) ) );
 		$statuses = array();
-		$unpaid   = array();
+		$todo     = array();
+		$prices   = array();
+		$known    = array();
+		foreach ( $ids as $id ) {
+			$state = self::shipment_state( $id );
+			if ( $state && self::settled( $state['status'] ) ) {
+				$statuses[ $id ] = self::settle( $id, $state['status'] );
+				continue;
+			}
+			$todo[]        = $id;
+			$prices[ $id ] = self::price_of( $id, $state );
+			$known[ $id ]  = $state && null !== $state['status'] ? $state['status'] : self::STATUS_PENDING_PAYMENT;
+		}
+		if ( ! $todo ) {
+			return self::pay_result( $statuses, 0.0, $statuses ? __( 'These labels are already paid or cancelled at Frenet. Nothing was charged.', 'woo-shipping-gateway' ) : '', false );
+		}
+		if ( self::missing_balance( $prices ) > 0 ) {
+			$message = __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' );
+			return self::pay_result( $statuses + self::keep_unpaid( $todo, $message, $known ), 0.0, $message, false );
+		}
+		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', '/shipments/checkout', array_map( 'intval', $todo ) );
+		self::forget_wallet();
+		$unknown = is_wp_error( $res );
+		$message = '';
+		$unpaid  = array();
+		$total   = 0.0;
 		if ( ! $unknown ) {
 			$errors = (array) ( WC_Frenet_Labels_Api::field( $res, 'errors' ) ?? array() );
 			if ( $errors && is_array( $errors[0] ) ) {
 				$message = WC_Frenet_Labels_Api::clean_error( (string) ( WC_Frenet_Labels_Api::field( $errors[0], 'message' ) ?? '' ) );
 			}
 		}
-		foreach ( $ids as $id ) {
+		foreach ( $todo as $id ) {
 			$status = self::real_status( $id );
 			if ( null === $status ) {
-				$status = ( ! $unknown && 1 === (int) ( WC_Frenet_Labels_Api::field( $res, 'status' ) ?? 0 ) ) ? self::STATUS_PAID : self::STATUS_PENDING_PAYMENT;
+				$status = ( ! $unknown && 1 === (int) ( WC_Frenet_Labels_Api::field( $res, 'status' ) ?? 0 ) ) ? self::STATUS_PAID : $known[ $id ];
 			}
 			$statuses[ $id ] = $status;
+			$paid            = in_array( $status, self::PAID_STATUSES, true );
+			$total          += $paid ? $prices[ $id ] : 0.0;
 			$order           = self::order_for( $id );
 			if ( ! $order ) {
 				continue;
 			}
 			$order->update_meta_data( '_frenet_shipment_status', (string) $status );
-			if ( in_array( $status, self::PAID_STATUSES, true ) ) {
+			if ( $paid ) {
 				$order->delete_meta_data( self::ISSUE );
 				/* translators: 1: shipment id, 2: amount */
-				$order->add_order_note( sprintf( __( 'Frenet label %1$s paid (%2$s).', 'woo-shipping-gateway' ), $id, self::money( (float) $order->get_meta( '_frenet_shipment_price' ) ) ) );
+				$order->add_order_note( sprintf( __( 'Frenet label %1$s paid (%2$s).', 'woo-shipping-gateway' ), $id, self::money( $prices[ $id ] ) ) );
 				$order->save();
 				if ( ! self::fetch_label( $order ) ) {
 					self::schedule_poll( $order->get_id(), 1 );
@@ -416,23 +438,65 @@ class WC_Frenet_Labels_Service {
 		if ( $unknown ) {
 			/* translators: %s: error */
 			$message = sprintf( __( 'The payment did not answer (%s). The store checks again every minute; do not pay twice.', 'woo-shipping-gateway' ), $res->get_error_message() );
-		} elseif ( '' === $message && array_diff( $statuses, self::PAID_STATUSES ) ) {
+		} elseif ( '' === $message && $unpaid ) {
 			$message = __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' );
 		}
 		foreach ( $unpaid as $order ) {
 			self::set_issue( $order, '' !== $message ? $message : __( 'The label was not paid.', 'woo-shipping-gateway' ) );
 		}
-		$total = 0.0;
-		foreach ( $statuses as $id => $status ) {
-			$order  = in_array( $status, self::PAID_STATUSES, true ) ? self::order_for( (string) $id ) : null;
-			$total += $order ? (float) $order->get_meta( '_frenet_shipment_price' ) : 0.0;
-		}
+		return self::pay_result( $statuses, $total, $message, $unknown );
+	}
+
+	/**
+	 * Result of pay().
+	 *
+	 * @param array<string, int> $statuses Status of each shipment id.
+	 * @param float              $total    Amount paid now.
+	 * @param string             $message  Message for the shopkeeper.
+	 * @param bool               $unknown  Whether the payment went unanswered.
+	 * @return array{statuses: array<string, int>, total: float, message: string, unknown: bool}
+	 */
+	private static function pay_result( array $statuses, $total, $message, $unknown ) {
 		return array(
 			'statuses' => $statuses,
-			'total'    => $total,
-			'message'  => $message,
-			'unknown'  => $unknown,
+			'total'    => (float) $total,
+			'message'  => (string) $message,
+			'unknown'  => (bool) $unknown,
 		);
+	}
+
+	/**
+	 * Whether a status needs no payment any more: paid, posted or gone. Pure.
+	 *
+	 * @param int|null $status ShipmentStatus.
+	 * @return bool
+	 */
+	public static function settled( $status ) {
+		return null !== $status && ( in_array( (int) $status, self::PAID_STATUSES, true ) || in_array( (int) $status, self::GONE_STATUSES, true ) );
+	}
+
+	/**
+	 * Brings the order of a shipment that needs no payment up to date with Frenet, without a new note.
+	 *
+	 * @param string $id     Shipment id.
+	 * @param int    $status Real status.
+	 * @return int The status.
+	 */
+	private static function settle( $id, $status ) {
+		$order = self::order_for( $id );
+		if ( ! $order ) {
+			return $status;
+		}
+		$paid = in_array( $status, self::PAID_STATUSES, true );
+		$order->update_meta_data( '_frenet_shipment_status', (string) $status );
+		if ( $paid ) {
+			$order->delete_meta_data( self::ISSUE );
+		}
+		$order->save();
+		if ( $paid && ! $order->get_meta( '_frenet_label_ready' ) && ! self::fetch_label( $order ) ) {
+			self::schedule_poll( $order->get_id(), 1 );
+		}
+		return $status;
 	}
 
 	/**
@@ -452,39 +516,59 @@ class WC_Frenet_Labels_Service {
 	 * Frenet holds the whole balance on a checkout it cannot finish and the shipment can no longer be deleted
 	 * (validated live 2026-11-11), so a payment the wallet cannot cover is never sent.
 	 *
-	 * @param array<int, string> $ids Shipment ids.
+	 * @param array<string, float> $prices Price of each shipment id.
 	 * @return float
 	 */
-	public static function missing_balance( array $ids ) {
+	public static function missing_balance( array $prices ) {
 		$wallet = self::wallet( true );
 		if ( is_wp_error( $wallet ) ) {
 			return 0.0;
 		}
-		$total = 0.0;
-		foreach ( $ids as $id ) {
-			$total += self::shipment_price( $id );
-		}
-		return max( 0.0, round( $total - (float) $wallet['balance'], 2 ) );
+		return max( 0.0, round( array_sum( $prices ) - (float) $wallet['balance'], 2 ) );
 	}
 
 	/**
-	 * Price of a shipment: the one kept on its order, else the quotation Frenet returns; 0 when unknown.
+	 * Price of a shipment: the quotation Frenet returns, else the one kept on its order; 0 when unknown.
 	 *
 	 * @param string $id Shipment id.
 	 * @return float
 	 */
 	public static function shipment_price( $id ) {
-		$order = self::order_for( (string) $id );
-		$price = $order ? (float) $order->get_meta( '_frenet_shipment_price' ) : 0.0;
-		if ( $price > 0 ) {
-			return $price;
+		return self::price_of( (string) $id, self::shipment_state( $id ) );
+	}
+
+	/**
+	 * Price of a shipment from its state already read: Frenet's quotation, else the one kept on its order.
+	 *
+	 * @param string                                     $id    Shipment id.
+	 * @param array{status: int|null, price: float}|null $state shipment_state() result.
+	 * @return float
+	 */
+	private static function price_of( $id, $state ) {
+		if ( $state && $state['price'] > 0 ) {
+			return $state['price'];
 		}
+		$order = self::order_for( (string) $id );
+		return $order ? (float) $order->get_meta( '_frenet_shipment_price' ) : 0.0;
+	}
+
+	/**
+	 * Real status and price of a shipment at Frenet (GET /shipments/{id}); null when Frenet does not answer.
+	 *
+	 * @param string $id Shipment id.
+	 * @return array{status: int|null, price: float}|null
+	 */
+	public static function shipment_state( $id ) {
 		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/shipments/' . rawurlencode( (string) $id ) );
 		if ( is_wp_error( $res ) ) {
-			return 0.0;
+			return null;
 		}
-		$quote = (array) ( WC_Frenet_Labels_Api::field( $res, 'quotation' ) ?? array() );
-		return WC_Frenet_Labels_Compare::to_float( $quote['shippingPrice'] ?? ( $quote['platformShippingPrice'] ?? 0 ) );
+		$status = WC_Frenet_Labels_Api::field( $res, 'shipmentStatus' );
+		$quote  = (array) ( WC_Frenet_Labels_Api::field( $res, 'quotation' ) ?? array() );
+		return array(
+			'status' => is_numeric( $status ) ? (int) $status : null,
+			'price'  => WC_Frenet_Labels_Compare::to_float( WC_Frenet_Labels_Api::field( $quote, 'shippingPrice' ) ?? ( WC_Frenet_Labels_Api::field( $quote, 'platformShippingPrice' ) ?? 0 ) ),
+		);
 	}
 
 	/**
@@ -492,23 +576,19 @@ class WC_Frenet_Labels_Service {
 	 *
 	 * @param array<int, string> $ids     Shipment ids.
 	 * @param string             $message Reason.
-	 * @return array{statuses: array<string, int>, total: float, message: string, unknown: bool}
+	 * @param array<string, int> $known   Status of each shipment id.
+	 * @return array<string, int> Status of each shipment id.
 	 */
-	private static function keep_unpaid( array $ids, $message ) {
+	private static function keep_unpaid( array $ids, $message, array $known ) {
 		$statuses = array();
 		foreach ( $ids as $id ) {
-			$statuses[ $id ] = self::STATUS_PENDING_PAYMENT;
+			$statuses[ $id ] = $known[ $id ] ?? self::STATUS_PENDING_PAYMENT;
 			$order           = self::order_for( $id );
 			if ( $order ) {
 				self::set_issue( $order, $message );
 			}
 		}
-		return array(
-			'statuses' => $statuses,
-			'total'    => 0.0,
-			'message'  => $message,
-			'unknown'  => false,
-		);
+		return $statuses;
 	}
 
 	/**
@@ -756,12 +836,8 @@ class WC_Frenet_Labels_Service {
 	 * @return int|null
 	 */
 	public static function real_status( $id ) {
-		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/shipments/' . rawurlencode( (string) $id ) );
-		if ( is_wp_error( $res ) ) {
-			return null;
-		}
-		$status = WC_Frenet_Labels_Api::field( $res, 'shipmentStatus' );
-		return is_numeric( $status ) ? (int) $status : null;
+		$state = self::shipment_state( $id );
+		return $state ? $state['status'] : null;
 	}
 
 	/**
