@@ -33,6 +33,9 @@ class WC_Frenet_Labels_Service {
 	/** Smallest deposit Mercado Pago takes through Frenet: R$ 3 is refused, R$ 4 passes (validated live 2026-10-27). */
 	const DEPOSIT_MIN = 5;
 
+	/** Per-user transient (suffix: user id) with the shipment ids Frenet left out of the last printed PDF. */
+	const PRINT_FAILED = 'frenet_labels_print_failed_';
+
 	/** REST route (under /wp-json/) Frenet calls when a wallet deposit changes. */
 	const DEPOSIT_ROUTE = 'frenet/v1/deposit';
 

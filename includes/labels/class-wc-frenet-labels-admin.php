@@ -653,6 +653,9 @@ class WC_Frenet_Labels_Admin {
 				)
 			);
 		}
+		if ( $res['failed'] ) {
+			set_transient( WC_Frenet_Labels_Service::PRINT_FAILED . get_current_user_id(), $res['failed'], HOUR_IN_SECONDS );
+		}
 		while ( ob_get_level() > 0 ) {
 			ob_end_clean();
 		}

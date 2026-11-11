@@ -7,6 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+$frenet_unprinted = get_transient( WC_Frenet_Labels_Service::PRINT_FAILED . get_current_user_id() );
+if ( is_array( $frenet_unprinted ) && $frenet_unprinted ) {
+	delete_transient( WC_Frenet_Labels_Service::PRINT_FAILED . get_current_user_id() );
+	/* translators: %s: shipment ids */
+	echo '<div class="notice notice-warning inline"><p>' . esc_html( sprintf( __( 'Frenet left these labels out of the last PDF: %s. Print them again in a minute; if it keeps failing, check them in Labels.', 'woo-shipping-gateway' ), implode( ', ', array_map( 'strval', $frenet_unprinted ) ) ) ) . '</p></div>';
+}
 $frenet_list = WC_Frenet_Labels_Service::shipments( 0, 100 );
 $frenet_paid = array();
 if ( ! is_wp_error( $frenet_list ) ) {
