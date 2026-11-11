@@ -238,7 +238,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
         function wcfrenet_extensions_missing_notice() {
             ?>
             <div class="notice notice-error is-dismissible">
-            <p><?php _e( 'FRENET: Você precisa ativar a extensão do php SimpleXmlElement' ); ?></p>
+            <p><?php esc_html_e( 'FRENET: Enable the SimpleXML PHP extension.', 'woo-shipping-gateway' ); ?></p>
             </div>
             <?php
         }
@@ -246,7 +246,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
         function wcfrenet_woocommerce_fallback_notice() {
             ?>
             <div class="notice notice-error is-dismissible">
-            <p><?php _e( 'FRENET: Instale o woocomerce para poder usar esta extensão' ); ?></p>
+            <p><?php esc_html_e( 'FRENET: Install WooCommerce to use this extension.', 'woo-shipping-gateway' ); ?></p>
             </div>
             <?php
         }
