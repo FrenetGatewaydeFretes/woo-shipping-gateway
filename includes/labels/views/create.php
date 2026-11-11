@@ -114,7 +114,7 @@ endif;
 						<span data-frenet-nfe-summary><?php echo esc_html( $frenet_nfe['ok'] ? WC_Frenet_Labels_Nfe::summary( $frenet_nfe ) : __( 'optional', 'woo-shipping-gateway' ) ); ?></span>
 						<details>
 							<summary><?php echo esc_html( $frenet_nfe['ok'] ? __( 'Change', 'woo-shipping-gateway' ) : __( 'Add NF-e key', 'woo-shipping-gateway' ) ); ?></summary>
-							<input type="text" inputmode="numeric" maxlength="60" autocomplete="off" spellcheck="false" data-frenet-nfe value="<?php echo esc_attr( $frenet_nfe['ok'] ? $frenet_nfe['key'] : '' ); ?>" placeholder="<?php esc_attr_e( '44 digits from the DANFE', 'woo-shipping-gateway' ); ?>" aria-label="<?php esc_attr_e( 'NF-e access key', 'woo-shipping-gateway' ); ?>">
+							<input type="text" inputmode="text" maxlength="60" autocomplete="off" autocapitalize="characters" spellcheck="false" data-frenet-nfe value="<?php echo esc_attr( $frenet_nfe['ok'] ? $frenet_nfe['key'] : '' ); ?>" placeholder="<?php esc_attr_e( '44 characters from the DANFE', 'woo-shipping-gateway' ); ?>" aria-label="<?php esc_attr_e( 'NF-e access key', 'woo-shipping-gateway' ); ?>">
 							<button type="button" class="button button-small" data-frenet-nfe-save><?php esc_html_e( 'Save', 'woo-shipping-gateway' ); ?></button>
 							<span class="frenet-field-msg" role="status" aria-live="polite"></span>
 						</details>
