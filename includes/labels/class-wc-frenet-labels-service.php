@@ -774,11 +774,19 @@ class WC_Frenet_Labels_Service {
 				? WC_Frenet_Labels_Api::whitelabel( 'POST', '/shipments/' . rawurlencode( $id ) . '/cancel' )
 				: WC_Frenet_Labels_Api::whitelabel( 'DELETE', '/shipments/' . rawurlencode( $id ) );
 			$after = self::real_status( $id );
-			if ( null !== $after && ! in_array( $after, self::GONE_STATUSES, true ) ) {
+			if ( null === $after ) {
+				/* translators: %s: shipment id */
+				return new WP_Error( 'frenet_labels_cancel_unknown', sprintf( __( 'Frenet did not confirm whether shipment %s was cancelled. Nothing changed in the store: try again in a moment.', 'woo-shipping-gateway' ), $id ) );
+			}
+			if ( self::STATUS_PENDING_PAYMENT === $after && ( ! $order || 'panel' !== (string) $order->get_meta( '_frenet_label_journey' ) ) ) {
+				/* translators: %s: shipment id */
+				return new WP_Error( 'frenet_labels_cancel_held', sprintf( __( 'Frenet holds the wallet balance for shipment %s, whose payment did not go through, and it cannot be cancelled or deleted now. Pay it in Labels after adding balance, or contact Frenet support to release it.', 'woo-shipping-gateway' ), $id ) );
+			}
+			if ( ! in_array( $after, self::GONE_STATUSES, true ) ) {
 				/* translators: 1: shipment id, 2: status name */
 				return new WP_Error( 'frenet_labels_cancel', sprintf( __( 'Frenet did not cancel shipment %1$s (%2$s). Cancel it in the Frenet panel.', 'woo-shipping-gateway' ), $id, self::status_label( $after ) ) );
 			}
-			$status = null !== $after ? $after : ( $paid ? self::STATUS_CANCEL_SCHEDULED : self::STATUS_DELETED );
+			$status = $after;
 		}
 		self::forget_wallet();
 		if ( $order ) {
