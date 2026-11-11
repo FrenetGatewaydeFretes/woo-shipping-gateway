@@ -28,6 +28,13 @@ class WC_Frenet_Tracking {
 	const CHECKED     = 'wc_frenet_tracking_checked_';
 
 	/**
+	 * Whether the status change being made must not e-mail the customer.
+	 *
+	 * @var bool
+	 */
+	private static $quiet = false;
+
+	/**
 	 * Hooks.
 	 *
 	 * @return void
@@ -43,7 +50,7 @@ class WC_Frenet_Tracking {
 			add_action(
 				'woocommerce_order_status_' . $status,
 				function ( $order_id ) use ( $status ) {
-					if ( WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
+					if ( ! self::$quiet && WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
 						WC()->mailer();
 						do_action( 'woocommerce_frenet_status_email_' . $status, $order_id );
 					}
@@ -173,7 +180,8 @@ class WC_Frenet_Tracking {
 
 	/**
 	 * Saves a tracking code typed by hand or imported. On a new code: clears old events, adds a note,
-	 * e-mails the customer ($notify) and moves Processing orders to In transit (automatic status on).
+	 * e-mails the customer ($notify) and moves Processing orders to In transit (automatic status on),
+	 * without the status e-mail when $notify is false.
 	 *
 	 * @param WC_Order $order  Order.
 	 * @param string   $code   Tracking code ('' removes it).
@@ -211,7 +219,12 @@ class WC_Frenet_Tracking {
 			do_action( 'woocommerce_frenet_tracking_email', $order->get_id() );
 		}
 		if ( WC_Frenet_Labels_Settings::on( 'tracking_status' ) && $order->has_status( 'processing' ) ) {
-			self::change_status( $order, 'frenet-transit', __( 'Tracking code added.', 'woo-shipping-gateway' ) );
+			self::$quiet = ! $notify;
+			try {
+				self::change_status( $order, 'frenet-transit', __( 'Tracking code added.', 'woo-shipping-gateway' ) );
+			} finally {
+				self::$quiet = false;
+			}
 		}
 		return $code;
 	}
