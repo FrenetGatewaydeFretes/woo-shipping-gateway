@@ -22,6 +22,7 @@ class WC_Frenet_Tracking {
 	const GROUP       = 'woo-shipping-gateway';
 	const SCHEDULE    = 'woocommerce_frenet_tracking_schedule';
 	const BATCH       = 50;
+	const ADMIN_BATCH = 10;
 	const OPEN        = array( 'processing', 'on-hold', 'frenet-transit', 'frenet-pickup' );
 	const CURSOR      = 'woocommerce_frenet_tracking_cursor';
 	const CHECKED     = 'wc_frenet_tracking_checked_';
@@ -495,6 +496,17 @@ class WC_Frenet_Tracking {
 			'remaining' => $remaining,
 			'done'      => count( $page['orders'] ) < (int) $limit || 0 === $remaining,
 		);
+	}
+
+	/**
+	 * "Update all now", one short request at a time: up to ADMIN_BATCH orders from $offset. The answer says where the
+	 * next request starts and whether anything is left.
+	 *
+	 * @param int $offset Orders to skip (the "offset" of the previous answer; 0 to start).
+	 * @return array{synced: int, changed: int, pending: int, errors: int, offset: int, total: int, remaining: int, done: bool}
+	 */
+	public static function sync_now( $offset = 0 ) {
+		return self::sync_batch( $offset, self::ADMIN_BATCH );
 	}
 
 	/**

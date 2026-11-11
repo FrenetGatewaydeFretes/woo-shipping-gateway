@@ -148,13 +148,14 @@ class WC_Frenet_Tracking_Admin {
 	}
 
 	/**
-	 * Runs the hourly sync now.
+	 * Updates the next few open orders now ("offset" from the previous answer; "done" false means call again).
 	 *
 	 * @return void
 	 */
 	public static function ajax_sync_all() {
 		self::guard();
-		wp_send_json_success( WC_Frenet_Tracking::cron_sync() );
+		$offset = absint( $_POST['offset'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		wp_send_json_success( WC_Frenet_Tracking::sync_now( $offset ) );
 	}
 
 	/**
