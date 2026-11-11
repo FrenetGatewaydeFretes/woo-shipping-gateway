@@ -879,10 +879,11 @@ class WC_Frenet_Labels_Service {
 			return;
 		}
 		if ( $attempt >= self::RECOVER_MAX ) {
+			$gone = __( 'Frenet did not create the shipment that went unanswered. Nothing was charged; the label can be created again.', 'woo-shipping-gateway' );
 			$order->delete_meta_data( self::RECOVER );
 			$order->delete_meta_data( self::RECOVER_SERVICE );
-			$order->add_order_note( __( 'Frenet did not create the shipment that went unanswered. Nothing was charged; the label can be created again.', 'woo-shipping-gateway' ) );
-			$order->save();
+			$order->add_order_note( $gone );
+			self::set_issue( $order, $gone );
 			return;
 		}
 		self::schedule_recover( $order_id, $attempt + 1 );
