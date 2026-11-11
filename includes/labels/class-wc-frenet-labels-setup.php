@@ -275,7 +275,7 @@ class WC_Frenet_Labels_Setup {
 	 * @return void
 	 */
 	public static function handle() {
-		if ( ! current_user_can( WC_Frenet_Labels_Admin::CAP ) || ! check_admin_referer( WC_Frenet_Labels_Admin::NONCE ) ) {
+		if ( ! current_user_can( WC_Frenet_Labels_Admin::CAP ) || ! check_admin_referer( self::ACTION ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'woo-shipping-gateway' ), 403 );
 		}
 		$step  = isset( $_POST['step'] ) ? sanitize_key( wp_unslash( $_POST['step'] ) ) : '';

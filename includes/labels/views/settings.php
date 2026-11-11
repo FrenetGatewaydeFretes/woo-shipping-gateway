@@ -47,7 +47,7 @@ if ( $frenet_left ) :
 <?php endif; ?>
 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-form">
 	<input type="hidden" name="action" value="frenet_labels_save">
-	<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
+	<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE_SETTINGS ); ?>
 	<?php // Two columns on wide screens: the whole form fits with less scrolling, and Save stays in the bar below. ?>
 	<div class="frenet-grid">
 	<section class="frenet-card">

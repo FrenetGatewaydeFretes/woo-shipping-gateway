@@ -38,7 +38,7 @@ $frenet_min   = WC_Frenet_Labels_Service::money( WC_Frenet_Labels_Service::DEPOS
 			<div class="frenet-refill__panel">
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate data-frenet-refill-form data-min="<?php echo esc_attr( (string) WC_Frenet_Labels_Service::DEPOSIT_MIN ); ?>" data-max="<?php echo esc_attr( (string) ( $frenet_wallet['room'] ?? 0 ) ); ?>">
 					<input type="hidden" name="action" value="frenet_labels_deposit">
-					<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
+					<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE_DEPOSIT ); ?>
 					<label class="frenet-field" for="frenet-deposit-value"><?php esc_html_e( 'Amount', 'woo-shipping-gateway' ); ?></label>
 					<span class="frenet-refill__money">
 						<span aria-hidden="true">R$</span>

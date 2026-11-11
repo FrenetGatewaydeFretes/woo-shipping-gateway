@@ -83,7 +83,7 @@ $frenet_invalid = static function ( array $errors, $key ) {
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-setup__form" novalidate>
 			<input type="hidden" name="action" value="<?php echo esc_attr( WC_Frenet_Labels_Setup::ACTION ); ?>">
 			<input type="hidden" name="step" value="account">
-			<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
+			<?php wp_nonce_field( WC_Frenet_Labels_Setup::ACTION ); ?>
 
 			<label class="frenet-field" for="frenet-setup-token"><?php esc_html_e( 'Store token', 'woo-shipping-gateway' ); ?></label>
 			<input id="frenet-setup-token" class="regular-text" type="password" name="frenet_labels[token]" value="" autocomplete="new-password" spellcheck="false"
@@ -143,7 +143,7 @@ $frenet_invalid = static function ( array $errors, $key ) {
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-setup__form" novalidate data-frenet-setup-sender>
 			<input type="hidden" name="action" value="<?php echo esc_attr( WC_Frenet_Labels_Setup::ACTION ); ?>">
 			<input type="hidden" name="step" value="sender">
-			<?php wp_nonce_field( WC_Frenet_Labels_Admin::NONCE ); ?>
+			<?php wp_nonce_field( WC_Frenet_Labels_Setup::ACTION ); ?>
 			<div class="frenet-sender">
 				<?php foreach ( $frenet_fields as $frenet_key => $frenet_field ) : ?>
 					<p class="<?php echo esc_attr( $frenet_field[3] ); ?>">

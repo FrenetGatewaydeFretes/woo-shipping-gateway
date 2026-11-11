@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Admin of the Frenet labels: top-level "Frenet" menu (Configuração, Criar envio, Etiquetas, Impressão,
  * Rastreios, Ponto de postagem), AJAX actions, the order list bulk action and the order box.
- * Every action needs manage_woocommerce and the "frenet_labels" nonce.
+ * Every action needs manage_woocommerce and a nonce: the settings and deposit forms have their own, the rest share "frenet_labels".
  */
 class WC_Frenet_Labels_Admin {
 
@@ -14,6 +14,9 @@ class WC_Frenet_Labels_Admin {
 	const PANEL = 'https://painel.frenet.com.br';
 
 	const DEPOSIT_ERROR = 'frenet_labels_deposit_error_';
+
+	const NONCE_SETTINGS = 'frenet_labels_save';
+	const NONCE_DEPOSIT  = 'frenet_labels_deposit';
 
 	/**
 	 * Hooks.
@@ -301,7 +304,7 @@ class WC_Frenet_Labels_Admin {
 	 * @return void
 	 */
 	public static function save_settings() {
-		if ( ! current_user_can( self::CAP ) || ! check_admin_referer( self::NONCE ) ) {
+		if ( ! current_user_can( self::CAP ) || ! check_admin_referer( self::NONCE_SETTINGS ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'woo-shipping-gateway' ), 403 );
 		}
 		$input = isset( $_POST['frenet_labels'] ) && is_array( $_POST['frenet_labels'] ) ? wp_unslash( $_POST['frenet_labels'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized key by key in save().
@@ -317,7 +320,7 @@ class WC_Frenet_Labels_Admin {
 	 * @return void
 	 */
 	public static function deposit() {
-		if ( ! current_user_can( self::CAP ) || ! check_admin_referer( self::NONCE ) ) {
+		if ( ! current_user_can( self::CAP ) || ! check_admin_referer( self::NONCE_DEPOSIT ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'woo-shipping-gateway' ), 403 );
 		}
 		$value = self::amount( sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) );
