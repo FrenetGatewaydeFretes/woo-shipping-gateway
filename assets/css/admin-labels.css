@@ -35,7 +35,7 @@
 	--fl-navy-2: #2a0f8f;
 	--fl-ink: #344054;
 	--fl-muted: #565a72;
-	--fl-faint: #7a7a7a;
+	--fl-field: #8c8f94;
 	--fl-line: #eaecf0;
 	--fl-row: #f2f4f7;
 	--fl-page: #fafaff;
@@ -84,10 +84,10 @@
 .frenet-brand { display: inline-flex; align-items: center; gap: 8px; padding-right: 16px; border-right: 1px solid rgba(249, 245, 255, .28); }
 /* Wallet inside the brand strip: balance, labels left, add balance (Frenet panel) and refresh. */
 .frenet-header__wallet { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-left: auto; }
-.frenet-header__label { color: #d9ccff; font-size: 13px; }
+.frenet-header__label { color: #f9f5ff; font-size: 13px; }
 .frenet-header__value { color: #fff; font-family: var(--fl-display); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; line-height: 1; }
-.frenet-header__value.is-muted { color: #d9ccff; font-size: 15px; }
-.frenet-header__meta { color: #d9ccff; font-size: 13px; }
+.frenet-header__value.is-muted { color: #f9f5ff; font-size: 15px; }
+.frenet-header__meta { color: #f9f5ff; font-size: 13px; }
 .frenet-header__cta { display: inline-flex; align-items: center; min-height: 34px; padding: 0 14px; border-radius: 8px; border: 0; background: #fff; color: var(--fl-navy); font: inherit; font-weight: 500; text-decoration: none; cursor: pointer; }
 .frenet-header__cta:hover,
 .frenet-header__cta:focus { background: var(--fl-violet-soft); color: var(--fl-navy); }
@@ -102,7 +102,7 @@
 .frenet-refill__panel { position: absolute; z-index: 30; top: calc(100% + 10px); right: 0; width: 320px; max-width: calc(100vw - 32px); padding: 18px; border: 1px solid var(--fl-line); border-radius: 12px; background: #fff; box-shadow: 0 12px 32px rgba(12, 0, 90, .18); color: var(--fl-ink); }
 .frenet-refill__panel form { margin: 0; }
 .frenet-refill__panel .frenet-field { margin-top: 0; }
-.frenet-refill__money { display: flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid #c9cdd6; border-radius: 8px; background: #fff; }
+.frenet-refill__money { display: flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--fl-field); border-radius: 8px; background: #fff; }
 .frenet-refill__money:focus-within { border-color: var(--fl-violet); box-shadow: 0 0 0 1px var(--fl-violet); }
 .frenet-refill__money > span { color: var(--fl-muted); font-weight: 500; }
 .frenet-labels .frenet-refill__money input { flex: 1; min-width: 0; min-height: 44px; margin: 0; padding: 0; border: 0; box-shadow: none; background: transparent; color: var(--fl-navy); font-family: var(--fl-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; outline: none; }
@@ -124,7 +124,8 @@
 .frenet-refill__actions .button-link { color: var(--fl-muted); }
 .frenet-header__link { margin: 0; padding: 0; border: 0; background: none; color: #f9f5ff; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .frenet-header__link:hover,
-.frenet-header__link:focus-visible { color: #fff; outline: none; text-decoration-thickness: 2px; }
+.frenet-header__link:focus-visible { color: #fff; text-decoration-thickness: 2px; }
+.frenet-header__link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .frenet-brand img { width: 28px; height: 28px; border-radius: 7px; }
 .frenet-brand__word { font-family: var(--fl-display); font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
 .frenet-labels .frenet-header .frenet-title { margin: 0; padding: 0; color: #fff; font-family: var(--fl-display); font-size: 22px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
@@ -201,7 +202,7 @@
 .frenet-labels input[type="password"],
 .frenet-labels input[type="url"],
 .frenet-labels select,
-.frenet-box input[type="text"] { min-height: 38px; border: 1px solid #d0d5dd; border-radius: var(--fl-radius); color: var(--fl-ink); }
+.frenet-box input[type="text"] { min-height: 38px; border: 1px solid var(--fl-field); border-radius: var(--fl-radius); color: var(--fl-ink); }
 .frenet-labels .regular-text { width: 100%; max-width: 440px; }
 .frenet-labels input:focus,
 .frenet-labels select:focus,
@@ -316,8 +317,8 @@
 .frenet-service-cell { min-width: 260px; }
 /* Service picker: the carrier logo lives inside the control and inside every option. */
 .frenet-choice-box { position: relative; max-width: 380px; }
-.frenet-choice-box__btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; margin: 0; padding: 6px 34px 6px 10px; border: 1px solid #c3c4c7; border-radius: 8px; background: #fff; color: var(--fl-ink); font: inherit; text-align: left; cursor: pointer; }
-.frenet-choice-box__btn:hover { border-color: var(--fl-lavender); }
+.frenet-choice-box__btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; margin: 0; padding: 6px 34px 6px 10px; border: 1px solid var(--fl-field); border-radius: 8px; background: #fff; color: var(--fl-ink); font: inherit; text-align: left; cursor: pointer; }
+.frenet-choice-box__btn:hover { border-color: var(--fl-violet); }
 .frenet-choice-box__btn:focus-visible,
 .frenet-choice-box.is-open .frenet-choice-box__btn { border-color: var(--fl-violet); box-shadow: 0 0 0 1px var(--fl-violet); outline: none; }
 .frenet-choice-box__logo { display: flex; flex: none; justify-content: center; width: 64px; }
@@ -367,7 +368,7 @@
 .frenet-toolbar .frenet-filters { margin: 0; }
 .frenet-filters__label { align-self: center; color: var(--fl-muted); font-size: 13px; }
 .frenet-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 14px; border: 1px solid var(--fl-line); border-radius: 999px; background: #fff; color: var(--fl-ink); font-weight: 500; text-decoration: none; transition: border-color .15s ease, color .15s ease; }
-.frenet-chip span { color: var(--fl-faint); font-variant-numeric: tabular-nums; }
+.frenet-chip span { color: var(--fl-muted); font-variant-numeric: tabular-nums; }
 .frenet-chip:hover { border-color: var(--fl-violet); color: var(--fl-violet-dark); }
 .frenet-chip.is-active { border-color: var(--fl-violet); background: var(--fl-violet); color: var(--fl-violet-ink); }
 .frenet-chip.is-active span { color: var(--fl-violet-ink); }
@@ -404,7 +405,7 @@
 .frenet-dropoff__editor[hidden] { display: none; }
 .frenet-dropoff__search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
 .frenet-dropoff__search input { width: 160px; }
-.frenet-dropoff input[type="search"] { width: 100%; max-width: 520px; min-height: 38px; border: 1px solid #d0d5dd; border-radius: var(--fl-radius); }
+.frenet-dropoff input[type="search"] { width: 100%; max-width: 520px; min-height: 38px; border: 1px solid var(--fl-field); border-radius: var(--fl-radius); }
 .frenet-dropoff select[size] { display: block; width: 100%; height: auto; min-height: 220px; padding: 4px; border-radius: var(--fl-radius); background-image: none; }
 .frenet-dropoff select[size] option { padding: 8px 10px; border-radius: 6px; white-space: normal; }
 .frenet-dropoff select[size] option:checked { background: var(--fl-violet-tint); color: var(--fl-navy); font-weight: 600; }
