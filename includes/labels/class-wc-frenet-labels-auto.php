@@ -16,10 +16,13 @@ defined( 'ABSPATH' ) || exit;
 class WC_Frenet_Labels_Auto {
 
 	const HOOK          = 'frenet_labels_auto_create';
+	const GROUP         = 'woo-shipping-gateway';
 	const META_QUEUED   = '_frenet_auto_queued';
 	const META_DONE     = '_frenet_auto_done';
+	const SINCE         = 'woocommerce_frenet_labels_auto_since';
 	const RULE_CUSTOMER = 'customer';
 	const DELAY         = MINUTE_IN_SECONDS;
+	const PAID_FROM     = array( 'pending', 'on-hold', 'failed' );
 	/** Product meta "Automatic shipment with": '', best_price, best_time or carrier:<CODE>. */
 	const PRODUCT_META   = '_frenet_auto_carrier';
 	const CARRIER_PREFIX = 'carrier:';
@@ -36,15 +39,19 @@ class WC_Frenet_Labels_Auto {
 	const WHY_UNAVAILABLE     = 'unavailable';
 
 	/**
-	 * Hooks: paid orders are queued; the queue runs later.
+	 * Hooks: orders are queued when they are paid (never on a later status change); the queue runs later.
 	 *
 	 * @return void
 	 */
 	public static function init() {
 		add_action( 'woocommerce_payment_complete', array( __CLASS__, 'schedule' ) );
-		add_action( 'woocommerce_order_status_processing', array( __CLASS__, 'schedule' ) );
-		add_action( 'woocommerce_order_status_completed', array( __CLASS__, 'schedule' ) );
+		foreach ( self::PAID_FROM as $from ) {
+			add_action( 'woocommerce_order_status_' . $from . '_to_processing', array( __CLASS__, 'schedule' ) );
+		}
 		add_action( self::HOOK, array( __CLASS__, 'run' ) );
+		add_action( 'add_option_' . WC_Frenet_Labels_Settings::OPTION, array( __CLASS__, 'settings_added' ), 10, 2 );
+		add_action( 'update_option_' . WC_Frenet_Labels_Settings::OPTION, array( __CLASS__, 'settings_updated' ), 10, 2 );
+		self::since();
 	}
 
 	/**
@@ -53,9 +60,62 @@ class WC_Frenet_Labels_Auto {
 	 * @return bool
 	 */
 	public static function enabled() {
-		return WC_Frenet_Labels_Settings::ready()
-			&& WC_Frenet_Labels_Settings::on( 'auto_create' )
-			&& WC_Frenet_Labels_Settings::on( 'auto_create_consent' );
+		return WC_Frenet_Labels_Settings::ready() && self::switched_on( WC_Frenet_Labels_Settings::all() );
+	}
+
+	/**
+	 * Whether the switch and the authorisation are both on in a settings array.
+	 *
+	 * @param mixed $settings Settings option value.
+	 * @return bool
+	 */
+	public static function switched_on( $settings ) {
+		return is_array( $settings )
+			&& 'yes' === ( $settings['auto_create'] ?? '' )
+			&& 'yes' === ( $settings['auto_create_consent'] ?? '' );
+	}
+
+	/**
+	 * When the merchant turned the automation on (0 while off). Stores now the first time it is seen on, which also
+	 * covers stores where it was on before this date was kept.
+	 *
+	 * @return int Timestamp.
+	 */
+	public static function since() {
+		$since = (int) get_option( self::SINCE, 0 );
+		if ( ! $since && self::switched_on( WC_Frenet_Labels_Settings::all() ) ) {
+			$since = time();
+			update_option( self::SINCE, $since );
+		}
+		return $since;
+	}
+
+	/**
+	 * First save of the settings.
+	 *
+	 * @param string $option Option name.
+	 * @param mixed  $value  New value.
+	 * @return void
+	 */
+	public static function settings_added( $option, $value ) {
+		self::settings_updated( array(), $value );
+	}
+
+	/**
+	 * Keeps the date the automation was turned on: set when it goes on, cleared when it goes off.
+	 *
+	 * @param mixed $old_value Previous value.
+	 * @param mixed $value     New value.
+	 * @return void
+	 */
+	public static function settings_updated( $old_value, $value ) {
+		$was = self::switched_on( $old_value );
+		$is  = self::switched_on( $value );
+		if ( $is && ! $was ) {
+			update_option( self::SINCE, time() );
+		} elseif ( ! $is && $was ) {
+			delete_option( self::SINCE );
+		}
 	}
 
 	/**
@@ -359,7 +419,8 @@ class WC_Frenet_Labels_Auto {
 	}
 
 	/**
-	 * Whether an order is one the automation handles: paid, ships to Brazil, no live Frenet shipment yet.
+	 * Whether an order is one the automation handles: paid after the automation was turned on, ships to Brazil and
+	 * was never shipped.
 	 *
 	 * @param WC_Order $order Order.
 	 * @return bool
@@ -375,7 +436,35 @@ class WC_Frenet_Labels_Auto {
 		if ( 'BR' !== $country ) {
 			return false;
 		}
-		return ! WC_Frenet_Labels_Service::has_shipment( $order );
+		return ! self::paid_before( $order, self::since() ) && ! self::handled( $order );
+	}
+
+	/**
+	 * Whether the order already went its way: a tracking code, a finished automatic attempt or any Frenet shipment,
+	 * even one cancelled since.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return bool
+	 */
+	public static function handled( WC_Order $order ) {
+		foreach ( array( '_frenet_tracking_code', self::META_DONE, '_frenet_shipment_id' ) as $key ) {
+			if ( '' !== (string) $order->get_meta( $key ) ) {
+				return true;
+			}
+		}
+		return WC_Frenet_Labels_Service::has_shipment( $order );
+	}
+
+	/**
+	 * Whether the order was paid (created, when it has no payment date) before a moment.
+	 *
+	 * @param WC_Order $order Order.
+	 * @param int      $since Timestamp; 0 means always.
+	 * @return bool
+	 */
+	public static function paid_before( WC_Order $order, $since ) {
+		$date = $order->get_date_paid() ? $order->get_date_paid() : $order->get_date_created();
+		return $since > 0 && $date && $date->getTimestamp() < (int) $since;
 	}
 
 	/**
@@ -394,10 +483,14 @@ class WC_Frenet_Labels_Auto {
 		}
 		$order->update_meta_data( self::META_QUEUED, current_time( 'mysql' ) );
 		$order->save();
+		$id = (int) $order->get_id();
 		if ( function_exists( 'as_schedule_single_action' ) ) {
-			as_schedule_single_action( time() + self::DELAY, self::HOOK, array( 'order_id' => (int) $order->get_id() ), 'woo-shipping-gateway' );
-		} else {
-			wp_schedule_single_event( time() + self::DELAY, self::HOOK, array( (int) $order->get_id() ) );
+			$args = array( 'order_id' => $id );
+			if ( ! as_has_scheduled_action( self::HOOK, $args, self::GROUP ) ) {
+				as_schedule_single_action( time() + self::DELAY, self::HOOK, $args, self::GROUP );
+			}
+		} elseif ( ! wp_next_scheduled( self::HOOK, array( $id ) ) ) {
+			wp_schedule_single_event( time() + self::DELAY, self::HOOK, array( $id ) );
 		}
 	}
 
@@ -412,8 +505,11 @@ class WC_Frenet_Labels_Auto {
 		if ( ! $order ) {
 			return;
 		}
+		if ( self::handled( $order ) ) {
+			return;
+		}
 		if ( ! self::enabled() || ! self::applies( $order ) ) {
-			// Turned off, cancelled or shipped by hand meanwhile: nothing to do, and it can be queued again later.
+			// Turned off or cancelled meanwhile: nothing to do, and it can be queued again later.
 			$order->delete_meta_data( self::META_QUEUED );
 			$order->save();
 			return;
