@@ -38,7 +38,7 @@ class WC_Frenet_Email_Status extends WC_Email {
 		$this->template_base   = WOO_FRENET_PATH . 'templates/';
 		$this->placeholders    = array( '{order_number}' => '' );
 		$this->enabled_default = $enabled_default;
-		add_action( 'woocommerce_frenet_status_email_' . $status, array( $this, 'trigger' ) );
+		add_action( 'wc_frenet_status_email_' . $status, array( $this, 'trigger' ) );
 		parent::__construct();
 	}
 

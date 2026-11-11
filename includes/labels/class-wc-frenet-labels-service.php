@@ -752,7 +752,7 @@ class WC_Frenet_Labels_Service {
 		// label just bought is not posted yet ("Etiqueta emitida"), and it may still be cancelled.
 		if ( $new_code && WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
 			WC()->mailer();
-			do_action( 'woocommerce_frenet_tracking_email', $order->get_id() );
+			do_action( 'wc_frenet_tracking_email', $order->get_id() );
 		}
 		return $ready;
 	}

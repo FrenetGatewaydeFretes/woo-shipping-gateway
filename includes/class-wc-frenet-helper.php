@@ -77,7 +77,7 @@ class WC_Frenet_Helper
      * Whether Correios Automático (Infixs) already shows its shipping calculator on the product page.
      * That calculator quotes every method of the shipping zone, Frenet included, so the Frenet simulator
      * would only print a second box with the same rates (reported by Frenet QA, 2026-11-04).
-     * Filter "woocommerce_frenet_simulator_yields" to show both anyway.
+     * Filter "wc_frenet_simulator_yields" to show both anyway.
      *
      * @return bool
      */
@@ -89,7 +89,7 @@ class WC_Frenet_Helper
             $value = is_array( $settings ) && isset( $settings['general']['calculate_shipping_product_page'] ) ? $settings['general']['calculate_shipping_product_page'] : 'yes';
             $on    = function_exists( 'wc_string_to_bool' ) ? wc_string_to_bool( $value ) : in_array( $value, array( true, 'yes', '1', 1 ), true );
         }
-        return (bool) apply_filters( 'woocommerce_frenet_simulator_yields', $on );
+        return (bool) apply_filters( 'wc_frenet_simulator_yields', $on );
     }
 
 }

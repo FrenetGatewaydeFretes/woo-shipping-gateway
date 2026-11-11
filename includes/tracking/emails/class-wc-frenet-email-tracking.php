@@ -22,7 +22,7 @@ class WC_Frenet_Email_Tracking extends WC_Email {
 			'{order_number}'  => '',
 			'{tracking_code}' => '',
 		);
-		add_action( 'woocommerce_frenet_tracking_email', array( $this, 'trigger' ) );
+		add_action( 'wc_frenet_tracking_email', array( $this, 'trigger' ) );
 		parent::__construct();
 	}
 

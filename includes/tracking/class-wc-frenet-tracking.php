@@ -52,7 +52,7 @@ class WC_Frenet_Tracking {
 				function ( $order_id ) use ( $status ) {
 					if ( ! self::$quiet ) {
 						WC()->mailer();
-						do_action( 'woocommerce_frenet_status_email_' . $status, $order_id );
+						do_action( 'wc_frenet_status_email_' . $status, $order_id );
 					}
 				}
 			);
@@ -217,7 +217,7 @@ class WC_Frenet_Tracking {
 		$order->save();
 		if ( $notify && WC_Frenet_Labels_Settings::on( 'tracking_email' ) ) {
 			WC()->mailer();
-			do_action( 'woocommerce_frenet_tracking_email', $order->get_id() );
+			do_action( 'wc_frenet_tracking_email', $order->get_id() );
 		}
 		if ( WC_Frenet_Labels_Settings::on( 'tracking_status' ) && $order->has_status( 'processing' ) ) {
 			self::$quiet = ! $notify;
