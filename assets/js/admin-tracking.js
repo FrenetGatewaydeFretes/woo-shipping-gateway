@@ -35,17 +35,26 @@
 		}
 	}
 
-	function esc( s ) {
-		var d = document.createElement( 'div' );
-		d.textContent = s == null ? '' : String( s );
-		return d.innerHTML;
+	function node( tag, cls, text ) {
+		var n = document.createElement( tag );
+		if ( cls ) {
+			n.className = cls;
+		}
+		if ( text !== undefined && text !== null ) {
+			n.textContent = String( text );
+		}
+		return n;
 	}
 
-	function eventHtml( s ) {
+	function paintEvent( el, s ) {
+		el.textContent = '';
 		if ( s.description ) {
-			return '<strong>' + esc( s.description ) + '</strong><br><span class="frenet-muted">' + esc( s.when ) + '</span>';
+			el.appendChild( node( 'strong', '', s.description ) );
+			el.appendChild( node( 'br' ) );
+			el.appendChild( node( 'span', 'frenet-muted', s.when ) );
+		} else {
+			el.appendChild( node( 'span', 'frenet-muted', t.noMovement ) );
 		}
-		return '<span class="frenet-muted">' + esc( frenetTracking.i18n.noMovement ) + '</span>';
 	}
 
 	// Update one order (row of the tracking page or the order box).
@@ -64,7 +73,7 @@
 			var holder = row || box;
 			var ev = holder.querySelector( '[data-frenet-track-event]' );
 			if ( ev ) {
-				ev.innerHTML = eventHtml( s );
+				paintEvent( ev, s );
 			}
 			var st = holder.querySelector( '[data-frenet-track-status]' );
 			if ( st ) {
@@ -143,6 +152,30 @@
 	var reviewBtn = imp.querySelector( '[data-frenet-import-preview]' );
 	var labels = { add: [ t.resultAdd, 'ok' ], replace: [ t.resultRep, 'wait' ], same: [ t.resultSame, 'off' ], not_found: [ t.resultNone, 'bad' ], duplicate: [ t.resultDup, 'off' ] };
 
+	function previewRow( r ) {
+		var l = labels[ r.result ] || [ r.result, 'off' ];
+		var tr = node( 'tr' );
+		var order = node( 'td' );
+		var link;
+		tr.appendChild( node( 'td', '', r.line ) );
+		if ( r.url && /^https?:\/\//i.test( r.url ) ) {
+			link = node( 'a', '', '#' + r.order );
+			link.href = r.url;
+			order.appendChild( link );
+		} else {
+			order.textContent = '#' + r.order;
+		}
+		if ( r.status ) {
+			order.appendChild( node( 'br' ) );
+			order.appendChild( node( 'span', 'frenet-muted', r.status ) );
+		}
+		tr.appendChild( order );
+		tr.appendChild( node( 'td', 'frenet-code', r.code ) );
+		tr.appendChild( node( 'td', 'frenet-code', r.current || '—' ) );
+		tr.appendChild( node( 'td' ) ).appendChild( node( 'span', 'frenet-pill is-' + l[ 1 ], l[ 0 ] ) );
+		return tr;
+	}
+
 	function editMode() {
 		box.hidden = true;
 		lines.readOnly = false;
@@ -158,13 +191,10 @@
 		reviewBtn.disabled = true;
 		say( status, '', 'loading' );
 		post( 'preview', { lines: lines.value } ).then( function ( p ) {
-			rows.innerHTML = p.rows.map( function ( r ) {
-				var l = labels[ r.result ] || [ r.result, 'off' ];
-				var order = r.url ? '<a href="' + esc( r.url ) + '">#' + esc( r.order ) + '</a>' : '#' + esc( r.order );
-				return '<tr><td>' + esc( r.line ) + '</td><td>' + order + ( r.status ? '<br><span class="frenet-muted">' + esc( r.status ) + '</span>' : '' ) +
-					'</td><td class="frenet-code">' + esc( r.code ) + '</td><td class="frenet-code">' + esc( r.current || '—' ) +
-					'</td><td><span class="frenet-pill is-' + l[ 1 ] + '">' + esc( l[ 0 ] ) + '</span></td></tr>';
-			} ).join( '' );
+			rows.textContent = '';
+			p.rows.forEach( function ( r ) {
+				rows.appendChild( previewRow( r ) );
+			} );
 			var parts = [];
 			if ( p.invalid.length ) {
 				parts.push( t.invalid.replace( '%s', p.invalid.join( ', ' ) ) );
