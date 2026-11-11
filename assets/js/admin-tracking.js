@@ -15,7 +15,11 @@
 		body.append( 'nonce', frenetLabels.nonce );
 		Object.keys( data || {} ).forEach( function ( k ) { body.append( k, data[ k ] ); } );
 		return fetch( frenetLabels.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
-			.then( function ( r ) { return r.json(); } )
+			.then( function ( r ) {
+				return r.json().catch( function () { return null; } );
+			}, function () {
+				return null;
+			} )
 			.then( function ( j ) {
 				if ( ! j || ! j.success ) {
 					throw new Error( ( j && j.data && j.data.message ) || frenetLabels.i18n.error );
