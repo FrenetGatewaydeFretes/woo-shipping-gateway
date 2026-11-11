@@ -835,7 +835,7 @@ class WC_Frenet_Labels_Service {
 			'/wallet/deposit',
 			array(
 				'Value'           => $value,
-				'NotificationUrl' => $notify,
+				'NotificationUrl' => add_query_arg( 'k', WC_Frenet_Labels_Settings::deposit_key(), $notify ),
 				'CallbackUrls'    => array(
 					'SuccessUrl' => $to( 'success' ),
 					'FailureUrl' => $to( 'failure' ),

@@ -237,6 +237,15 @@ class WC_Frenet_Labels_Settings {
 	}
 
 	/**
+	 * Key of the deposit NotificationUrl: the route answers only to the address the store gave Frenet.
+	 *
+	 * @return string
+	 */
+	public static function deposit_key() {
+		return substr( wp_hash( 'frenet_deposit' ), 0, 16 );
+	}
+
+	/**
 	 * Origin CEP of the Frenet shipping method, else the store postcode.
 	 *
 	 * @return string
