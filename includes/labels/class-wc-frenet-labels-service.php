@@ -806,6 +806,16 @@ class WC_Frenet_Labels_Service {
 			return;
 		}
 		if ( $attempt >= self::POLL_MAX ) {
+			$status = self::real_status( (string) $order->get_meta( '_frenet_shipment_id' ) );
+			if ( null !== $status ) {
+				$order->update_meta_data( '_frenet_shipment_status', (string) $status );
+			}
+			if ( in_array( null !== $status ? $status : (int) $order->get_meta( '_frenet_shipment_status' ), self::UNPAID_STATUSES, true ) ) {
+				$unpaid = __( 'The Frenet label was not paid: Frenet did not charge it. Check the wallet balance and pay it in Labels.', 'woo-shipping-gateway' );
+				$order->add_order_note( $unpaid );
+				self::set_issue( $order, $unpaid );
+				return;
+			}
 			$order->add_order_note( __( 'Frenet has not released the label after 10 minutes. Check the shipment in the Frenet panel.', 'woo-shipping-gateway' ) );
 			$order->save();
 			return;
