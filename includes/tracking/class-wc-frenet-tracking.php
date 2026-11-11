@@ -242,45 +242,64 @@ class WC_Frenet_Tracking {
 				'type'        => (string) ( $e['EventType'] ?? $e['eventType'] ?? '' ),
 			);
 		}
-		usort(
+		$keys = array();
+		foreach ( $events as $i => $event ) {
+			$keys[ $i ] = array( self::event_time( $event['date'] ), $i );
+		}
+		uksort(
 			$events,
-			function ( $a, $b ) {
-				return self::event_time( $a['date'] ) <=> self::event_time( $b['date'] );
+			function ( $a, $b ) use ( $keys ) {
+				return $keys[ $a ] <=> $keys[ $b ];
 			}
 		);
-		return $events;
+		return array_values( $events );
 	}
 
 	/**
-	 * Frenet dates come as "dd/mm/YYYY HH:ii".
+	 * Frenet dates come as "dd/mm/YYYY HH:ii", sometimes with seconds or without the time, or in ISO 8601.
 	 *
 	 * @param string $date Date.
 	 * @return int Timestamp (0 if unknown).
 	 */
 	public static function event_time( $date ) {
-		$d = DateTime::createFromFormat( 'd/m/Y H:i', trim( (string) $date ) );
-		return $d ? $d->getTimestamp() : 0;
+		$date = trim( (string) $date );
+		foreach ( array( '!d/m/Y H:i:s', '!d/m/Y H:i', '!d/m/Y' ) as $format ) {
+			$d      = DateTime::createFromFormat( $format, $date );
+			$errors = DateTime::getLastErrors();
+			if ( $d && ( ! $errors || ! ( $errors['warning_count'] + $errors['error_count'] ) ) ) {
+				return $d->getTimestamp();
+			}
+		}
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?(Z|[+-]\d{2}:?\d{2})?$/', $date ) ) {
+			try {
+				return ( new DateTime( $date ) )->getTimestamp();
+			} catch ( Exception $e ) {
+				return 0;
+			}
+		}
+		return 0;
 	}
 
 	/**
 	 * Latest event → order status (without "wc-"). Pure: unit tested.
 	 *
 	 * Uses the Frenet EventType when present (9 delivered, 3 returned, 18 at the drop-off point,
-	 * 0/1/2/5 moving) and Correios/carrier phrases otherwise. Anything unknown means in transit;
-	 * '' (no change) while the label is not posted yet.
+	 * 0/1/2/5 moving) and Correios/carrier phrases otherwise. A package going back or delivered to
+	 * the sender is returning, and "não (foi) entregue" is not a delivery. Anything unknown means in
+	 * transit; '' (no change) while the label is not posted yet.
 	 *
 	 * @param array<string, string> $event Event.
 	 * @return string
 	 */
 	public static function status_for_event( array $event ) {
 		$type = trim( (string) ( $event['type'] ?? '' ) );
+		$text = function_exists( 'mb_strtolower' ) ? mb_strtolower( (string) ( $event['description'] ?? '' ) ) : strtolower( (string) ( $event['description'] ?? '' ) );
+		if ( '3' === $type || self::mentions( $text, array( 'ao remetente', 'devolvido', 'devolução', 'devolucao' ) ) ) {
+			return 'frenet-returning';
+		}
 		if ( '9' === $type ) {
 			return 'frenet-delivered';
 		}
-		if ( '3' === $type ) {
-			return 'frenet-returning';
-		}
-		$text = function_exists( 'mb_strtolower' ) ? mb_strtolower( (string) ( $event['description'] ?? '' ) ) : strtolower( (string) ( $event['description'] ?? '' ) );
 		// Correios events before posting ("Etiqueta emitida - Aguardando postagem", "Etiqueta expirada") and of a cancelled
 		// label ("Etiqueta cancelada pelo emissor", EventType 1 like a moving package, validated live 2026-10-28): no change.
 		foreach ( array( 'etiqueta emitida', 'etiqueta expirada', 'etiqueta cancelada', 'aguardando postagem', 'prazo para postagem' ) as $needle ) {
@@ -288,20 +307,29 @@ class WC_Frenet_Tracking {
 				return '';
 			}
 		}
-		foreach ( array( 'devolvido', 'devolução', 'devolucao', 'em devolução' ) as $needle ) {
-			if ( false !== strpos( $text, $needle ) ) {
-				return 'frenet-returning';
-			}
-		}
-		if ( false !== strpos( $text, 'entregue' ) && false === strpos( $text, 'não entregue' ) && false === strpos( $text, 'nao entregue' ) && false === strpos( $text, 'ponto de postagem' ) ) {
+		if ( false !== strpos( $text, 'entregue' ) && ! preg_match( '/n[ãa]o\s+(foi\s+)?entregue/iu', $text ) && false === strpos( $text, 'ponto de postagem' ) ) {
 			return 'frenet-delivered';
 		}
-		foreach ( array( 'aguardando retirada', 'disponível para retirada', 'disponivel para retirada' ) as $needle ) {
-			if ( false !== strpos( $text, $needle ) ) {
-				return 'frenet-pickup';
-			}
+		if ( self::mentions( $text, array( 'aguardando retirada', 'disponível para retirada', 'disponivel para retirada' ) ) ) {
+			return 'frenet-pickup';
 		}
 		return 'frenet-transit';
+	}
+
+	/**
+	 * Whether a text contains one of the phrases.
+	 *
+	 * @param string   $text    Lower-case text.
+	 * @param string[] $needles Phrases.
+	 * @return bool
+	 */
+	private static function mentions( $text, array $needles ) {
+		foreach ( $needles as $needle ) {
+			if ( false !== strpos( $text, $needle ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
