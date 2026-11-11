@@ -54,7 +54,7 @@ $frenet_cols   = array(
 		<?php esc_html_e( 'What you set here is used when you turn them on in Settings.', 'woo-shipping-gateway' ); ?>
 	<?php endif; ?>
 	<?php echo esc_html( $frenet_quotes ? __( 'Customers see the Frenet carriers at checkout.', 'woo-shipping-gateway' ) : __( 'Customers do not see Frenet at checkout: they pay your other shipping method and the carrier is decided here.', 'woo-shipping-gateway' ) ); ?>
-	<a href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG ) ); ?>#frenet-auto-settings"><?php esc_html_e( 'Settings', 'woo-shipping-gateway' ); ?></a>
+	<a href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG ) ); ?>#frenet-auto-settings"><?php echo esc_html_x( 'Settings', 'Frenet admin menu', 'woo-shipping-gateway' ); ?></a>
 </div>
 <div class="frenet-toolbar">
 	<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" class="frenet-filters" role="search">
