@@ -1042,6 +1042,21 @@ class WC_Frenet_Labels_Service {
 	}
 
 	/**
+	 * Whether a label URL Frenet returned can be opened: only Frenet's own hosts over https. Pure.
+	 *
+	 * @param string $url Link.
+	 * @return bool
+	 */
+	public static function allowed_label_url( $url ) {
+		$url = (string) $url;
+		if ( '' === $url ) {
+			return false;
+		}
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		return 0 === strpos( $url, 'https://' ) && (bool) preg_match( '/(^|\.)frenet\.com\.br$/', $host );
+	}
+
+	/**
 	 * Mercado Pago Checkout Pro URL of a preference. Pure.
 	 *
 	 * @param string $preference PreferenceId.

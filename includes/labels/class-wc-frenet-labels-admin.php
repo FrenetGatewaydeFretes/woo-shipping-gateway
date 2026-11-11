@@ -638,8 +638,8 @@ class WC_Frenet_Labels_Admin {
 		$res = WC_Frenet_Labels_Service::batch_pdf( array_map( 'strval', $ids ) );
 		if ( is_wp_error( $res ) && 1 === count( $ids ) ) {
 			$label = WC_Frenet_Labels_Service::label( (string) $ids[0] );
-			if ( ! is_wp_error( $label ) && '' !== $label['label_url'] ) {
-				wp_redirect( $label['label_url'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- the label lives on the Frenet panel.
+			if ( ! is_wp_error( $label ) && WC_Frenet_Labels_Service::allowed_label_url( $label['label_url'] ) ) {
+				wp_redirect( $label['label_url'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Frenet host over https (checked in the service).
 				exit;
 			}
 		}
