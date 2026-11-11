@@ -186,9 +186,9 @@ if ( $frenet_left ) :
 		<p class="description"><?php esc_html_e( 'Orders with a tracking code (bought here or added by hand) are checked with Frenet until they are delivered.', 'woo-shipping-gateway' ); ?></p>
 		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[tracking_status]" value="1" <?php checked( 'yes', $frenet_s['tracking_status'] ); ?>> <span><?php esc_html_e( 'Change the order status with the tracking', 'woo-shipping-gateway' ); ?></span></label>
 		<p class="description"><?php esc_html_e( 'Adds the statuses In transit, Awaiting pickup, Delivered and Returning, and moves the order according to the latest event. Cancelled, refunded and completed orders are never changed.', 'woo-shipping-gateway' ); ?></p>
-		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[tracking_email]" value="1" <?php checked( 'yes', $frenet_s['tracking_email'] ); ?>> <span><?php esc_html_e( 'E-mail the customer', 'woo-shipping-gateway' ); ?></span></label>
+		<label class="frenet-switch"><input type="checkbox" name="frenet_labels[tracking_email]" value="1" <?php checked( 'yes', $frenet_s['tracking_email'] ); ?>> <span><?php esc_html_e( 'E-mail the tracking code to the customer', 'woo-shipping-gateway' ); ?></span></label>
 		<p class="description">
-			<?php esc_html_e( 'The tracking code and each status change. Edit the texts or turn single e-mails off in', 'woo-shipping-gateway' ); ?>
+			<?php esc_html_e( 'Status e-mails (in transit, awaiting pickup, delivered, returning) are turned on or off one by one, and every text is edited, in', 'woo-shipping-gateway' ); ?>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-settings&tab=email' ) ); ?>"><?php esc_html_e( 'WooCommerce > Settings > Emails', 'woo-shipping-gateway' ); ?></a>.
 		</p>
 	</section>
