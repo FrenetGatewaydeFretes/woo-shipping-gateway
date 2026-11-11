@@ -1,4 +1,6 @@
 <?php
+use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -39,7 +41,7 @@ class WC_Frenet_Autofill {
 		$ver  = WC_Frenet_Main::VERSION . '.' . filemtime( WOO_FRENET_PATH . 'assets/js/frenet-autofill.js' );
 		wp_enqueue_style( 'frenet-autofill', $base . 'assets/css/frenet-autofill.css', array(), $ver );
 		// On block pages the script reads the cart store: declare it so WooCommerce loads it first.
-		$deps = wp_script_is( 'wc-blocks-data-store', 'registered' ) ? array( 'wp-data', 'wc-blocks-data-store' ) : array();
+		$deps = self::block_page() && wp_script_is( 'wc-blocks-data-store', 'registered' ) ? array( 'wp-data', 'wc-blocks-data-store' ) : array();
 		wp_enqueue_script( 'frenet-autofill', $base . 'assets/js/frenet-autofill.js', $deps, $ver, true );
 		wp_localize_script(
 			'frenet-autofill',
@@ -52,6 +54,27 @@ class WC_Frenet_Autofill {
 				'notFound' => __( 'We could not find this CEP. Check the number or fill in the address by hand.', 'woo-shipping-gateway' ),
 			)
 		);
+	}
+
+	/**
+	 * Whether the page renders the cart or checkout block (in its content or in the block theme template).
+	 *
+	 * @return bool
+	 */
+	private static function block_page() {
+		if ( has_block( 'woocommerce/checkout' ) || has_block( 'woocommerce/cart' ) ) {
+			return true;
+		}
+		if ( ! class_exists( CartCheckoutUtils::class ) ) {
+			return false;
+		}
+		if ( is_checkout() && method_exists( CartCheckoutUtils::class, 'is_checkout_block_default' ) ) {
+			return CartCheckoutUtils::is_checkout_block_default();
+		}
+		if ( is_cart() && method_exists( CartCheckoutUtils::class, 'is_cart_block_default' ) ) {
+			return CartCheckoutUtils::is_cart_block_default();
+		}
+		return false;
 	}
 
 	/**
