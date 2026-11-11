@@ -26,9 +26,7 @@ class WC_Frenet_Order_Statuses {
 		add_action( 'init', array( __CLASS__, 'register' ) );
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_to_list' ) );
 		add_filter( 'woocommerce_order_is_paid_statuses', array( __CLASS__, 'paid' ) );
-		add_filter( 'woocommerce_reports_order_statuses', array( __CLASS__, 'paid' ) );
-		add_filter( 'woocommerce_analytics_actionable_order_statuses', array( __CLASS__, 'paid' ) );
-		add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', array( __CLASS__, 'not_paid_yet' ) );
+		add_filter( 'woocommerce_reports_order_statuses', array( __CLASS__, 'reports' ) );
 	}
 
 	/**
@@ -125,18 +123,16 @@ class WC_Frenet_Order_Statuses {
 	}
 
 	/**
-	 * A payment never moves an order out of a shipping status.
+	 * Statuses of a legacy report query: ours join only the sales queries (processing or completed), never the
+	 * refunds query nor a query without a status filter.
 	 *
-	 * @param array<int, string> $statuses Statuses.
-	 * @return array<int, string>
+	 * @param mixed $statuses Statuses, or false for every status.
+	 * @return mixed
 	 */
-	public static function not_paid_yet( $statuses ) {
-		$ours = array_map(
-			function ( $s ) {
-				return substr( $s, 3 );
-			},
-			self::slugs()
-		);
-		return array_values( array_diff( $statuses, $ours ) );
+	public static function reports( $statuses ) {
+		if ( ! is_array( $statuses ) || in_array( 'refunded', $statuses, true ) || ! array_intersect( array( 'processing', 'completed' ), $statuses ) ) {
+			return $statuses;
+		}
+		return self::paid( $statuses );
 	}
 }
