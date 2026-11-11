@@ -130,7 +130,7 @@
 	}
 
 	function refreshWallet() {
-		post( 'wallet' ).then( function ( res ) {
+		return post( 'wallet' ).then( function ( res ) {
 			if ( ! res.success ) {
 				return;
 			}
@@ -1143,6 +1143,7 @@
 			var failed = 0;
 			var next = function () {
 				if ( i >= sel.length ) {
+					renderSummary();
 					status.textContent = failed ? fmt( t.doneFailed, sel.length - failed, failed ) : fmt( 1 === sel.length ? t.doneAllOne : t.doneAll, sel.length );
 					if ( failed ) {
 						var first = create.querySelector( 'tr.is-failed' );
@@ -1151,7 +1152,7 @@
 						}
 					}
 					btnCalc.disabled = false;
-					refreshWallet();
+					refreshWallet().then( updateBar );
 					return;
 				}
 				var x = sel[ i++ ];
@@ -1302,6 +1303,8 @@
 					window.setTimeout( function () {
 						window.location.reload();
 					}, 1200 );
+				} else {
+					update();
 				}
 			} );
 		} );
