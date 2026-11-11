@@ -29,38 +29,51 @@ class WC_Frenet_Tracking_Admin {
 		if ( ! wp_script_is( 'frenet-labels', 'enqueued' ) ) {
 			return;
 		}
-		$base = plugins_url( '/', WOO_FRENET_PATH . 'woo-shipping-gateway.php' );
+		$base   = plugins_url( '/', WOO_FRENET_PATH . 'woo-shipping-gateway.php' );
+		$plural = static function ( array $noop ) {
+			return array(
+				'one'   => translate_nooped_plural( $noop, 1, 'woo-shipping-gateway' ),
+				'other' => translate_nooped_plural( $noop, 2, 'woo-shipping-gateway' ),
+			);
+		};
 		wp_enqueue_script( 'frenet-tracking', $base . 'assets/js/admin-tracking.js', array( 'frenet-labels' ), WC_Frenet_Main::VERSION . '.' . filemtime( WOO_FRENET_PATH . 'assets/js/admin-tracking.js' ), true );
 		wp_localize_script(
 			'frenet-tracking',
 			'frenetTracking',
 			array(
 				'i18n' => array(
-					'updating'   => __( 'Checking with Frenet…', 'woo-shipping-gateway' ),
-					'saving'     => __( 'Saving…', 'woo-shipping-gateway' ),
-					'updated'    => __( 'Updated', 'woo-shipping-gateway' ),
-					'noMovement' => __( 'No movement yet', 'woo-shipping-gateway' ),
+					'updating'    => __( 'Checking with Frenet…', 'woo-shipping-gateway' ),
+					'saving'      => __( 'Saving…', 'woo-shipping-gateway' ),
+					'updated'     => __( 'Updated', 'woo-shipping-gateway' ),
+					'noMovement'  => __( 'No movement yet', 'woo-shipping-gateway' ),
 					'checkedNone' => __( 'Checked: no movement yet. Events appear once the carrier scans the package.', 'woo-shipping-gateway' ),
 					/* translators: %s: message from Frenet */
 					'checkedNote' => __( 'Checked. Frenet answered: %s', 'woo-shipping-gateway' ),
-					'saved'      => __( 'Code saved', 'woo-shipping-gateway' ),
-					'removed'    => __( 'Code removed', 'woo-shipping-gateway' ),
-					'paste'      => __( 'Paste at least one line "order;code".', 'woo-shipping-gateway' ),
+					'saved'       => __( 'Code saved', 'woo-shipping-gateway' ),
+					'removed'     => __( 'Code removed', 'woo-shipping-gateway' ),
+					'paste'       => __( 'Paste at least one line "order;code".', 'woo-shipping-gateway' ),
 					/* translators: %d: number of orders */
-					'applyN'     => __( 'Apply to %d orders', 'woo-shipping-gateway' ),
-					'applyOne'   => __( 'Apply to 1 order', 'woo-shipping-gateway' ),
-					'nothing'    => __( 'Nothing to apply: check the lines marked below.', 'woo-shipping-gateway' ),
-					/* translators: 1: applied, 2: skipped */
-					'imported'   => __( '%1$d codes applied, %2$d lines skipped.', 'woo-shipping-gateway' ),
+					'apply'       => $plural( _n_noop( 'Apply to %d order', 'Apply to %d orders', 'woo-shipping-gateway' ) ),
+					'nothing'     => __( 'Nothing to apply: check the lines marked below.', 'woo-shipping-gateway' ),
+					/* translators: %d: codes applied */
+					'applied'     => $plural( _n_noop( '%d code applied.', '%d codes applied.', 'woo-shipping-gateway' ) ),
+					/* translators: %d: lines skipped */
+					'skipped'     => $plural( _n_noop( '%d line skipped.', '%d lines skipped.', 'woo-shipping-gateway' ) ),
 					/* translators: %s: line numbers */
-					'invalid'    => __( 'Lines not understood (expected "order;code"): %s', 'woo-shipping-gateway' ),
-					'resultAdd'  => __( 'New code', 'woo-shipping-gateway' ),
-					'resultRep'  => __( 'Replaces the current code', 'woo-shipping-gateway' ),
-					'resultSame' => __( 'Already has this code', 'woo-shipping-gateway' ),
-					'resultNone' => __( 'Order not found', 'woo-shipping-gateway' ),
-					'resultDup'  => __( 'Repeated order: only the first line counts', 'woo-shipping-gateway' ),
-					/* translators: 1: synced orders, 2: status changes, 3: orders without events yet, 4: errors */
-					'syncedAll'  => __( '%1$d orders checked, %2$d status changes, %3$d without movement yet, %4$d errors.', 'woo-shipping-gateway' ),
+					'invalid'     => __( 'Lines not understood (expected "order;code"): %s', 'woo-shipping-gateway' ),
+					'resultAdd'   => __( 'New code', 'woo-shipping-gateway' ),
+					'resultRep'   => __( 'Replaces the current code', 'woo-shipping-gateway' ),
+					'resultSame'  => __( 'Already has this code', 'woo-shipping-gateway' ),
+					'resultNone'  => __( 'Order not found', 'woo-shipping-gateway' ),
+					'resultDup'   => __( 'Repeated order: only the first line counts', 'woo-shipping-gateway' ),
+					/* translators: %d: orders checked */
+					'synced'      => $plural( _n_noop( '%d order checked.', '%d orders checked.', 'woo-shipping-gateway' ) ),
+					/* translators: %d: status changes */
+					'changed'     => $plural( _n_noop( '%d status change.', '%d status changes.', 'woo-shipping-gateway' ) ),
+					/* translators: %d: orders without tracking events yet */
+					'pending'     => $plural( _n_noop( '%d order without movement yet.', '%d orders without movement yet.', 'woo-shipping-gateway' ) ),
+					/* translators: %d: errors */
+					'errors'      => $plural( _n_noop( '%d error.', '%d errors.', 'woo-shipping-gateway' ) ),
 				),
 			)
 		);

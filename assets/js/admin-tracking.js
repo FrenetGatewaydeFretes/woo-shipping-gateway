@@ -44,6 +44,14 @@
 		} );
 	}
 
+	function plural( forms, n ) {
+		return 1 === Number( n ) ? forms.one : forms.other;
+	}
+
+	function count( forms, n ) {
+		return fmt( plural( forms, n ), n );
+	}
+
 	function node( tag, cls, text ) {
 		var n = document.createElement( tag );
 		if ( cls ) {
@@ -117,7 +125,7 @@
 		btn.disabled = true;
 		say( msg, t.updating, 'loading' );
 		post( 'sync_all', {} ).then( function ( r ) {
-			say( msg, fmt( t.syncedAll, r.synced, r.changed, r.pending || 0, r.errors ), r.errors ? 'warn' : 'ok' );
+			say( msg, [ count( t.synced, r.synced ), count( t.changed, r.changed ), count( t.pending, r.pending || 0 ), count( t.errors, r.errors ) ].join( ' ' ), r.errors ? 'warn' : 'ok' );
 			window.setTimeout( function () { window.location.reload(); }, 1500 );
 		} ).catch( function ( err ) {
 			say( msg, err.message, 'error' );
@@ -212,7 +220,7 @@
 				parts.unshift( t.nothing );
 			}
 			say( status, parts.join( ' ' ), p.invalid.length || ! p.apply ? 'warn' : '' );
-			apply.textContent = p.apply === 1 ? t.applyOne : fmt( t.applyN, p.apply );
+			apply.textContent = count( t.apply, p.apply );
 			apply.disabled = ! p.apply;
 			box.hidden = false;
 			lines.readOnly = true;
@@ -235,7 +243,7 @@
 		apply.disabled = true;
 		say( status, t.saving, 'loading' );
 		post( 'import', { lines: lines.value, notify: notifyBox.checked ? '1' : '' } ).then( function ( r ) {
-			say( status, fmt( t.imported, r.applied, r.skipped ), 'ok' );
+			say( status, count( t.applied, r.applied ) + ' ' + count( t.skipped, r.skipped ), 'ok' );
 			lines.value = '';
 			editMode();
 		} ).catch( function ( err ) {
