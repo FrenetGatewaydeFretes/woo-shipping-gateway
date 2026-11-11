@@ -25,6 +25,8 @@ class WC_Frenet_Labels_Service {
 	const RECOVER_SERVICE = '_frenet_create_unanswered_service';
 	const RECOVER_HOOK    = 'woocommerce_frenet_labels_recover';
 	const RECOVER_MAX     = 5;
+	const RECOVER_AT      = '_frenet_create_unanswered_at';
+	const RECOVER_WINDOW  = 30 * MINUTE_IN_SECONDS;
 	const FIND_PAGES      = 3;
 
 	/** Action Scheduler group of the poll and recover jobs (same as the automatic shipments). */
@@ -256,6 +258,13 @@ class WC_Frenet_Labels_Service {
 		if ( self::has_shipment( $order ) ) {
 			return new WP_Error( 'frenet_labels_exists', __( 'This order already has a Frenet shipment. Cancel it first.', 'woo-shipping-gateway' ) );
 		}
+		if ( '' !== (string) $order->get_meta( self::RECOVER ) && time() - (int) $order->get_meta( self::RECOVER_AT ) > self::RECOVER_WINDOW ) {
+			self::recover( $order->get_id(), self::RECOVER_MAX );
+			$order = wc_get_order( $order->get_id() );
+			if ( self::has_shipment( $order ) ) {
+				return new WP_Error( 'frenet_labels_exists', __( 'This order already has a Frenet shipment. Cancel it first.', 'woo-shipping-gateway' ) );
+			}
+		}
 		if ( '' !== (string) $order->get_meta( self::RECOVER ) ) {
 			return new WP_Error( 'frenet_labels_exists', __( 'Frenet did not answer the last attempt of this order and the store is still checking whether it created the shipment. Wait a few minutes before creating it again.', 'woo-shipping-gateway' ) );
 		}
@@ -299,6 +308,7 @@ class WC_Frenet_Labels_Service {
 			if ( '' === $id ) {
 				$order->update_meta_data( self::RECOVER, $frenet_id );
 				$order->update_meta_data( self::RECOVER_SERVICE, wp_json_encode( array( $service, $journey ) ) );
+				$order->update_meta_data( self::RECOVER_AT, (string) time() );
 				$order->save();
 				self::schedule_recover( $order->get_id(), 1 );
 				return new WP_Error( 'frenet_labels_no_answer', __( 'Frenet did not answer in time and nothing has been charged yet. If Frenet created the shipment anyway, the store finds it within a few minutes and goes on as usual: do not create it again.', 'woo-shipping-gateway' ) );
@@ -340,6 +350,7 @@ class WC_Frenet_Labels_Service {
 	private static function remember_created( WC_Order $order, $id, array $service, $journey ) {
 		$order->delete_meta_data( self::RECOVER );
 		$order->delete_meta_data( self::RECOVER_SERVICE );
+		$order->delete_meta_data( self::RECOVER_AT );
 		$order->update_meta_data( '_frenet_shipment_id', $id );
 		$order->update_meta_data( '_frenet_shipment_status', (string) self::STATUS_CREATED );
 		$order->update_meta_data( '_frenet_label_journey', $journey );
@@ -962,6 +973,7 @@ class WC_Frenet_Labels_Service {
 			$gone = __( 'Frenet did not create the shipment that went unanswered. Nothing was charged; the label can be created again.', 'woo-shipping-gateway' );
 			$order->delete_meta_data( self::RECOVER );
 			$order->delete_meta_data( self::RECOVER_SERVICE );
+			$order->delete_meta_data( self::RECOVER_AT );
 			$order->add_order_note( $gone );
 			self::set_issue( $order, $gone );
 			return;
