@@ -98,7 +98,7 @@ if ( ! class_exists( 'WC_Frenet_Main' ) ) :
             }
 
             if ( ! class_exists( 'SimpleXmlElement' ) ) {
-                add_action( 'admin_notices', 'wcfrenet_extensions_missing_notice' );
+                add_action( 'admin_notices', array( $this, 'wcfrenet_extensions_missing_notice' ) );
             }
         }
 
