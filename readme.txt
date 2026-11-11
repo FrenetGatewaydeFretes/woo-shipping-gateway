@@ -1,7 +1,7 @@
 ## Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio
 Contributors: frenet, apiki, aguiart0, pedroasa
 Donate link: http://www.frenet.com.br/  
-Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
+Tags: frete, correios, shipping, etiquetas, rastreio  
 Requires at least: 6.2  
 Tested up to: 7.1
 Requires PHP: 7.4  
@@ -642,8 +642,7 @@ Notes:
 
 = 2.1.23 =
 
-* IMPORTANTE: a autenticação por usuário/senha (webservice SOAP) foi removida, pois não é mais aceita pela Frenet. Se sua loja ainda não tem um Token configurado, configure um em WooCommerce > Configurações > Entrega > Frenet antes de atualizar, ou o cálculo de frete vai parar de funcionar.
-* Corrige o problema em que uma falha temporária na cotação da Frenet podia deixar o pedido ser finalizado sem cobrar frete. Agora, quando a cotação falha, o cliente é avisado e a finalização fica bloqueada enquanto a Frenet for a forma de entrega escolhida — com outra transportadora selecionada o pedido segue normalmente.
+* IMPORTANTE: o login por usuário/senha foi removido. Sem um Token em WooCommerce > Configurações > Entrega > Frenet, o cálculo de frete para. Uma falha na cotação da Frenet agora bloqueia a finalização em vez de deixar o pedido sem frete.
 
 = 2.1.15 =
 
