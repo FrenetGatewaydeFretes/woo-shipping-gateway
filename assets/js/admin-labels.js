@@ -636,10 +636,12 @@
 			btn.type = 'button';
 			btn.setAttribute( 'aria-haspopup', 'listbox' );
 			btn.setAttribute( 'aria-expanded', 'false' );
+			btn.setAttribute( 'aria-controls', id );
 			btn.appendChild( el( 'span', 'frenet-choice-box__logo' ) );
 			btn.appendChild( el( 'span', 'frenet-choice-box__text' ) );
 			btn.appendChild( el( 'span', 'frenet-choice-box__caret' ) ).setAttribute( 'aria-hidden', 'true' );
 			list.setAttribute( 'role', 'listbox' );
+			list.setAttribute( 'aria-labelledby', 'frenet-col-carrier' );
 			list.id = id;
 			list.tabIndex = -1;
 			list.hidden = true;

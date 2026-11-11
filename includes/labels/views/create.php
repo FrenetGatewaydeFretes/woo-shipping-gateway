@@ -73,7 +73,7 @@ endif;
 				<th scope="col"><?php esc_html_e( 'Destination', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'Package', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'NF-e', 'woo-shipping-gateway' ); ?></th>
-				<th scope="col"><?php esc_html_e( 'Carrier', 'woo-shipping-gateway' ); ?></th>
+				<th scope="col" id="frenet-col-carrier"><?php esc_html_e( 'Carrier', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'Status', 'woo-shipping-gateway' ); ?></th>
 				<th scope="col"><?php esc_html_e( 'Notes', 'woo-shipping-gateway' ); ?></th>
 			</tr></thead>
