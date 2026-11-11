@@ -139,7 +139,7 @@ $frenet_pages = max( 1, (int) ceil( $frenet_list['total'] / $frenet_per ) );
 				$frenet_when   = (string) ( $frenet_vol['modifiedOn'] ?? '' );
 				$frenet_stamp  = '' !== $frenet_when ? strtotime( $frenet_when ) : false;
 				?>
-				<tr<?php echo $frenet_issue ? ' class="is-failed"' : ''; ?> data-frenet-label="<?php echo esc_attr( $frenet_id ); ?>" data-price="<?php echo esc_attr( (string) $frenet_price ); ?>" data-unpaid="<?php echo $frenet_unpaid ? '1' : '0'; ?>" data-paid="<?php echo $frenet_paid ? '1' : '0'; ?>">
+				<tr<?php echo $frenet_issue ? ' class="is-failed"' : ''; ?> data-frenet-label="<?php echo esc_attr( $frenet_id ); ?>" data-price="<?php echo esc_attr( (string) $frenet_price ); ?>" data-unpaid="<?php echo $frenet_unpaid ? '1' : '0'; ?>" data-paid="<?php echo $frenet_paid ? '1' : '0'; ?>" data-status="<?php echo esc_attr( (string) $frenet_status ); ?>">
 					<th scope="row" class="check-column">
 						<?php if ( $frenet_unpaid || $frenet_paid ) : ?>
 							<input type="checkbox" data-frenet-pick aria-label="<?php /* translators: %s: shipment */ echo esc_attr( sprintf( __( 'Select shipment %s', 'woo-shipping-gateway' ), $frenet_id ) ); ?>">

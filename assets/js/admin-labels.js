@@ -1293,7 +1293,11 @@
 				return r.getAttribute( 'data-frenet-label' );
 			} ) } ).then( function ( res ) {
 				lstatus.textContent = res.success ? ( res.data.message || t.done ) : ( ( res.data && res.data.message ) || t.error );
-				if ( res.success ) {
+				var changed = res.success && ( res.data.total > 0 || res.data.unknown || unpaid.some( function ( r ) {
+					var s = res.data.statuses && res.data.statuses[ r.getAttribute( 'data-frenet-label' ) ];
+					return undefined !== s && String( s ) !== r.getAttribute( 'data-status' );
+				} ) );
+				if ( changed ) {
 					window.setTimeout( function () {
 						window.location.reload();
 					}, 1200 );
