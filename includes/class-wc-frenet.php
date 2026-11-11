@@ -336,6 +336,7 @@ class WC_Frenet extends WC_Shipping_Method {
 				'type'             => 'checkbox',
 				'label'            => __( 'Enable logging', 'woo-shipping-gateway' ),
 				'default'          => 'no',
+				/* translators: %s: path of the Frenet log file */
 				'description'      => sprintf( __( 'Log Frenet events, such as WebServices requests, inside %s. Quote failures are always logged to the WooCommerce log regardless of this setting.', 'woo-shipping-gateway' ), '<code>woocommerce/logs/frenet-' . sanitize_file_name( wp_hash( 'frenet' ) ) . '.txt</code>' )
 			)
 		);
@@ -640,6 +641,7 @@ class WC_Frenet extends WC_Shipping_Method {
         }
 
         if ( $date > 0 ) {
+            /* translators: %d: number of working days until delivery */
             $name .= ' (' . sprintf( _n( 'Delivery in %d working day', 'Delivery in %d working days', $date, 'woo-shipping-gateway' ),  $date ) . ')';
         }
 
