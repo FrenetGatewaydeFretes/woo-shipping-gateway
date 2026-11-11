@@ -7,6 +7,7 @@
  * @var string   $email_heading
  * @var string   $tracking_code
  * @var string   $tracking_url
+ * @var string   $additional_content
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -17,4 +18,7 @@ printf( esc_html__( 'Your order #%s has been shipped.', 'woo-shipping-gateway' )
 echo esc_html__( 'Tracking code:', 'woo-shipping-gateway' ) . ' ' . esc_html( $tracking_code ) . "\n";
 if ( $tracking_url ) {
 	echo esc_url_raw( $tracking_url ) . "\n";
+}
+if ( ! empty( $additional_content ) ) {
+	echo "\n" . esc_html( wp_strip_all_tags( wptexturize( $additional_content ) ) ) . "\n";
 }

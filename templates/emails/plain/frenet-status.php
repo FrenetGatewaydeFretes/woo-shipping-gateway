@@ -9,6 +9,7 @@
  * @var string   $tracking_code
  * @var string   $tracking_url
  * @var array    $events
+ * @var string   $additional_content
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -25,4 +26,7 @@ if ( $tracking_code ) {
 	if ( $tracking_url ) {
 		echo esc_url_raw( $tracking_url ) . "\n";
 	}
+}
+if ( ! empty( $additional_content ) ) {
+	echo "\n" . esc_html( wp_strip_all_tags( wptexturize( $additional_content ) ) ) . "\n";
 }

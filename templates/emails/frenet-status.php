@@ -9,6 +9,7 @@
  * @var string   $tracking_code
  * @var string   $tracking_url
  * @var array    $events
+ * @var string   $additional_content
  * @var WC_Email $email
  */
 
@@ -30,6 +31,9 @@ $frenet_last = $events ? end( $events ) : null;
 		· <a href="<?php echo esc_url( $tracking_url ); ?>"><?php esc_html_e( 'Track my order', 'woo-shipping-gateway' ); ?></a>
 	<?php endif; ?>
 	</p>
+<?php endif; ?>
+<?php if ( ! empty( $additional_content ) ) : ?>
+	<?php echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) ); ?>
 <?php endif; ?>
 <?php
 do_action( 'woocommerce_email_footer', $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core e-mail hook.

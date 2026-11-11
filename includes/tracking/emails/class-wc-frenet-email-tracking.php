@@ -74,13 +74,14 @@ class WC_Frenet_Email_Tracking extends WC_Email {
 	private function args( $plain ) {
 		$t = WC_Frenet_Tracking::get( $this->object );
 		return array(
-			'order'         => $this->object,
-			'email_heading' => $this->get_heading(),
-			'tracking_code' => $t['code'],
-			'tracking_url'  => $t['url'],
-			'sent_to_admin' => false,
-			'plain_text'    => $plain,
-			'email'         => $this,
+			'order'              => $this->object,
+			'email_heading'      => $this->get_heading(),
+			'additional_content' => $this->get_additional_content(),
+			'tracking_code'      => $t['code'],
+			'tracking_url'       => $t['url'],
+			'sent_to_admin'      => false,
+			'plain_text'         => $plain,
+			'email'              => $this,
 		);
 	}
 

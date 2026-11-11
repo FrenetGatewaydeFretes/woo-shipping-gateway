@@ -111,15 +111,16 @@ class WC_Frenet_Email_Status extends WC_Email {
 		$labels = WC_Frenet_Order_Statuses::labels();
 		$t      = WC_Frenet_Tracking::get( $order );
 		return array(
-			'order'         => $order,
-			'email_heading' => $this->get_heading(),
-			'status_label'  => $labels[ 'wc-' . $this->status ] ?? '',
-			'tracking_code' => $t['code'],
-			'tracking_url'  => $t['url'],
-			'events'        => $t['events'],
-			'sent_to_admin' => false,
-			'plain_text'    => $plain,
-			'email'         => $this,
+			'order'              => $order,
+			'email_heading'      => $this->get_heading(),
+			'additional_content' => $this->get_additional_content(),
+			'status_label'       => $labels[ 'wc-' . $this->status ] ?? '',
+			'tracking_code'      => $t['code'],
+			'tracking_url'       => $t['url'],
+			'events'             => $t['events'],
+			'sent_to_admin'      => false,
+			'plain_text'         => $plain,
+			'email'              => $this,
 		);
 	}
 
