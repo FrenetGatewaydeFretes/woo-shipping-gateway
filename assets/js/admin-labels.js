@@ -465,10 +465,6 @@
 		var dialog = document.querySelector( '[data-frenet-dialog]' );
 		var summary = document.querySelector( '[data-frenet-summary]' );
 
-		// Labels are always bought from the store (there is no "send to the Frenet panel" choice any more).
-		var journey = function () {
-			return 'here';
-		};
 		var picked = function () {
 			return rows.filter( function ( r ) {
 				return r.querySelector( '[data-frenet-pick]' ).checked && ! r.hasAttribute( 'data-done' );
@@ -503,7 +499,7 @@
 			barTotalWrap.hidden = false;
 			barTotal.textContent = money( total );
 			var now = balanceNow();
-			var pays = 'here' === journey() && cfg.wallet;
+			var pays = !! cfg.wallet;
 			// No balance for this total: say it instead of a negative number, and hold "Criar envio" until it fits.
 			var short = pays && now !== null && now - total < 0;
 			barAfterWrap.hidden = ! ( pays && now !== null );
@@ -1080,8 +1076,7 @@
 				body.appendChild( tr );
 			} );
 			dialog.querySelector( '[data-frenet-review-total]' ).textContent = money( total );
-			var j = journey();
-			var pays = 'here' === j && cfg.wallet;
+			var pays = !! cfg.wallet;
 			var now = balanceNow();
 			var balanceBox = dialog.querySelector( '[data-frenet-review-balance]' );
 			var warn = dialog.querySelector( '[data-frenet-review-warning]' );
@@ -1102,8 +1097,6 @@
 			}
 			if ( pays ) {
 				confirm.textContent = 1 === sel.length ? fmt( t.buyHereOne, money( total ) ) : fmt( t.buyHere, sel.length, money( total ) );
-			} else if ( 'panel' === j ) {
-				confirm.textContent = 1 === sel.length ? t.sendPanelOne : fmt( t.sendPanel, sel.length );
 			} else {
 				confirm.textContent = fmt( t.createOnly, sel.length );
 			}
@@ -1135,7 +1128,6 @@
 				return;
 			}
 			var sel = selection();
-			var j = journey();
 			btnReview.disabled = true;
 			btnCalc.disabled = true;
 			status.textContent = t.working;
@@ -1158,7 +1150,7 @@
 				var x = sel[ i++ ];
 				var cell = x.row.querySelector( '[data-frenet-result]' );
 				cell.textContent = t.working;
-				post( 'create', { order_id: x.row.getAttribute( 'data-order' ), service: x.service.code, journey: j } ).then( function ( res ) {
+				post( 'create', { order_id: x.row.getAttribute( 'data-order' ), service: x.service.code, journey: 'here' } ).then( function ( res ) {
 					cell.textContent = '';
 					// "Observações": the reason stays on the order (saved by the server) and the row turns red.
 					var issue = res.data && res.data.issue ? res.data.issue : null;
@@ -1351,26 +1343,6 @@
 				if ( line ) {
 					line.textContent = ( res.data && res.data.message ) || t.error;
 				}
-			}
-		} );
-	} );
-
-	/* ---------------------------------------------------------------- Rastreios */
-
-	document.addEventListener( 'click', function ( e ) {
-		var btn = e.target.closest( '[data-frenet-track]' );
-		if ( ! btn ) {
-			return;
-		}
-		var cell = btn.closest( '[data-frenet-track-result]' );
-		btn.disabled = true;
-		post( 'tracking', { service: btn.getAttribute( 'data-service' ), number: btn.getAttribute( 'data-number' ) } ).then( function ( res ) {
-			cell.textContent = '';
-			if ( res.success ) {
-				cell.appendChild( el( 'strong', 'frenet-block', res.data.description ) );
-				cell.appendChild( el( 'span', 'frenet-muted', [ res.data.date, res.data.location ].filter( Boolean ).join( ' · ' ) ) );
-			} else {
-				cell.appendChild( el( 'span', 'frenet-error', ( res.data && res.data.message ) || t.error ) );
 			}
 		} );
 	} );

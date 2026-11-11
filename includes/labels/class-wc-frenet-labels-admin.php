@@ -175,7 +175,6 @@ class WC_Frenet_Labels_Admin {
 			array(
 				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
 				'nonce'    => wp_create_nonce( self::NONCE ),
-				'journey'  => 'here',
 				'wallet'   => WC_Frenet_Labels_Settings::on( 'wallet_payment' ),
 				'carriers' => WC_Frenet_Labels_Carriers::js(),
 				'i18n'     => self::js_strings(),
@@ -226,14 +225,10 @@ class WC_Frenet_Labels_Admin {
 			'days'          => __( '%d business days', 'woo-shipping-gateway' ),
 			/* translators: %d: business days (always 1) */
 			'day'           => __( '%d business day', 'woo-shipping-gateway' ),
-			'noService'     => __( 'No carrier', 'woo-shipping-gateway' ),
 			/* translators: 1: number of labels, 2: total amount */
 			'buyHere'       => __( 'Buy %1$d labels · %2$s', 'woo-shipping-gateway' ),
 			/* translators: %s: amount */
 			'buyHereOne'    => __( 'Buy 1 label · %s', 'woo-shipping-gateway' ),
-			/* translators: %d: number of orders */
-			'sendPanel'     => __( 'Send %d orders to the Frenet panel', 'woo-shipping-gateway' ),
-			'sendPanelOne'  => __( 'Send 1 order to the Frenet panel', 'woo-shipping-gateway' ),
 			/* translators: %d: number of shipments */
 			'createOnly'    => __( 'Create %d shipments (pay later in Labels)', 'woo-shipping-gateway' ),
 			// Review: orders without an NF-e key get a DC-e from Frenet.
@@ -265,7 +260,6 @@ class WC_Frenet_Labels_Admin {
 			'doneAllOne'    => __( 'Done: %d shipment created.', 'woo-shipping-gateway' ),
 			/* translators: 1: orders that went through, 2: orders with an error */
 			'doneFailed'    => __( 'Done: %1$d went through, %2$d with an error. See the Notes column of the red rows.', 'woo-shipping-gateway' ),
-			'balanceAfter'  => __( 'Balance after', 'woo-shipping-gateway' ),
 			'notEnough'     => __( 'Your balance does not cover this total. Add balance at the top of this screen or select fewer orders.', 'woo-shipping-gateway' ),
 			'noBalance'     => __( 'Not enough balance', 'woo-shipping-gateway' ),
 			/* translators: %s: amount */
