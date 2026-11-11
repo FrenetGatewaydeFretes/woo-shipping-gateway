@@ -370,6 +370,9 @@ class WC_Frenet_Labels_Service {
 	 */
 	public static function pay( array $ids ) {
 		$ids = array_values( array_unique( array_filter( array_map( 'strval', $ids ), 'ctype_digit' ) ) );
+		if ( self::missing_balance( $ids ) > 0 ) {
+			return self::keep_unpaid( $ids, __( 'Not enough balance in the Frenet wallet. The shipments stay unpaid: add balance and pay them in Labels.', 'woo-shipping-gateway' ) );
+		}
 		$res = WC_Frenet_Labels_Api::whitelabel( 'POST', '/shipments/checkout', array_map( 'intval', $ids ) );
 		self::forget_wallet();
 		$unknown  = is_wp_error( $res );
@@ -429,6 +432,71 @@ class WC_Frenet_Labels_Service {
 			'total'    => $total,
 			'message'  => $message,
 			'unknown'  => $unknown,
+		);
+	}
+
+	/**
+	 * What the wallet lacks to pay these shipments; 0 when it covers them or the balance is unknown.
+	 *
+	 * Frenet holds the whole balance on a checkout it cannot finish and the shipment can no longer be deleted
+	 * (validated live 2026-11-11), so a payment the wallet cannot cover is never sent.
+	 *
+	 * @param array<int, string> $ids Shipment ids.
+	 * @return float
+	 */
+	public static function missing_balance( array $ids ) {
+		$wallet = self::wallet( true );
+		if ( is_wp_error( $wallet ) ) {
+			return 0.0;
+		}
+		$total = 0.0;
+		foreach ( $ids as $id ) {
+			$total += self::shipment_price( $id );
+		}
+		return max( 0.0, round( $total - (float) $wallet['balance'], 2 ) );
+	}
+
+	/**
+	 * Price of a shipment: the one kept on its order, else the quotation Frenet returns; 0 when unknown.
+	 *
+	 * @param string $id Shipment id.
+	 * @return float
+	 */
+	public static function shipment_price( $id ) {
+		$order = self::order_for( (string) $id );
+		$price = $order ? (float) $order->get_meta( '_frenet_shipment_price' ) : 0.0;
+		if ( $price > 0 ) {
+			return $price;
+		}
+		$res = WC_Frenet_Labels_Api::whitelabel( 'GET', '/shipments/' . rawurlencode( (string) $id ) );
+		if ( is_wp_error( $res ) ) {
+			return 0.0;
+		}
+		$quote = (array) ( WC_Frenet_Labels_Api::field( $res, 'quotation' ) ?? array() );
+		return WC_Frenet_Labels_Compare::to_float( $quote['shippingPrice'] ?? ( $quote['platformShippingPrice'] ?? 0 ) );
+	}
+
+	/**
+	 * Leaves shipments unpaid without calling Frenet, with the reason on their orders.
+	 *
+	 * @param array<int, string> $ids     Shipment ids.
+	 * @param string             $message Reason.
+	 * @return array{statuses: array<string, int>, total: float, message: string, unknown: bool}
+	 */
+	private static function keep_unpaid( array $ids, $message ) {
+		$statuses = array();
+		foreach ( $ids as $id ) {
+			$statuses[ $id ] = self::STATUS_PENDING_PAYMENT;
+			$order           = self::order_for( $id );
+			if ( $order ) {
+				self::set_issue( $order, $message );
+			}
+		}
+		return array(
+			'statuses' => $statuses,
+			'total'    => 0.0,
+			'message'  => $message,
+			'unknown'  => false,
 		);
 	}
 
