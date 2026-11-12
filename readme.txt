@@ -483,6 +483,16 @@ Notes:
 
 == Changelog ==
 
+= 3.0.0 - 12/11/2026 =
+
+* Novo menu Frenet no painel, com Etiquetas: crie envios, compare transportadoras, pague com a carteira Frenet, imprima em A4 ou 10x15, cancele e exclua, com escolha do ponto de postagem e da NF-e.
+* Envios automáticos opcionais: a etiqueta é criada quando o pedido é pago, com autorização do lojista e sem pagar além do saldo da carteira.
+* Carteira Frenet com saldo, extrato e recarga pelo Mercado Pago.
+* Rastreio: consulta automática dos códigos, status do pedido Em transporte, Aguardando retirada, Entregue e Em devolução, e e-mails ao cliente com o código e as mudanças de status.
+* Endereço preenchido pelo CEP no checkout clássico, no checkout em blocos, no carrinho e em Minha conta. É opcional e não atua onde o Infixs Checkout Fields já preenche.
+* Tela de primeiros passos para configurar o remetente e os tokens.
+* Requisitos mínimos passam a ser WordPress 6.2, PHP 7.4 e WooCommerce 8.0.
+
 = 2.1.25 - 15/10/2026 =
 
 * Corrige o cupom enviado à Frenet na cotação quando o cliente aplica mais de um cupom e remove o primeiro: o cupom que ficou no carrinho deixava de ser enviado, as regras de frete por cupom do painel Frenet deixavam de valer e o PHP registrava o aviso "Undefined array key 0".
@@ -649,6 +659,10 @@ Notes:
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 3.0.0 =
+
+* Requer WordPress 6.2, PHP 7.4 e WooCommerce 8.0. A cotação de frete não muda. As novidades ficam no menu Frenet; envios automáticos, rastreio automático e endereço pelo CEP vêm desligados até serem ativados.
 
 = 2.1.25 =
 
