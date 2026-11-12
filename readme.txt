@@ -1,11 +1,12 @@
 ## Frenet Shipping Gateway for WooCommerce - Correios, Etiquetas e Rastreio
 Contributors: frenet, apiki, aguiart0, pedroasa
 Donate link: http://www.frenet.com.br/  
-Tags: shipping, delivery, woocommerce, correios, jamef, jadlog, tnt, braspress  
-Requires at least: 3.5  
+Tags: frete, correios, shipping, etiquetas, rastreio  
+Requires at least: 6.2  
 Tested up to: 7.1
-Version: 2.1.25
-Stable tag: 2.1.25
+Requires PHP: 7.4  
+Version: 3.0.0
+Stable tag: 3.0.0
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -290,6 +291,24 @@ Yes. Enable the "Virtual Products Fee" in the Frenet settings and set the fee am
 
 
 
+== External services ==
+
+This plugin connects to Frenet, the shipping platform it integrates with, and, only when the store adds balance to its Frenet wallet, to Mercado Pago.
+
+**Frenet shipping quote** (api.frenet.com.br): used to show shipping rates in the cart, at checkout and in the product page simulator. Each quote sends the store token, the origin CEP, the customer's destination CEP and country, the weight, size, quantity and value of the items, and the applied coupon code.
+
+**Frenet address by CEP** (api.frenet.com.br): used only when "Fill the address from the CEP" is turned on. When the customer types a CEP at checkout, in the cart or in My Account, that CEP is sent with the store token to return the street, neighborhood, city and state.
+
+**Frenet tracking** (api.frenet.com.br): used when the store adds a tracking code to an order or the automatic tracking is turned on. It sends the tracking code and the carrier service code to read the delivery events.
+
+**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels with its partner token. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. It also reads the wallet balance and statement, the carriers and the drop-off points.
+
+**Mercado Pago** (mercadopago.com.br): used only when the store clicks "Add balance". Frenet creates the payment with the amount and the store's return address, and the store's browser is sent to the Mercado Pago checkout to pay it. The plugin never receives card or bank data.
+
+Frenet: [Terms of use](https://frenet.com.br/termos-de-uso/) · [Privacy policy](https://frenet.com.br/politica-de-privacidade/)
+
+Mercado Pago: [Terms and policies](https://www.mercadopago.com.br/ajuda/termos-e-politicas_194) · [Privacy policy](https://www.mercadopago.com.br/privacidade)
+
 == Installation ==
 
 Instale a Frenet no seu WooCommerce seguindo o passo a passo do [tutorial de integração](https://ajuda.frenet.com.br/s/article/integracao-plataforma-woocommerce?utm_source=woocommerce&utm_medium=artigo&utm_campaign=parceria) disponível na Central de Ajuda. 
@@ -464,6 +483,16 @@ Notes:
 
 == Changelog ==
 
+= 3.0.0 - 12/11/2026 =
+
+* Novo menu Frenet no painel, com Etiquetas: crie envios, compare transportadoras, pague com a carteira Frenet, imprima em A4 ou 10x15, cancele e exclua, com escolha do ponto de postagem e da NF-e.
+* Envios automáticos opcionais: a etiqueta é criada quando o pedido é pago, com autorização do lojista e sem pagar além do saldo da carteira.
+* Carteira Frenet com saldo, extrato e recarga pelo Mercado Pago.
+* Rastreio: consulta automática dos códigos, status do pedido Em transporte, Aguardando retirada, Entregue e Em devolução, e e-mails ao cliente com o código e as mudanças de status.
+* Endereço preenchido pelo CEP no checkout clássico, no checkout em blocos, no carrinho e em Minha conta. É opcional e não atua onde o Infixs Checkout Fields já preenche.
+* Tela de primeiros passos para configurar o remetente e os tokens.
+* Requisitos mínimos passam a ser WordPress 6.2, PHP 7.4 e WooCommerce 8.0.
+
 = 2.1.25 - 15/10/2026 =
 
 * Corrige o cupom enviado à Frenet na cotação quando o cliente aplica mais de um cupom e remove o primeiro: o cupom que ficou no carrinho deixava de ser enviado, as regras de frete por cupom do painel Frenet deixavam de valer e o PHP registrava o aviso "Undefined array key 0".
@@ -631,6 +660,10 @@ Notes:
 
 == Upgrade Notice ==
 
+= 3.0.0 =
+
+* Requer WordPress 6.2, PHP 7.4 e WooCommerce 8.0. A cotação de frete não muda. As novidades ficam no menu Frenet; envios automáticos, rastreio automático e endereço pelo CEP vêm desligados até serem ativados.
+
 = 2.1.25 =
 
 * Corrige o envio do cupom à Frenet quando o cliente remove um de dois cupons aplicados, para que as regras de frete por cupom voltem a valer, e escapa a descrição da tela de configuração do método. Não exige mudanças de configuração.
@@ -641,8 +674,7 @@ Notes:
 
 = 2.1.23 =
 
-* IMPORTANTE: a autenticação por usuário/senha (webservice SOAP) foi removida, pois não é mais aceita pela Frenet. Se sua loja ainda não tem um Token configurado, configure um em WooCommerce > Configurações > Entrega > Frenet antes de atualizar, ou o cálculo de frete vai parar de funcionar.
-* Corrige o problema em que uma falha temporária na cotação da Frenet podia deixar o pedido ser finalizado sem cobrar frete. Agora, quando a cotação falha, o cliente é avisado e a finalização fica bloqueada enquanto a Frenet for a forma de entrega escolhida — com outra transportadora selecionada o pedido segue normalmente.
+* IMPORTANTE: o login por usuário/senha foi removido. Sem um Token em WooCommerce > Configurações > Entrega > Frenet, o cálculo de frete para. Uma falha na cotação da Frenet agora bloqueia a finalização em vez de deixar o pedido sem frete.
 
 = 2.1.15 =
 
