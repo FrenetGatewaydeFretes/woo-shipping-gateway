@@ -62,7 +62,7 @@ $frenet_invalid = static function ( array $errors, $key ) {
 						<span class="frenet-steps__dot" aria-hidden="true"><?php echo $frenet_done ? '&#10003;' : (int) $frenet_n; ?></span>
 						<span class="frenet-steps__text">
 							<strong><?php echo esc_html( $frenet_step[0] ); ?></strong>
-							<span><?php echo esc_html( $frenet_locked ? __( 'Only with the partner token', 'woo-shipping-gateway' ) : ( $frenet_done ? __( 'Done', 'woo-shipping-gateway' ) : $frenet_step[1] ) ); ?></span>
+							<span><?php echo esc_html( $frenet_locked ? __( 'Only with Frenet labels on', 'woo-shipping-gateway' ) : ( $frenet_done ? __( 'Done', 'woo-shipping-gateway' ) : $frenet_step[1] ) ); ?></span>
 						</span>
 					</<?php echo esc_attr( $frenet_tag ); ?>>
 				</li>
@@ -79,7 +79,7 @@ $frenet_invalid = static function ( array $errors, $key ) {
 		?>
 		<p class="frenet-setup__kicker"><?php esc_html_e( 'Step 1 of 2', 'woo-shipping-gateway' ); ?></p>
 		<h2><?php esc_html_e( 'Connect your Frenet account', 'woo-shipping-gateway' ); ?></h2>
-		<p class="frenet-lead"><?php esc_html_e( 'With the store token, the store quotes freight, tracks parcels, fills the address by CEP and shows your wallet balance. To also buy and print labels here, add the partner token. We check both with Frenet before going on.', 'woo-shipping-gateway' ); ?></p>
+		<p class="frenet-lead"><?php esc_html_e( 'With the store token, the store quotes freight, buys and prints labels, tracks parcels, fills the address by CEP and shows your wallet balance. We check it with Frenet before going on.', 'woo-shipping-gateway' ); ?></p>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-setup__form" novalidate>
 			<input type="hidden" name="action" value="<?php echo esc_attr( WC_Frenet_Labels_Setup::ACTION ); ?>">
 			<input type="hidden" name="step" value="account">
@@ -107,11 +107,11 @@ $frenet_invalid = static function ( array $errors, $key ) {
 				<label class="frenet-inline"><input type="checkbox" name="frenet_labels[clear_token]" value="1"> <?php esc_html_e( 'Remove the saved store token', 'woo-shipping-gateway' ); ?></label>
 			<?php endif; ?>
 
-			<label class="frenet-field" for="frenet-setup-partner"><?php esc_html_e( 'Partner token (optional, for labels)', 'woo-shipping-gateway' ); ?></label>
+			<label class="frenet-field" for="frenet-setup-partner"><?php esc_html_e( 'Partner token (optional)', 'woo-shipping-gateway' ); ?></label>
 			<input id="frenet-setup-partner" class="regular-text" type="password" name="frenet_labels[partner_token]" value="" autocomplete="new-password" spellcheck="false"
 				placeholder="<?php echo esc_attr( $frenet_has_partner ? __( 'Saved. Type a new one to replace it.', 'woo-shipping-gateway' ) : '' ); ?>"<?php echo $frenet_invalid( $frenet_errors, 'partner_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the closure. ?>>
 			<?php $frenet_error( $frenet_errors, 'partner_token' ); ?>
-			<p class="description"><?php esc_html_e( 'Exclusive to Frenet customers with the whitelabel service; each store has its own. Without it, leave it empty: everything else works and the labels are bought in the Frenet panel. Keep it secret like a password.', 'woo-shipping-gateway' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Only if Frenet gave your store a partner token of its own (whitelabel service). Empty: the store uses the Frenet one. Keep it secret like a password.', 'woo-shipping-gateway' ); ?></p>
 
 			<div class="frenet-actions">
 				<button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Check and continue', 'woo-shipping-gateway' ); ?></button>
@@ -200,11 +200,10 @@ $frenet_invalid = static function ( array $errors, $key ) {
 				<li><strong><?php esc_html_e( 'Address by CEP', 'woo-shipping-gateway' ); ?></strong> <?php esc_html_e( 'Street, neighborhood, city and state filled at checkout.', 'woo-shipping-gateway' ); ?></li>
 				<li><strong><?php esc_html_e( 'Wallet balance', 'woo-shipping-gateway' ); ?></strong> <?php esc_html_e( 'At the top of the Frenet screens.', 'woo-shipping-gateway' ); ?></li>
 			</ul>
-			<div class="frenet-note"><?php esc_html_e( 'Buying, printing and cancelling labels from the store needs the partner token (Frenet whitelabel service). Until then, buy them in the Frenet panel.', 'woo-shipping-gateway' ); ?></div>
+			<div class="frenet-note"><?php esc_html_e( 'The label screens are off. Turn on "Enable Frenet labels" in Settings to create labels from the store.', 'woo-shipping-gateway' ); ?></div>
 			<p class="description"><?php esc_html_e( 'Tracking e-mails and the address by CEP stay off until you turn them on in Settings.', 'woo-shipping-gateway' ); ?></p>
 			<div class="frenet-actions">
 				<a class="button button-primary button-hero" href="<?php echo esc_url( WC_Frenet_Labels_Admin::url( WC_Frenet_Labels_Admin::SLUG ) ); ?>"><?php esc_html_e( 'Review all settings', 'woo-shipping-gateway' ); ?></a>
-				<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'account' ) ); ?>"><?php esc_html_e( 'Add the partner token', 'woo-shipping-gateway' ); ?></a>
 				<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Admin::PANEL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open the Frenet panel', 'woo-shipping-gateway' ); ?></a>
 			</div>
 		<?php else : ?>
