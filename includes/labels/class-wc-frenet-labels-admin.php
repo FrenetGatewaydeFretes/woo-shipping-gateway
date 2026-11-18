@@ -362,7 +362,7 @@ class WC_Frenet_Labels_Admin {
 	/**
 	 * Common guard of every AJAX action.
 	 *
-	 * @param bool $labels Whether the action needs the partner token (false: the store token is enough).
+	 * @param bool $labels Whether the action needs the label screens on (false: the store token is enough).
 	 * @return void
 	 */
 	private static function guard( $labels = true ) {
@@ -373,10 +373,7 @@ class WC_Frenet_Labels_Admin {
 			return;
 		}
 		if ( ! WC_Frenet_Labels_Settings::ready() ) {
-			$message = 'basic' === WC_Frenet_Labels_Settings::mode() && '' === WC_Frenet_Labels_Settings::get( 'partner_token' )
-				? __( 'This needs the Frenet partner token. Add it in Frenet > First steps, or buy the label in the Frenet panel. Nothing was charged.', 'woo-shipping-gateway' )
-				: __( 'Frenet labels are not configured. Open Frenet > Settings.', 'woo-shipping-gateway' );
-			wp_send_json_error( array( 'message' => $message ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Frenet labels are not configured. Open Frenet > Settings.', 'woo-shipping-gateway' ) ), 400 );
 		}
 	}
 
@@ -742,8 +739,7 @@ class WC_Frenet_Labels_Admin {
 		}
 		echo '<div class="frenet-box">';
 		self::view( 'order-tracking', array( 'order' => $order ) );
-		// Basic mode: say why there is no "create label" here and where to buy it.
-		echo '<p class="frenet-muted frenet-box__basic">' . esc_html__( 'Creating the label here needs the partner token. Buy it in the Frenet panel and paste the tracking code above.', 'woo-shipping-gateway' )
+		echo '<p class="frenet-muted frenet-box__basic">' . esc_html__( 'Frenet labels are turned off. Turn them on in Frenet > Settings, or buy the label in the Frenet panel and paste the tracking code above.', 'woo-shipping-gateway' )
 			. ' <a href="' . esc_url( self::PANEL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open the Frenet panel', 'woo-shipping-gateway' ) . '</a></p>';
 		echo '</div>';
 	}

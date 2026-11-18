@@ -902,7 +902,7 @@ class WC_Frenet extends WC_Shipping_Method {
     protected function requestJson(array $serviceParam, $context = '')
     {
         $this->log('Requesting the Frenet WebServices...');
-        $this->log(wp_json_encode($serviceParam, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $this->log(wp_json_encode(array_diff_key($serviceParam, array('Token' => '')), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         $this->log('URL: ' . $this->urlShipQuote);
 
         $values   = array();

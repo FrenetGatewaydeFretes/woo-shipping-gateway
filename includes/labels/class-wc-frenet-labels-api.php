@@ -38,15 +38,9 @@ class WC_Frenet_Labels_Api {
 	 */
 	public static function whitelabel( $method, $path, $body = null ) {
 		$token   = WC_Frenet_Labels_Settings::store_token();
-		$partner = WC_Frenet_Labels_Settings::get( 'partner_token' );
-		// Reading the wallet and its statement are the WhiteLabel calls that need no partner token: Frenet accepts the store
-		// token in both headers there (validated live 2026-10-27 and 2026-11-04). Creating, listing, paying, cancelling and
-		// deposits refuse it.
-		if ( '' === $partner && 'GET' === $method && ( '/wallet' === $path || 0 === strpos( $path, '/wallet/demonstrative?' ) ) ) {
-			$partner = $token;
-		}
-		if ( '' === $token || '' === $partner ) {
-			return new WP_Error( 'frenet_labels_tokens', __( 'Frenet labels need the store token and the partner token. Check the Frenet settings.', 'woo-shipping-gateway' ) );
+		$partner = WC_Frenet_Labels_Settings::partner_token();
+		if ( '' === $token ) {
+			return new WP_Error( 'frenet_labels_tokens', __( 'Frenet labels need the store token. Check the Frenet settings.', 'woo-shipping-gateway' ) );
 		}
 		$format = '' !== self::$format ? self::$format : WC_Frenet_Labels_Settings::get( 'label_format' );
 		return self::send(
@@ -76,9 +70,9 @@ class WC_Frenet_Labels_Api {
 	 */
 	public static function configuration( $method, $path, $body = null ) {
 		$token   = WC_Frenet_Labels_Settings::store_token();
-		$partner = WC_Frenet_Labels_Settings::get( 'partner_token' );
-		if ( '' === $token || '' === $partner ) {
-			return new WP_Error( 'frenet_labels_tokens', __( 'Frenet labels need the store token and the partner token. Check the Frenet settings.', 'woo-shipping-gateway' ) );
+		$partner = WC_Frenet_Labels_Settings::partner_token();
+		if ( '' === $token ) {
+			return new WP_Error( 'frenet_labels_tokens', __( 'Frenet labels need the store token. Check the Frenet settings.', 'woo-shipping-gateway' ) );
 		}
 		return self::send(
 			self::CONFIGURATION_BASE . $path,

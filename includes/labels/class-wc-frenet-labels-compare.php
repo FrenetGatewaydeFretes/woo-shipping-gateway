@@ -38,7 +38,8 @@ class WC_Frenet_Labels_Compare {
 	}
 
 	/**
-	 * Usable services (no error, price > 0), cheapest first.
+	 * Usable services at Frenet's contract price and time, what the label costs, without the freight rules of the store
+	 * (no error, contract price > 0, so a service with free shipping stays), cheapest first.
 	 *
 	 * @param array<int, mixed> $raw ShippingSevicesArray (raw API data, items may be anything).
 	 * @return array<int, array{code: string, name: string, carrier: string, carrier_code: string, price: float, days: int}>
@@ -49,7 +50,7 @@ class WC_Frenet_Labels_Compare {
 			if ( ! is_array( $s ) || ! empty( $s['Error'] ) || ! isset( $s['ServiceCode'] ) ) {
 				continue;
 			}
-			$price = self::to_float( $s['ShippingPrice'] ?? 0 );
+			$price = self::to_float( $s['OriginalShippingPrice'] ?? ( $s['ShippingPrice'] ?? 0 ) );
 			if ( $price <= 0 ) {
 				continue;
 			}
@@ -58,8 +59,8 @@ class WC_Frenet_Labels_Compare {
 				'name'         => (string) ( $s['ServiceDescription'] ?? $s['ServiceCode'] ),
 				'carrier'      => (string) ( $s['Carrier'] ?? '' ),
 				'carrier_code' => (string) ( $s['CarrierCode'] ?? '' ),
-				'price'        => round( $price, 2 ),
-				'days'         => (int) ( $s['DeliveryTime'] ?? 0 ),
+				'price'        => round( $price, 2, PHP_ROUND_HALF_EVEN ),
+				'days'         => (int) ( $s['OriginalDeliveryTime'] ?? ( $s['DeliveryTime'] ?? 0 ) ),
 			);
 		}
 		usort(
