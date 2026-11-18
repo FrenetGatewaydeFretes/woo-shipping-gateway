@@ -17,6 +17,13 @@ class WC_Frenet_Labels_Settings {
 	const DEFAULT_URL = 'https://whitelabel.frenet.com.br/v1';
 
 	/**
+	 * Partner token of the stores without one of their own.
+	 *
+	 * @var string
+	 */
+	private const PARTNER = 'CE157DE1P95E8P4D9BP93F9PF6A4C191F096';
+
+	/**
 	 * Settings of this request (the option is not autoloaded), until the option changes.
 	 *
 	 * @var array<string, string>|null
@@ -234,6 +241,16 @@ class WC_Frenet_Labels_Settings {
 	}
 
 	/**
+	 * Partner token sent to the WhiteLabel API: the store's own one, otherwise Frenet's.
+	 *
+	 * @return string
+	 */
+	public static function partner_token() {
+		$own = self::get( 'partner_token' );
+		return '' !== $own ? $own : self::PARTNER;
+	}
+
+	/**
 	 * WhiteLabel API address: the FRENET_LABELS_API_URL constant of wp-config.php when defined, otherwise the saved
 	 * one when it is still a Frenet address, otherwise the default.
 	 *
@@ -313,12 +330,12 @@ class WC_Frenet_Labels_Settings {
 	}
 
 	/**
-	 * Labels can be used: switched on, partner token and store token present.
+	 * Labels can be used: switched on and store token present.
 	 *
 	 * @return bool
 	 */
 	public static function ready() {
-		return self::on( 'enabled' ) && '' !== self::get( 'partner_token' ) && '' !== self::store_token();
+		return self::on( 'enabled' ) && '' !== self::store_token();
 	}
 
 	/**

@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  * the wallet of the brand strip, on every screen, and how labels are paid stays in Settings.
  * Each step is saved on its own and marked done only after it is checked (tokens against the live wallet,
  * sender against what Frenet requires), so the merchant never reaches "Criar envio" with a setup that fails.
- * Without a partner token only the first step applies (basic mode): the sender is for labels.
+ * With the label screens off only the first step applies (basic mode): the sender is for labels.
  * Stores that were configured before this screen existed keep working: nothing here blocks the label screens.
  */
 class WC_Frenet_Labels_Setup {
@@ -70,12 +70,12 @@ class WC_Frenet_Labels_Setup {
 	}
 
 	/**
-	 * Steps that apply: all of them with a partner token, only the account without one (basic mode).
+	 * Steps that apply: all of them while labels can be bought, only the account in basic mode.
 	 *
 	 * @return array<int, string>
 	 */
 	public static function steps() {
-		return '' !== WC_Frenet_Labels_Settings::get( 'partner_token' ) ? self::STEPS : array( 'account' );
+		return 'basic' !== WC_Frenet_Labels_Settings::mode() ? self::STEPS : array( 'account' );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class WC_Frenet_Labels_Setup {
 	 */
 	public static function titles() {
 		return array(
-			'account' => array( __( 'Connect your account', 'woo-shipping-gateway' ), __( 'Store token, and partner token for labels', 'woo-shipping-gateway' ) ),
+			'account' => array( __( 'Connect your account', 'woo-shipping-gateway' ), __( 'Store token, and your partner token if you have one', 'woo-shipping-gateway' ) ),
 			'sender'  => array( __( 'Confirm the sender', 'woo-shipping-gateway' ), __( 'Who sends the parcels', 'woo-shipping-gateway' ) ),
 		);
 	}
@@ -302,7 +302,7 @@ class WC_Frenet_Labels_Setup {
 
 	/**
 	 * Step 1: saves the tokens and reads the wallet with them; only a wallet answer marks the account connected.
-	 * The partner token is optional: without it the account works in basic mode (no labels).
+	 * The partner token is optional: without one of its own the store uses Frenet's.
 	 *
 	 * @param array<string, mixed> $input Form values.
 	 * @return string Next step.

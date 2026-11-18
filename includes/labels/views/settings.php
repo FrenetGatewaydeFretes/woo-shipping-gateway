@@ -39,10 +39,9 @@ if ( $frenet_left ) :
 <?php elseif ( 'basic' === WC_Frenet_Labels_Settings::mode() ) : ?>
 	<div class="frenet-setup-banner">
 		<p>
-			<strong><?php esc_html_e( 'Basic mode: no partner token', 'woo-shipping-gateway' ); ?></strong>
-			<?php esc_html_e( 'Quotes, simulator, tracking, address by CEP and the balance work. Buying labels from the store needs the partner token; until then, buy them in the Frenet panel.', 'woo-shipping-gateway' ); ?>
+			<strong><?php esc_html_e( 'Frenet labels are turned off', 'woo-shipping-gateway' ); ?></strong>
+			<?php esc_html_e( 'Quotes, simulator, tracking, address by CEP and the balance work. Turn on "Enable Frenet labels" below to buy labels from the store.', 'woo-shipping-gateway' ); ?>
 		</p>
-		<a class="button" href="<?php echo esc_url( WC_Frenet_Labels_Setup::url( 'account' ) ); ?>"><?php esc_html_e( 'Add the partner token', 'woo-shipping-gateway' ); ?></a>
 	</div>
 <?php endif; ?>
 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="frenet-form">
@@ -74,10 +73,10 @@ if ( $frenet_left ) :
 			<label class="frenet-inline"><input type="checkbox" name="frenet_labels[clear_token]" value="1"> <?php esc_html_e( 'Remove the saved client token', 'woo-shipping-gateway' ); ?></label>
 		<?php endif; ?>
 
-		<label class="frenet-field" for="frenet-partner"><?php esc_html_e( 'Partner token (optional, for labels)', 'woo-shipping-gateway' ); ?></label>
+		<label class="frenet-field" for="frenet-partner"><?php esc_html_e( 'Partner token (optional)', 'woo-shipping-gateway' ); ?></label>
 		<input id="frenet-partner" class="regular-text" type="password" name="frenet_labels[partner_token]" value="" autocomplete="new-password" spellcheck="false"
 			placeholder="<?php echo esc_attr( $frenet_partner ? __( 'Saved. Type a new one to replace it.', 'woo-shipping-gateway' ) : '' ); ?>" aria-describedby="frenet-partner-help">
-		<p id="frenet-partner-help" class="description"><?php esc_html_e( 'Exclusive to Frenet customers with the whitelabel service: each store has its own (x-partner-token). Ask Frenet for it. Required to create, list, pay and cancel labels. Keep it secret like a password.', 'woo-shipping-gateway' ); ?></p>
+		<p id="frenet-partner-help" class="description"><?php esc_html_e( 'Only if Frenet gave your store a partner token of its own (whitelabel service). Empty: the store uses the Frenet one. Keep it secret like a password.', 'woo-shipping-gateway' ); ?></p>
 		<?php if ( $frenet_partner ) : ?>
 			<label class="frenet-inline"><input type="checkbox" name="frenet_labels[clear_partner_token]" value="1"> <?php esc_html_e( 'Remove the saved partner token', 'woo-shipping-gateway' ); ?></label>
 		<?php endif; ?>

@@ -5,8 +5,8 @@ Tags: frete, correios, shipping, etiquetas, rastreio
 Requires at least: 6.2  
 Tested up to: 7.1
 Requires PHP: 7.4  
-Version: 3.0.0
-Stable tag: 3.0.0
+Version: 3.0.1
+Stable tag: 3.0.1
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -301,7 +301,7 @@ This plugin connects to Frenet, the shipping platform it integrates with, and, o
 
 **Frenet tracking** (api.frenet.com.br): used when the store adds a tracking code to an order or the automatic tracking is turned on. It sends the tracking code and the carrier service code to read the delivery events.
 
-**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels with its partner token. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. It also reads the wallet balance and statement, the carriers and the drop-off points.
+**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. It also reads the wallet balance and statement, the carriers and the drop-off points.
 
 **Mercado Pago** (mercadopago.com.br): used only when the store clicks "Add balance". Frenet creates the payment with the amount and the store's return address, and the store's browser is sent to the Mercado Pago checkout to pay it. The plugin never receives card or bank data.
 
@@ -483,6 +483,12 @@ Notes:
 
 == Changelog ==
 
+= 3.0.1 - 18/11/2026 =
+
+* Criar envio mostra o preço da etiqueta, o mesmo do painel Frenet, em vez do preço do checkout com as regras de frete da loja. Serviços com frete grátis por regra voltam a aparecer, com o valor da etiqueta. O checkout continua aplicando as regras.
+* As etiquetas funcionam sem token de parceiro próprio: a loja passa a usar o da Frenet. Um token de parceiro próprio salvo nas configurações continua valendo.
+* O log de debug do método de entrega deixa de gravar o token da loja.
+
 = 3.0.0 - 12/11/2026 =
 
 * Novo menu Frenet no painel, com Etiquetas: crie envios, compare transportadoras, pague com a carteira Frenet, imprima em A4 ou 10x15, cancele e exclua, com escolha do ponto de postagem e da NF-e.
@@ -659,6 +665,10 @@ Notes:
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 3.0.1 =
+
+* Criar envio passa a mostrar o preço da etiqueta, igual ao painel Frenet. As etiquetas funcionam sem token de parceiro próprio e o log de debug não grava mais o token da loja. Não exige mudanças de configuração.
 
 = 3.0.0 =
 
