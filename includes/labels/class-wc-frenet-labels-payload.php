@@ -345,6 +345,31 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
+	 * The single volume of the shipment: weights summed, items stacked by height, the longest length and width.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array{Weight: float, Length: float, Height: float, Width: float}
+	 */
+	public static function volume( WC_Order $order ) {
+		$weight = 0.0;
+		$len    = 0.0;
+		$wid    = 0.0;
+		$hei    = 0.0;
+		foreach ( self::items( $order ) as $i ) {
+			$weight += $i['weight'] * $i['qty'];
+			$len     = max( $len, $i['length'] );
+			$wid     = max( $wid, $i['width'] );
+			$hei    += $i['height'] * $i['qty'];
+		}
+		return array(
+			'Weight' => round( $weight, 3 ),
+			'Length' => $len,
+			'Height' => $hei,
+			'Width'  => $wid,
+		);
+	}
+
+	/**
 	 * Shipment body for the chosen service.
 	 *
 	 * @param WC_Order             $order   Order.
@@ -355,15 +380,7 @@ class WC_Frenet_Labels_Payload {
 		$sender = self::sender();
 		$to     = self::recipient( $order );
 		$items  = array();
-		$weight = 0.0;
-		$len    = 0.0;
-		$wid    = 0.0;
-		$hei    = 0.0;
 		foreach ( self::items( $order ) as $i ) {
-			$weight += $i['weight'] * $i['qty'];
-			$len     = max( $len, $i['length'] );
-			$wid     = max( $wid, $i['width'] );
-			$hei    += $i['height'] * $i['qty'];
 			$items[] = array(
 				'OrderId'     => (string) $order->get_id(),
 				'ItemId'      => (string) $i['item']->get_id(),
@@ -415,11 +432,7 @@ class WC_Frenet_Labels_Payload {
 					'Address'  => $address( $to ),
 				),
 			),
-			'Volumes'   => array(
-				'Weight'        => round( $weight, 3 ),
-				'Length'        => $len,
-				'Height'        => $hei,
-				'Width'         => $wid,
+			'Volumes'   => self::volume( $order ) + array(
 				'Price'         => $value,
 				'DeclaredValue' => $value,
 				'OrderItemsId'  => array_column( $items, 'ItemId' ),
