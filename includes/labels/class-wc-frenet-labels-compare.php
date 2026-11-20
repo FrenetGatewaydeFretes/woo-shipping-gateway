@@ -72,6 +72,27 @@ class WC_Frenet_Labels_Compare {
 	}
 
 	/**
+	 * Services whose code is in the list; all of them when the list is empty (enabled services unknown).
+	 *
+	 * @param array<int, array<string, mixed>> $services normalize() result.
+	 * @param array<int, string>               $codes    Service codes the store enabled.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function only( array $services, array $codes ) {
+		if ( ! $codes ) {
+			return $services;
+		}
+		return array_values(
+			array_filter(
+				$services,
+				static function ( $s ) use ( $codes ) {
+					return in_array( (string) $s['code'], $codes, true );
+				}
+			)
+		);
+	}
+
+	/**
 	 * Cheapest and fastest service codes ('' when there is none). Ties: fastest wins on price, cheapest on time.
 	 *
 	 * @param array<int, array<string, mixed>> $services normalize() result.
