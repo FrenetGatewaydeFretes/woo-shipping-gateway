@@ -10,10 +10,10 @@ defined( 'ABSPATH' ) || exit;
 /**
  * HTTP client for the Frenet APIs used by the labels screens.
  *
- * - WhiteLabel (labels, wallet, list): base URL from the settings, headers token + x-partner-token.
+ * - WhiteLabel (quote, labels, wallet, list): base URL from the settings, headers token + x-partner-token.
  *   Validated live (2026-09-30/10-01): both tokens are required together; responses are camelCase;
  *   errors carry .NET stack traces; label URLs carry the store token in base64 (p=) and are never logged.
- * - Public API (quote with every carrier, tracking): api.frenet.com.br with the store token.
+ * - Public API (tracking, address by CEP): api.frenet.com.br with the store token.
  */
 class WC_Frenet_Labels_Api {
 
@@ -87,36 +87,57 @@ class WC_Frenet_Labels_Api {
 	}
 
 	/**
-	 * Every usable carrier service for a package (POST /shipping/quote). "Sevices" is the server's typo.
+	 * Every carrier service of the account for a package at Frenet's contract price, what a label costs (POST /quotes).
+	 * Validated live (2026-11-20): Volumes must be a list (an object gives HTTP 400); the account's freight rules are not
+	 * applied (platformShippingPrice equals shippingPrice) and disabled services come too.
 	 *
-	 * @param string                           $to_cep Recipient CEP.
-	 * @param float                            $value  Declared value.
-	 * @param array<int, array<string, mixed>> $items  ShippingItemArray.
-	 * @return array<int, array<string, mixed>>|WP_Error ShippingSevicesArray.
+	 * @param string               $to_cep Recipient CEP.
+	 * @param float                $value  Declared value.
+	 * @param array<string, mixed> $volume Volume with Weight, Length, Height and Width.
+	 * @return array<int, array<string, mixed>>|WP_Error Services, see quote_services().
 	 */
-	public static function quote( $to_cep, $value, array $items ) {
-		$token = WC_Frenet_Labels_Settings::store_token();
-		if ( '' === $token ) {
-			return new WP_Error( 'frenet_labels_token', __( 'Frenet token not configured in the Frenet shipping method.', 'woo-shipping-gateway' ) );
-		}
-		$data = self::send(
-			self::PUBLIC_BASE . '/shipping/quote',
+	public static function quote( $to_cep, $value, array $volume ) {
+		$data = self::whitelabel(
 			'POST',
-			array( 'token' => $token ),
+			'/quotes',
 			array(
-				'SellerCEP'            => WC_Frenet_Labels_Settings::origin_cep(),
-				'RecipientCEP'         => preg_replace( '/\D/', '', (string) $to_cep ),
-				'ShipmentInvoiceValue' => (float) $value,
-				'RecipientCountry'     => 'BR',
-				'ShippingItemArray'    => $items,
-				'PlatformName'         => 'WOOCOMMERCE',
-			),
-			10
+				'SenderZipCode'     => (string) preg_replace( '/\D/', '', WC_Frenet_Labels_Settings::origin_cep() ),
+				'RecipientZipCode'  => (string) preg_replace( '/\D/', '', (string) $to_cep ),
+				'RecipientCountry'  => 'BR',
+				'ShipmentItemValue' => round( (float) $value, 2 ),
+				'Volumes'           => array( $volume + array( 'IsFragile' => false ) ),
+			)
 		);
 		if ( is_wp_error( $data ) ) {
 			return $data;
 		}
-		return array_values( (array) ( $data['ShippingSevicesArray'] ?? array() ) );
+		return self::quote_services( $data );
+	}
+
+	/**
+	 * Services of a POST /quotes answer. Pure.
+	 *
+	 * @param array<int|string, mixed> $data Answer of POST /quotes.
+	 * @return array<int, array{ServiceCode: string, ServiceDescription: string, Carrier: string, CarrierCode: string, ShippingPrice: mixed, DeliveryTime: int, Error: bool, Msg: string}>
+	 */
+	public static function quote_services( array $data ) {
+		$out = array();
+		foreach ( (array) ( self::field( $data, 'quotations' ) ?? array() ) as $q ) {
+			if ( ! is_array( $q ) ) {
+				continue;
+			}
+			$out[] = array(
+				'ServiceCode'        => (string) ( self::field( $q, 'shippingServiceCode' ) ?? '' ),
+				'ServiceDescription' => (string) ( self::field( $q, 'shippingServiceName' ) ?? '' ),
+				'Carrier'            => (string) ( self::field( $q, 'carrier' ) ?? '' ),
+				'CarrierCode'        => (string) ( self::field( $q, 'carrierCode' ) ?? '' ),
+				'ShippingPrice'      => self::field( $q, 'shippingPrice' ) ?? self::field( $q, 'platformShippingPrice' ) ?? 0,
+				'DeliveryTime'       => (int) ( self::field( $q, 'deliveryTime' ) ?? 0 ),
+				'Error'              => ! empty( self::field( $q, 'error' ) ),
+				'Msg'                => (string) ( self::field( $q, 'msg' ) ?? '' ),
+			);
+		}
+		return $out;
 	}
 
 	/**

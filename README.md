@@ -301,7 +301,7 @@ This plugin connects to Frenet, the shipping platform it integrates with, and, o
 
 **Frenet tracking** (api.frenet.com.br): used when the store adds a tracking code to an order or the automatic tracking is turned on. It sends the tracking code and the carrier service code to read the delivery events.
 
-**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. It also reads the wallet balance and statement, the carriers and the drop-off points.
+**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. To compare carriers in Create shipment, it sends the origin and destination CEP, the package weight and size and the declared value. It also reads the wallet balance and statement, the carriers and the drop-off points.
 
 **Mercado Pago** (mercadopago.com.br): used only when the store clicks "Add balance". Frenet creates the payment with the amount and the store's return address, and the store's browser is sent to the Mercado Pago checkout to pay it. The plugin never receives card or bank data.
 
