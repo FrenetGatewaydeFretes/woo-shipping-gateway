@@ -323,28 +323,6 @@ class WC_Frenet_Labels_Payload {
 	}
 
 	/**
-	 * ShippingItemArray for POST /shipping/quote.
-	 *
-	 * @param WC_Order $order Order.
-	 * @return array<int, array<string, mixed>>
-	 */
-	public static function quote_items( WC_Order $order ) {
-		return array_map(
-			static function ( $i ) {
-				return array(
-					'Weight'   => $i['weight'],
-					'Length'   => $i['length'],
-					'Height'   => $i['height'],
-					'Width'    => $i['width'],
-					'Quantity' => $i['qty'],
-					'SKU'      => $i['sku'],
-				);
-			},
-			self::items( $order )
-		);
-	}
-
-	/**
 	 * The single volume of the shipment: weights summed, items stacked by height, the longest length and width.
 	 *
 	 * @param WC_Order $order Order.

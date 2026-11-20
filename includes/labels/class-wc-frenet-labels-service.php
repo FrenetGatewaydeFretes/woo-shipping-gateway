@@ -103,12 +103,11 @@ class WC_Frenet_Labels_Service {
 	 * @return array<string, mixed>|WP_Error
 	 */
 	public static function compare( WC_Order $order ) {
-		$items = WC_Frenet_Labels_Payload::quote_items( $order );
-		if ( ! $items ) {
+		if ( ! WC_Frenet_Labels_Payload::items( $order ) ) {
 			return new WP_Error( 'frenet_labels_no_items', __( 'This order has no product to ship.', 'woo-shipping-gateway' ) );
 		}
 		$to  = WC_Frenet_Labels_Payload::recipient( $order );
-		$raw = WC_Frenet_Labels_Api::quote( $to['postcode'], WC_Frenet_Labels_Payload::declared_value( $order ), $items );
+		$raw = WC_Frenet_Labels_Api::quote( $to['postcode'], WC_Frenet_Labels_Payload::declared_value( $order ), WC_Frenet_Labels_Payload::volume( $order ) );
 		if ( is_wp_error( $raw ) ) {
 			return $raw;
 		}
