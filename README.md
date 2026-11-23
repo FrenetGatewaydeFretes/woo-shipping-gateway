@@ -5,8 +5,8 @@ Tags: frete, correios, shipping, etiquetas, rastreio
 Requires at least: 6.2  
 Tested up to: 7.1  
 Requires PHP: 7.4  
-Version: 3.0.0
-Stable tag: 3.0.0
+Version: 3.0.1
+Stable tag: 3.0.1
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -483,6 +483,12 @@ Notes:
 
 == Changelog ==
 
+= 3.0.1 - 18/11/2026 =
+
+* Criar envio mostra o preço da etiqueta, o mesmo do painel Frenet, em vez do preço do checkout com as regras de frete da loja. Serviços com frete grátis por regra voltam a aparecer, com o valor da etiqueta. O checkout continua aplicando as regras.
+* As etiquetas funcionam sem token de parceiro próprio: a loja passa a usar o da Frenet. Um token de parceiro próprio salvo nas configurações continua valendo.
+* O log de debug do método de entrega deixa de gravar o token da loja.
+
 = 3.0.0 - 12/11/2026 =
 
 * Novo menu Frenet no painel, com Etiquetas: crie envios, compare transportadoras, pague com a carteira Frenet, imprima em A4 ou 10x15, cancele e exclua, com escolha do ponto de postagem e da NF-e.
@@ -659,6 +665,10 @@ Notes:
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 3.0.1 =
+
+* Criar envio passa a mostrar o preço da etiqueta, igual ao painel Frenet. As etiquetas funcionam sem token de parceiro próprio e o log de debug não grava mais o token da loja. Não exige mudanças de configuração.
 
 = 3.0.0 =
 
