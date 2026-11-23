@@ -483,6 +483,11 @@ Notes:
 
 == Changelog ==
 
+= 3.0.2 - 23/11/2026 =
+
+* Criar envio passa a comparar as transportadoras pela API de etiquetas da Frenet, com o mesmo pacote usado para criar o envio: o preço e o prazo mostrados são os que a Frenet registra na etiqueta, também em pedidos com vários itens. O checkout continua com a cotação de sempre, com as regras de frete e os cupons do painel.
+* Criar envio mostra só as transportadoras ativadas no painel Frenet.
+
 = 3.0.1 - 18/11/2026 =
 
 * Criar envio mostra o preço da etiqueta, o mesmo do painel Frenet, em vez do preço do checkout com as regras de frete da loja. Serviços com frete grátis por regra voltam a aparecer, com o valor da etiqueta. O checkout continua aplicando as regras.
@@ -665,6 +670,10 @@ Notes:
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 3.0.2 =
+
+* Criar envio passa a cotar pela API de etiquetas da Frenet, com o mesmo pacote do envio, e mostra só as transportadoras ativadas no painel. O checkout não muda. Não exige mudanças de configuração.
 
 = 3.0.1 =
 
