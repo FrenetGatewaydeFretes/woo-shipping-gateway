@@ -5,8 +5,8 @@ Tags: frete, correios, shipping, etiquetas, rastreio
 Requires at least: 6.2  
 Tested up to: 7.1
 Requires PHP: 7.4  
-Version: 3.0.1
-Stable tag: 3.0.1
+Version: 3.0.2
+Stable tag: 3.0.2
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
