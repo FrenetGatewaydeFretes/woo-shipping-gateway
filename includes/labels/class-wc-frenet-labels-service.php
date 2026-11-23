@@ -25,6 +25,7 @@ class WC_Frenet_Labels_Service {
 	const POLL_HOOK = 'woocommerce_frenet_labels_poll';
 	const POLL_MAX  = 10;
 	const WALLET    = 'woocommerce_frenet_labels_wallet';
+	const ENABLED   = 'woocommerce_frenet_labels_enabled';
 
 	// Frenet did not answer a creation: Frenet order id still looked for ("156-3"), and [service, journey] of that attempt.
 	const RECOVER         = '_frenet_create_unanswered';
@@ -103,16 +104,15 @@ class WC_Frenet_Labels_Service {
 	 * @return array<string, mixed>|WP_Error
 	 */
 	public static function compare( WC_Order $order ) {
-		$items = WC_Frenet_Labels_Payload::quote_items( $order );
-		if ( ! $items ) {
+		if ( ! WC_Frenet_Labels_Payload::items( $order ) ) {
 			return new WP_Error( 'frenet_labels_no_items', __( 'This order has no product to ship.', 'woo-shipping-gateway' ) );
 		}
 		$to  = WC_Frenet_Labels_Payload::recipient( $order );
-		$raw = WC_Frenet_Labels_Api::quote( $to['postcode'], WC_Frenet_Labels_Payload::declared_value( $order ), $items );
+		$raw = WC_Frenet_Labels_Api::quote( $to['postcode'], WC_Frenet_Labels_Payload::declared_value( $order ), WC_Frenet_Labels_Payload::volume( $order ) );
 		if ( is_wp_error( $raw ) ) {
 			return $raw;
 		}
-		$services = WC_Frenet_Labels_Compare::normalize( $raw );
+		$services = WC_Frenet_Labels_Compare::only( WC_Frenet_Labels_Compare::normalize( $raw ), self::enabled_services() );
 		if ( ! $services ) {
 			return new WP_Error( 'frenet_labels_no_service', __( 'No carrier delivers this package to this CEP right now. Check the weight, the size and the address.', 'woo-shipping-gateway' ) );
 		}
@@ -127,6 +127,32 @@ class WC_Frenet_Labels_Service {
 			'chosen'   => $chosen,
 			'default'  => WC_Frenet_Labels_Compare::default_choice( $usable, $chosen, WC_Frenet_Labels_Settings::on( 'auto_best' ), WC_Frenet_Labels_Settings::get( 'default_service' ) ),
 		);
+	}
+
+	/**
+	 * Service codes the store enabled in the Frenet panel (GET /carriers/services), cached for ten minutes per account.
+	 * Empty when Frenet does not answer: the quote then shows every service instead of none.
+	 *
+	 * @return array<int, string>
+	 */
+	public static function enabled_services() {
+		$key    = self::ENABLED . '_' . substr( md5( WC_Frenet_Labels_Settings::store_token() . '|' . WC_Frenet_Labels_Settings::partner_token() . '|' . WC_Frenet_Labels_Settings::api_url() ), 0, 12 );
+		$cached = get_transient( $key );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+		$res = WC_Frenet_Labels_Api::configuration( 'GET', '/carriers/services' );
+		if ( is_wp_error( $res ) ) {
+			return array();
+		}
+		$codes = array();
+		foreach ( (array) ( WC_Frenet_Labels_Api::field( $res, 'shippingServices' ) ?? array() ) as $s ) {
+			if ( is_array( $s ) && true === WC_Frenet_Labels_Api::field( $s, 'enabled' ) && '' !== (string) WC_Frenet_Labels_Api::field( $s, 'serviceCode' ) ) {
+				$codes[] = (string) WC_Frenet_Labels_Api::field( $s, 'serviceCode' );
+			}
+		}
+		set_transient( $key, $codes, 10 * MINUTE_IN_SECONDS );
+		return $codes;
 	}
 
 	/**

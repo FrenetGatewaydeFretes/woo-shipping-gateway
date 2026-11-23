@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Carrier comparison for "Criar envio". Pure logic (no WordPress), unit tested.
  *
- * Input: ShippingSevicesArray of POST api.frenet.com.br/shipping/quote ("Sevices" is the server's typo).
+ * Input: services of the WhiteLabel quote (WC_Frenet_Labels_Api::quote()), at Frenet's contract price.
  * Each order gets its services normalized, the cheapest ("Melhor preço") and the fastest ("Melhor prazo")
  * marked, and a default selection: the service the customer chose, unless the store asked to pick the
  * best one automatically. For several orders, summarize() builds the per-carrier header of the screen.
@@ -38,10 +38,9 @@ class WC_Frenet_Labels_Compare {
 	}
 
 	/**
-	 * Usable services at Frenet's contract price and time, what the label costs, without the freight rules of the store
-	 * (no error, contract price > 0, so a service with free shipping stays), cheapest first.
+	 * Usable services (no error, price > 0), cheapest first.
 	 *
-	 * @param array<int, mixed> $raw ShippingSevicesArray (raw API data, items may be anything).
+	 * @param array<int, mixed> $raw Quote services (raw API data, items may be anything).
 	 * @return array<int, array{code: string, name: string, carrier: string, carrier_code: string, price: float, days: int}>
 	 */
 	public static function normalize( array $raw ) {
@@ -50,7 +49,7 @@ class WC_Frenet_Labels_Compare {
 			if ( ! is_array( $s ) || ! empty( $s['Error'] ) || ! isset( $s['ServiceCode'] ) ) {
 				continue;
 			}
-			$price = self::to_float( $s['OriginalShippingPrice'] ?? ( $s['ShippingPrice'] ?? 0 ) );
+			$price = self::to_float( $s['ShippingPrice'] ?? 0 );
 			if ( $price <= 0 ) {
 				continue;
 			}
@@ -60,7 +59,7 @@ class WC_Frenet_Labels_Compare {
 				'carrier'      => (string) ( $s['Carrier'] ?? '' ),
 				'carrier_code' => (string) ( $s['CarrierCode'] ?? '' ),
 				'price'        => round( $price, 2, PHP_ROUND_HALF_EVEN ),
-				'days'         => (int) ( $s['OriginalDeliveryTime'] ?? ( $s['DeliveryTime'] ?? 0 ) ),
+				'days'         => (int) ( $s['DeliveryTime'] ?? 0 ),
 			);
 		}
 		usort(
@@ -70,6 +69,27 @@ class WC_Frenet_Labels_Compare {
 			}
 		);
 		return $out;
+	}
+
+	/**
+	 * Services whose code is in the list; all of them when the list is empty (enabled services unknown).
+	 *
+	 * @param array<int, array<string, mixed>> $services normalize() result.
+	 * @param array<int, string>               $codes    Service codes the store enabled.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function only( array $services, array $codes ) {
+		if ( ! $codes ) {
+			return $services;
+		}
+		return array_values(
+			array_filter(
+				$services,
+				static function ( $s ) use ( $codes ) {
+					return in_array( (string) $s['code'], $codes, true );
+				}
+			)
+		);
 	}
 
 	/**

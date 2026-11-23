@@ -5,8 +5,8 @@ Tags: frete, correios, shipping, etiquetas, rastreio
 Requires at least: 6.2  
 Tested up to: 7.1  
 Requires PHP: 7.4  
-Version: 3.0.1
-Stable tag: 3.0.1
+Version: 3.0.2
+Stable tag: 3.0.2
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -301,7 +301,7 @@ This plugin connects to Frenet, the shipping platform it integrates with, and, o
 
 **Frenet tracking** (api.frenet.com.br): used when the store adds a tracking code to an order or the automatic tracking is turned on. It sends the tracking code and the carrier service code to read the delivery events.
 
-**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. It also reads the wallet balance and statement, the carriers and the drop-off points.
+**Frenet labels and wallet** (whitelabel.frenet.com.br and whitelabel-configuration.frenet.com.br): used only when the store enables Frenet labels. When the store creates, pays, prints or cancels a label, it sends the order data the carrier needs: the customer's name, CPF or CNPJ, e-mail, phone and shipping address, the items, weight, size and declared value, the NF-e key when informed, and the sender's data. To compare carriers in Create shipment, it sends the origin and destination CEP, the package weight and size and the declared value. It also reads the wallet balance and statement, the carriers and the drop-off points.
 
 **Mercado Pago** (mercadopago.com.br): used only when the store clicks "Add balance". Frenet creates the payment with the amount and the store's return address, and the store's browser is sent to the Mercado Pago checkout to pay it. The plugin never receives card or bank data.
 
@@ -482,6 +482,11 @@ Notes:
 - The product page shipping simulator remains hidden for virtual products.
 
 == Changelog ==
+
+= 3.0.2 - 23/11/2026 =
+
+* Criar envio passa a comparar as transportadoras pela API de etiquetas da Frenet, com o mesmo pacote usado para criar o envio: o preço e o prazo mostrados são os que a Frenet registra na etiqueta, também em pedidos com vários itens. O checkout continua com a cotação de sempre, com as regras de frete e os cupons do painel.
+* Criar envio mostra só as transportadoras ativadas no painel Frenet.
 
 = 3.0.1 - 18/11/2026 =
 
@@ -665,6 +670,10 @@ Notes:
 * Versão inicial do plugin.
 
 == Upgrade Notice ==
+
+= 3.0.2 =
+
+* Criar envio passa a cotar pela API de etiquetas da Frenet, com o mesmo pacote do envio, e mostra só as transportadoras ativadas no painel. O checkout não muda. Não exige mudanças de configuração.
 
 = 3.0.1 =
 
